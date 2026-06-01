@@ -15,9 +15,36 @@ const BLOQUES = [
 ]
 
 const PONENTES = [
-  { num: '01', marca: 'SOSA INGREDIENTS · Cocinera', nombre: 'Silma Ayres', ig: 'silmaayres', resultado: 'Vas a entender por qué dos elaboraciones con los mismos ingredientes pueden dar resultados completamente distintos — y cómo usar esa diferencia a tu favor desde el día siguiente.', para: 'Para quienes trabajan por intuición y para quienes lo hacen por fórmula. Los dos van a salir con nuevas herramientas.', hora: '10:00 – 12:00h' },
-  { num: '02', marca: '100×100 ALEXIS', nombre: 'Alexis García', ig: null, resultado: 'Vas a entender la química que hay detrás de cada masa — por qué los ingredientes reaccionan entre sí de una manera y no de otra, y cómo usar esa lógica para tomar decisiones en tu obrador.', para: 'No importa si haces pan, hojaldre o pastelería. La magia es la misma. Entenderla lo cambia todo.', hora: '14:00 – 16:00h' },
-  { num: '03', marca: 'RON AREHUCAS · Coctelería atlántica', nombre: 'Óscar Lafuente', ig: null, resultado: 'Vas a entender cómo el territorio se convierte en argumento de venta — y cómo aplicar esa lógica a tu producto, sea un cóctel, un pan o un plato.', para: 'Una ponencia sobre identidad, narrativa y producto. Más transversal de lo que parece.', hora: '16:30 – 17:30h' },
+  {
+    num: '01',
+    marca: 'SOSA INGREDIENTS · Cocinera',
+    nombre: 'Silma Ayres',
+    ig: 'silmaayres',
+    premio: 'Formada en DiverXo ✶✶✶ Michelin y El Celler de Can Roca — mejor restaurante del mundo',
+    resultado: 'Vas a entender por qué dos elaboraciones con los mismos ingredientes pueden dar resultados completamente distintos — y cómo usar esa diferencia a tu favor desde el día siguiente.',
+    para: 'Para quienes trabajan por intuición y para quienes lo hacen por fórmula. Los dos van a salir con nuevas herramientas.',
+    hora: '10:00 – 12:00h',
+  },
+  {
+    num: '02',
+    marca: '100×100 ALEXIS · Maestro Pastelero',
+    nombre: 'Alexis García',
+    ig: null,
+    premio: 'Mejor Maestro Pastelero de España 2024 · Pastelero Revelación Madrid Fusión 2018 · Miga de Oro de Canarias',
+    resultado: 'Vas a entender la química que hay detrás de cada masa — por qué los ingredientes reaccionan entre sí de una manera y no de otra, y cómo usar esa lógica para tomar decisiones en tu obrador.',
+    para: 'No importa si haces pan, hojaldre o pastelería. La magia es la misma. Entenderla lo cambia todo.',
+    hora: '14:00 – 16:00h',
+  },
+  {
+    num: '03',
+    marca: 'RON AREHUCAS · Coctelería atlántica',
+    nombre: 'Óscar Lafuente',
+    ig: null,
+    premio: 'Best Rum Bartender del Mundo 2024 — The Ultimate Awards',
+    resultado: 'Vas a entender cómo el territorio se convierte en argumento de venta — y cómo aplicar esa lógica a tu producto, sea un cóctel, un pan o un plato.',
+    para: 'Una ponencia sobre identidad, narrativa y producto. Más transversal de lo que parece.',
+    hora: '16:30 – 17:30h',
+  },
 ]
 
 const JORNADA = [
@@ -397,8 +424,16 @@ export default function LandingClient({ locale }: Props) {
                   </a>
                 )}
 
+                {/* Premio — destacado */}
+                <div style={{ background: 'var(--negro)', padding: '0.75rem 1rem', display: 'flex', gap: '0.6rem', alignItems: 'flex-start' }}>
+                  <span style={{ color: 'var(--amarillo)', fontSize: '0.9rem', lineHeight: 1, flexShrink: 0, marginTop: '0.1rem' }}>★</span>
+                  <p style={{ fontSize: '0.72rem', color: 'rgba(247,243,238,0.85)', lineHeight: 1.55, fontFamily: 'DM Sans, sans-serif', letterSpacing: '0.02em' }}>
+                    {p.premio}
+                  </p>
+                </div>
+
                 {/* Separador negro */}
-                <div style={{ height: 2, background: 'var(--negro)', margin: '0.25rem 0' }} />
+                <div style={{ height: 2, background: 'var(--negro)', margin: '0' }} />
 
                 {/* Resultado */}
                 <p style={{ fontSize: '0.82rem', color: 'var(--negro)', lineHeight: 1.7, flex: 1 }}>{p.resultado}</p>

@@ -187,7 +187,27 @@ function RegistroForm() {
       </select>
       <input name="email" type="email" placeholder="Email de contacto" required style={S.input} />
       <div>
-        <input name="telefono" type="tel" placeholder="Teléfono WhatsApp" style={S.input} />
+        <div style={{ display: 'flex', border: '1px solid var(--crema3)', background: 'var(--blanco)' }}>
+          {/* Prefijo país fijo */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: '0.4rem',
+            padding: '0.95rem 1rem',
+            borderRight: '1px solid var(--crema3)',
+            flexShrink: 0,
+            background: 'var(--crema2)',
+          }}>
+            <span style={{ fontSize: '1rem', lineHeight: 1 }}>🇪🇸</span>
+            <span style={{ fontSize: '0.85rem', color: 'var(--grafito)', fontFamily: 'DM Sans, sans-serif', fontWeight: 400, letterSpacing: '0.02em' }}>+34</span>
+          </div>
+          {/* Número sin prefijo */}
+          <input
+            name="telefono"
+            type="tel"
+            placeholder="612 345 678"
+            maxLength={12}
+            style={{ ...S.input, border: 'none', flex: 1, outline: 'none' }}
+          />
+        </div>
         <p style={{ fontSize: '0.68rem', color: 'var(--gris)', marginTop: '0.3rem', paddingLeft: '0.2rem' }}>
           Usaremos este número solo para confirmarte la plaza por WhatsApp.
         </p>

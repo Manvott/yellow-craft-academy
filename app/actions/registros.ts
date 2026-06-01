@@ -29,7 +29,13 @@ export async function registrarAsistente(formData: FormData) {
     cargo:         (formData.get('cargo') as string) || null,
     perfil:        (formData.get('perfil') as string) || null,
     email:         formData.get('email') as string,
-    telefono:      (formData.get('telefono') as string) || null,
+    telefono:      (() => {
+      const t = (formData.get('telefono') as string)?.trim()
+      if (!t) return null
+      // Normalizar: añadir +34 si el usuario no lo incluyó
+      if (t.startsWith('+')) return t
+      return `+34${t.replace(/\s/g, '')}`
+    })(),
     isla:          (formData.get('isla') as string) || null,
     instagram:     (formData.get('instagram') as string) || null,
     primera_vez:   formData.get('primera_vez') === 'si',

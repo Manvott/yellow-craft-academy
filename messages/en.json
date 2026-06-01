@@ -1,0 +1,72 @@
+{
+  "nav": {
+    "productos": "Products",
+    "pildoras": "Knowledge Pills",
+    "admin": "Admin"
+  },
+  "home": {
+    "title": "Yellow Craft Academy",
+    "subtitle": "Discover the best products for your HORECA business",
+    "event_date": "June 15, 2026",
+    "event_location": "Lanzarote, Canary Islands",
+    "all_suppliers": "All suppliers",
+    "all_categories": "All categories",
+    "search_placeholder": "Search product...",
+    "request_info": "Request information",
+    "no_products": "No products found"
+  },
+  "product": {
+    "price_from": "Guide price",
+    "unit": "Sales unit",
+    "category": "Category",
+    "supplier": "Supplier"
+  },
+  "solicitud": {
+    "title": "Request information",
+    "subtitle": "We will connect you with the supplier",
+    "nombre": "Full name",
+    "email": "Email address",
+    "telefono": "Phone",
+    "empresa": "Business / Company",
+    "isla": "Island",
+    "cargo": "Job title",
+    "mensaje": "Message (optional)",
+    "submit": "Send request",
+    "success": "Request sent! The supplier will contact you shortly.",
+    "error": "Error sending. Please try again.",
+    "required": "Required field",
+    "islas": {
+      "lanzarote": "Lanzarote",
+      "fuerteventura": "Fuerteventura",
+      "gran_canaria": "Gran Canaria",
+      "tenerife": "Tenerife",
+      "la_palma": "La Palma",
+      "la_gomera": "La Gomera",
+      "el_hierro": "El Hierro",
+      "otra": "Other"
+    }
+  },
+  "pildoras": {
+    "title": "Knowledge Pills",
+    "subtitle": "Learn and improve your business with our specialized content",
+    "no_content": "Coming soon",
+    "read_more": "Read more",
+    "read_less": "Read less"
+  },
+  "admin": {
+    "login": {
+      "title": "Admin access",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign in",
+      "error": "Invalid credentials"
+    },
+    "dashboard": {
+      "title": "Administration panel",
+      "solicitudes": "Requests received",
+      "proveedores": "Suppliers",
+      "productos": "Products",
+      "pildoras": "Knowledge pills"
+    }
+  }
+}

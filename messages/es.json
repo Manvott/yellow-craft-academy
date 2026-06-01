@@ -1,0 +1,72 @@
+{
+  "nav": {
+    "productos": "Productos",
+    "pildoras": "Píldoras de Conocimiento",
+    "admin": "Admin"
+  },
+  "home": {
+    "title": "Yellow Craft Academy",
+    "subtitle": "Descubre los mejores productos para tu negocio HORECA",
+    "event_date": "15 de Junio, 2026",
+    "event_location": "Lanzarote, Islas Canarias",
+    "all_suppliers": "Todos los proveedores",
+    "all_categories": "Todas las categorías",
+    "search_placeholder": "Buscar producto...",
+    "request_info": "Solicitar información",
+    "no_products": "No se encontraron productos"
+  },
+  "product": {
+    "price_from": "Precio orientativo",
+    "unit": "Unidad de venta",
+    "category": "Categoría",
+    "supplier": "Proveedor"
+  },
+  "solicitud": {
+    "title": "Solicitar información",
+    "subtitle": "Te ponemos en contacto con el proveedor",
+    "nombre": "Nombre y apellidos",
+    "email": "Correo electrónico",
+    "telefono": "Teléfono",
+    "empresa": "Empresa / Negocio",
+    "isla": "Isla",
+    "cargo": "Cargo",
+    "mensaje": "Mensaje (opcional)",
+    "submit": "Enviar solicitud",
+    "success": "¡Solicitud enviada! El proveedor se pondrá en contacto contigo.",
+    "error": "Error al enviar. Inténtalo de nuevo.",
+    "required": "Campo obligatorio",
+    "islas": {
+      "lanzarote": "Lanzarote",
+      "fuerteventura": "Fuerteventura",
+      "gran_canaria": "Gran Canaria",
+      "tenerife": "Tenerife",
+      "la_palma": "La Palma",
+      "la_gomera": "La Gomera",
+      "el_hierro": "El Hierro",
+      "otra": "Otra"
+    }
+  },
+  "pildoras": {
+    "title": "Píldoras de Conocimiento",
+    "subtitle": "Aprende y mejora tu negocio con nuestros contenidos especializados",
+    "no_content": "Próximamente",
+    "read_more": "Leer más",
+    "read_less": "Leer menos"
+  },
+  "admin": {
+    "login": {
+      "title": "Acceso administrador",
+      "email": "Email",
+      "password": "Contraseña",
+      "submit": "Entrar",
+      "error": "Credenciales incorrectas"
+    },
+    "dashboard": {
+      "title": "Panel de administración",
+      "solicitudes": "Solicitudes recibidas",
+      "proveedores": "Proveedores",
+      "productos": "Productos",
+      "pildoras": "Píldoras"
+    }
+  }
+}

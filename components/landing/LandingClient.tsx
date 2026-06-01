@@ -57,14 +57,15 @@ function RegistroForm() {
   const [isPending, startTransition] = useTransition()
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState('')
-  const [nombreInscritos, setNombreInscritos] = useState('')
+  const [nombreInscrito, setNombreInscrito] = useState('')
+  const [islaInscrito, setIslaInscrito] = useState('')
   const formRef = useRef<HTMLFormElement>(null)
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const fd = new FormData(e.currentTarget)
-    const nombre = fd.get('nombre') as string
-    setNombreInscritos(nombre)
+    setNombreInscrito(fd.get('nombre') as string)
+    setIslaInscrito(fd.get('isla') as string || '')
     startTransition(async () => {
       const result = await registrarAsistente(fd)
       if (result.ok) {
@@ -76,7 +77,8 @@ function RegistroForm() {
   }
 
   if (success) {
-    const waText = encodeURIComponent(`Hola, me acabo de inscribir en Yellow Craft Academy (15 jun). Soy ${nombreInscritos}. Confirmo que acepto recibir información del evento por WhatsApp.`)
+    const etiqueta = islaInscrito ? `${nombreInscrito} - ${islaInscrito}` : nombreInscrito
+    const waText = encodeURIComponent(`Hola, me acabo de inscribir en Yellow Craft Academy (15 jun). Soy ${etiqueta}. Confirmo que acepto recibir información del evento por WhatsApp.`)
     const waUrl = `https://wa.me/34608649038?text=${waText}`
 
     return (
@@ -163,6 +165,13 @@ function RegistroForm() {
           Usaremos este número solo para confirmarte la plaza por WhatsApp.
         </p>
       </div>
+
+      <select name="isla" required defaultValue="" style={{ ...S.input, cursor: 'pointer', color: 'var(--gris)' }}>
+        <option value="" disabled>Tu isla *</option>
+        {['Lanzarote', 'Fuerteventura', 'Gran Canaria', 'Tenerife', 'La Palma', 'La Gomera', 'El Hierro', 'Fuera de Canarias'].map(i => (
+          <option key={i} value={i} style={{ color: 'var(--grafito)' }}>{i}</option>
+        ))}
+      </select>
 
       <p style={{ fontSize: '0.65rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--gris)', marginTop: '0.5rem' }}>
         ¿A qué bloques vas a asistir?

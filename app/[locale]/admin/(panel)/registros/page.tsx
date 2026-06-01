@@ -8,6 +8,7 @@ export interface Registro {
   perfil: string | null
   email: string
   telefono: string | null
+  isla: string | null
   bloques: string[] | null
   acepta_whatsapp: boolean
   wa_confirmado: boolean

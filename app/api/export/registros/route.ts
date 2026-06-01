@@ -25,6 +25,7 @@ export async function GET(request: NextRequest) {
     'Email': r.email,
     'Empresa': r.empresa ?? '',
     'Perfil profesional': r.perfil ?? '',
+    'Isla': r.isla ?? '',
     'Teléfono WhatsApp': r.telefono ?? '',
     'Acepta canal WhatsApp': r.acepta_whatsapp ? 'Sí' : 'No',
     'Añadido a lista WA': r.wa_confirmado ? 'Sí' : 'No',

@@ -5,6 +5,9 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import type { Registro } from '@/app/[locale]/admin/(panel)/registros/page'
 
+// añadir isla al tipo local si no viene del page
+
+
 interface Props { registros: Registro[] }
 
 export default function RegistrosAdmin({ registros }: Props) {
@@ -49,7 +52,7 @@ export default function RegistrosAdmin({ registros }: Props) {
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
             <thead>
               <tr style={{ background: 'var(--crema2)', borderBottom: '1px solid var(--crema3)' }}>
-                {['Fecha', 'Nombre', 'Email', 'Empresa', 'Teléfono', 'Bloques', 'WA Lista', 'Acciones'].map(h => (
+                {['Fecha', 'Nombre', 'Isla', 'Email', 'Teléfono', 'Bloques', 'WA Lista', 'Acciones'].map(h => (
                   <th key={h} style={{ textAlign: 'left', padding: '0.75rem 1rem', fontSize: '0.6rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--gris)', fontWeight: 500, whiteSpace: 'nowrap' }}>
                     {h}
                   </th>
@@ -58,6 +61,7 @@ export default function RegistrosAdmin({ registros }: Props) {
             </thead>
             <tbody>
               {filtered.map((r, i) => {
+                const etiqueta = r.isla ? `${r.nombre} - ${r.isla}` : r.nombre
                 const waText = encodeURIComponent(`Hola ${r.nombre}, gracias por inscribirte en Yellow Craft Academy. Te confirmo tu plaza para el 15 de junio. Sala Ocean, Puerto del Carmen, Lanzarote. ¡Nos vemos allí!`)
                 const waLink = r.telefono
                   ? `https://wa.me/${r.telefono.replace(/\D/g, '')}?text=${waText}`
@@ -69,6 +73,13 @@ export default function RegistrosAdmin({ registros }: Props) {
                       {new Date(r.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })}
                     </td>
                     <td style={{ padding: '0.75rem 1rem', fontWeight: 500, color: 'var(--negro)', whiteSpace: 'nowrap' }}>{r.nombre}</td>
+                    <td style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', whiteSpace: 'nowrap' }}>
+                      {r.isla ? (
+                        <span style={{ background: 'var(--amarillo)', color: 'var(--negro)', padding: '0.15rem 0.5rem', fontSize: '0.65rem', letterSpacing: '0.08em', fontFamily: 'DM Sans, sans-serif' }}>
+                          {r.isla}
+                        </span>
+                      ) : <span style={{ color: 'var(--gris-l)' }}>—</span>}
+                    </td>
                     <td style={{ padding: '0.75rem 1rem', color: 'var(--gris)', fontSize: '0.78rem' }}>{r.email}</td>
                     <td style={{ padding: '0.75rem 1rem', color: 'var(--gris)', fontSize: '0.78rem' }}>{r.empresa ?? '—'}</td>
                     <td style={{ padding: '0.75rem 1rem', color: 'var(--gris)', whiteSpace: 'nowrap', fontSize: '0.78rem' }}>{r.telefono ?? '—'}</td>

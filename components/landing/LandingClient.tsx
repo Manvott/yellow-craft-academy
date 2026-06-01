@@ -74,14 +74,35 @@ function RegistroForm() {
 
   if (success) {
     return (
-      <div style={{ textAlign: 'center', padding: '3rem 0' }}>
-        <div style={{ width: 56, height: 56, background: 'var(--amarillo)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', fontSize: '1.5rem' }}>✓</div>
-        <p style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '2rem', fontWeight: 300, color: 'var(--negro)', marginBottom: '0.5rem' }}>Plaza reservada</p>
-        <p style={{ fontSize: '0.85rem', color: 'var(--gris)', lineHeight: 1.75 }}>
-          Gracias por inscribirte. Te confirmaremos tu plaza por WhatsApp o email en las próximas horas.
+      <div style={{ padding: '2.5rem 0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
+          <div style={{ width: 48, height: 48, background: 'var(--amarillo)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '1.3rem' }}>✓</div>
+          <p style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '2rem', fontWeight: 300, color: 'var(--negro)', lineHeight: 1 }}>
+            ¡Estás inscrito!
+          </p>
+        </div>
+        <p style={{ fontSize: '0.87rem', color: 'var(--gris)', lineHeight: 1.85, marginBottom: '1.5rem' }}>
+          Enhorabuena, tu plaza está reservada.
         </p>
-        <a href="#ponentes" style={{ display: 'inline-block', marginTop: '1.5rem', fontSize: '0.72rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--negro)', borderBottom: '1px solid var(--crema3)', textDecoration: 'none', paddingBottom: 2 }}>
-          Ver ponentes →
+        <div style={{ padding: '1.25rem 1.5rem', background: 'var(--amarillo)', marginBottom: '1.5rem' }}>
+          <p style={{ fontSize: '0.65rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--negro)', marginBottom: '0.4rem', fontFamily: 'DM Sans, sans-serif' }}>
+            Recuerda la dirección del evento
+          </p>
+          <p style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1.25rem', fontWeight: 400, color: 'var(--negro)', lineHeight: 1.4 }}>
+            Sala Ocean · Puerto del Carmen · Lanzarote
+          </p>
+          <p style={{ fontSize: '0.78rem', color: 'var(--grafito)', marginTop: '0.4rem', fontFamily: 'DM Sans, sans-serif' }}>
+            15 de junio de 2026 · 9:30h – 21:00h
+          </p>
+        </div>
+        <a
+          href="https://maps.google.com/?q=Sala+Ocean+Puerto+del+Carmen+Lanzarote"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.72rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--negro)', textDecoration: 'none', borderBottom: '1px solid var(--crema3)', paddingBottom: 2 }}
+        >
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+          Ver en Google Maps →
         </a>
       </div>
     )
@@ -151,7 +172,7 @@ export default function LandingClient({ locale }: Props) {
       <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.25rem 2.5rem', background: 'rgba(247,243,238,0.94)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(0,0,0,0.07)' }}>
         <Link href={`/${locale}/evento`} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
           <YCLogo size={34} />
-          <span style={{ fontSize: '0.7rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gris)' }}>Organizado por AVA · Lanzarote</span>
+          <span style={{ fontSize: '0.7rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gris)' }}>Organizado por AVA</span>
         </Link>
         <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
           <Link href={`/${locale}`} style={{ fontSize: '0.7rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--gris)', textDecoration: 'none' }}>Catálogo</Link>

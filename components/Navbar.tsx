@@ -32,7 +32,7 @@ export default function Navbar() {
           <text x="280" y="378" fontFamily="Helvetica Neue, Arial, sans-serif" fontSize="18" fontWeight="400" letterSpacing="9" fill="#0A0A08" textAnchor="middle" dominantBaseline="middle" opacity="0.38">ACADEMY</text>
         </svg>
         <span style={{ fontSize: '0.7rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gris)', fontFamily: 'DM Sans, sans-serif' }}>
-          Organizado por AVA · Lanzarote
+          Organizado por AVA
         </span>
       </Link>
 

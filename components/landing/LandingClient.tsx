@@ -19,6 +19,7 @@ const PONENTES = [
     num: '01',
     marca: 'SOSA INGREDIENTS · Cocinera',
     nombre: 'Silma Ayres',
+    foto: '/ponentes/silma-ayres.jpg',
     ig: 'silmaayres',
     premio: 'Formada en DiverXo ✶✶✶ Michelin y El Celler de Can Roca — mejor restaurante del mundo',
     resultado: 'Vas a entender por qué dos elaboraciones con los mismos ingredientes pueden dar resultados completamente distintos — y cómo usar esa diferencia a tu favor desde el día siguiente.',
@@ -29,6 +30,7 @@ const PONENTES = [
     num: '02',
     marca: '100×100 ALEXIS · Maestro Pastelero',
     nombre: 'Alexis García',
+    foto: '/ponentes/alexis-garcia.jpg',
     ig: null,
     premio: 'Mejor Maestro Pastelero de España 2024 · Pastelero Revelación Madrid Fusión 2018 · Miga de Oro de Canarias',
     resultado: 'Vas a entender la química que hay detrás de cada masa — por qué los ingredientes reaccionan entre sí de una manera y no de otra, y cómo usar esa lógica para tomar decisiones en tu obrador.',
@@ -39,6 +41,7 @@ const PONENTES = [
     num: '03',
     marca: 'RON AREHUCAS · Coctelería atlántica',
     nombre: 'Óscar Lafuente',
+    foto: '/ponentes/oscar-lafuente.jpg',
     ig: null,
     premio: 'Best Rum Bartender del Mundo 2024 — The Ultimate Awards',
     resultado: 'Vas a entender cómo el territorio se convierte en argumento de venta — y cómo aplicar esa lógica a tu producto, sea un cóctel, un pan o un plato.',
@@ -393,7 +396,7 @@ export default function LandingClient({ locale }: Props) {
         <div style={{ display: 'flex', animation: 'strip 28s linear infinite', width: 'max-content' }}>
           {[0, 1, 2].map(i => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '2rem', padding: '0 2rem', whiteSpace: 'nowrap' }}>
-              {['Yellow Craft Academy', '15 de junio · Lanzarote', 'Formación técnica gastronómica', 'Entrada gratuita · Plazas limitadas', 'AVA Identidad'].map((t, j) => (
+              {['Yellow Craft Academy', '15 de junio · Lanzarote', 'Formación técnica gastronómica', 'Acceso profesional · Plazas limitadas', 'AVA Identidad'].map((t, j) => (
                 <span key={j} style={{ display: 'inline-flex', alignItems: 'center', gap: '2rem' }}>
                   <span style={{ fontSize: '0.7rem', fontWeight: 500, letterSpacing: '0.25em', textTransform: 'uppercase', color: 'var(--negro)' }}>{t}</span>
                   <span style={{ width: 4, height: 4, background: 'var(--negro)', borderRadius: '50%', opacity: 0.25, display: 'inline-block' }} />
@@ -423,9 +426,24 @@ export default function LandingClient({ locale }: Props) {
                 display: 'flex', flexDirection: 'column', gap: '1.25rem',
                 background: 'var(--blanco)',
               }}>
+                {/* Foto */}
+                <div style={{ width: '100%', aspectRatio: '4/3', overflow: 'hidden', background: 'var(--crema2)', position: 'relative', marginBottom: '0.5rem' }}>
+                  {p.foto ? (
+                    <img
+                      src={p.foto}
+                      alt={p.nombre}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }}
+                    />
+                  ) : (
+                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <span style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '3rem', fontWeight: 300, color: 'var(--crema3)' }}>{p.num}</span>
+                    </div>
+                  )}
+                </div>
+
                 {/* Número + hora */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <span style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '3rem', fontWeight: 300, color: 'var(--crema3)', lineHeight: 1 }}>{p.num}</span>
+                  <span style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '2.5rem', fontWeight: 300, color: 'var(--crema3)', lineHeight: 1 }}>{p.num}</span>
                   <span style={{ fontSize: '0.58rem', letterSpacing: '0.2em', textTransform: 'uppercase', background: 'var(--negro)', color: 'var(--crema)', padding: '0.35rem 0.8rem', fontFamily: 'DM Sans, sans-serif', whiteSpace: 'nowrap' }}>{p.hora}</span>
                 </div>
 
@@ -551,7 +569,7 @@ export default function LandingClient({ locale }: Props) {
       {/* REGISTRO */}
       <div className="yca-registro" style={{ background: 'var(--crema2)', padding: '8rem 4rem', borderTop: '1px solid var(--crema3)' }} id="registro">
         <div style={{ maxWidth: 580, margin: '0 auto' }}>
-          <p style={{ ...S.eyebrow, marginBottom: '1rem' }}>Entrada gratuita · Plazas limitadas</p>
+          <p style={{ ...S.eyebrow, marginBottom: '1rem' }}>Acceso profesional · Plazas limitadas</p>
           <h2 style={{ ...S.sectionTitle, fontSize: 'clamp(2.5rem,4vw,3.8rem)', marginBottom: '1rem' }}>
             Reserva tu<br /><em style={{ fontStyle: 'italic', color: 'var(--gris)' }}>plaza</em>
           </h2>
@@ -560,7 +578,7 @@ export default function LandingClient({ locale }: Props) {
           </p>
           <RegistroForm />
           <p style={{ marginTop: '1.5rem', fontSize: '0.65rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'var(--gris-l)', textAlign: 'center' }}>
-            Entrada gratuita · Confirmación por orden de registro
+            Acceso profesional · Confirmación por orden de registro
           </p>
         </div>
       </div>

@@ -62,7 +62,7 @@ export default async function AdminLayout({
         </nav>
         <div style={{ padding: '1rem 1.25rem', borderTop: '1px solid rgba(247,243,238,0.07)' }}>
           <Link
-            href={`/${locale}`}
+            href={`/${locale}/evento`}
             style={{ fontSize: '0.65rem', color: 'rgba(247,243,238,0.25)', textDecoration: 'none', fontFamily: 'DM Sans, sans-serif' }}
           >
             ← Ver portal

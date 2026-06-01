@@ -149,12 +149,13 @@ export default function LandingClient({ locale }: Props) {
 
       {/* NAV */}
       <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.25rem 2.5rem', background: 'rgba(247,243,238,0.94)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(0,0,0,0.07)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <Link href={`/${locale}/evento`} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
           <YCLogo size={34} />
           <span style={{ fontSize: '0.7rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gris)' }}>Organizado por AVA · Lanzarote</span>
-        </div>
+        </Link>
         <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
           <Link href={`/${locale}`} style={{ fontSize: '0.7rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--gris)', textDecoration: 'none' }}>Catálogo</Link>
+          <Link href={`/${locale}/pildoras`} style={{ fontSize: '0.7rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--gris)', textDecoration: 'none' }}>Píldoras</Link>
           <a href="#registro" style={{ fontSize: '0.68rem', letterSpacing: '0.2em', textTransform: 'uppercase', background: 'var(--negro)', color: 'var(--crema)', padding: '0.45rem 1.3rem', fontWeight: 500, textDecoration: 'none' }}>Reservar plaza</a>
         </div>
       </nav>

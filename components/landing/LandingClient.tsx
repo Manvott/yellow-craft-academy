@@ -7,7 +7,7 @@ import { registrarAsistente } from '@/app/actions/registros'
 interface Props { locale: string }
 
 const BLOQUES = [
-  { value: '10:00 – 12:00h · Edu Azuaza · SOSA', hora: '10:00 – 12:00h', nombre: 'Ponencia · Edu Azuaza · SOSA', sub: 'Ingredientes técnicos en la cocina contemporánea' },
+  { value: '10:00 – 12:00h · Silma Ayres · SOSA', hora: '10:00 – 12:00h', nombre: 'Ponencia · Silma Ayres · SOSA', sub: 'Ingredientes técnicos en la cocina contemporánea' },
   { value: '12:00 – 13:30h · Brunch con producto', hora: '12:00 – 13:30h', nombre: 'Brunch con producto en escena', sub: 'Networking · portfolio AVA en mesa' },
   { value: '14:00 – 16:00h · Alexis García · 100×100', hora: '14:00 – 16:00h', nombre: 'Ponencia · Alexis García · 100×100 Alexis', sub: 'La alquimia de la masa' },
   { value: '16:30 – 17:30h · Óscar Lafuente · Ron Arehucas', hora: '16:30 – 17:30h', nombre: 'Ponencia · Óscar Lafuente · Ron Arehucas', sub: 'El Atlántico en copa · coctelería y maridaje' },
@@ -15,14 +15,14 @@ const BLOQUES = [
 ]
 
 const PONENTES = [
-  { num: '01', marca: 'SOSA · Director Técnico', nombre: 'Edu Azuaza', resultado: 'Vas a entender por qué dos elaboraciones con los mismos ingredientes pueden dar resultados completamente distintos — y cómo usar esa diferencia a tu favor desde el día siguiente.', para: 'Para quienes trabajan por intuición y para quienes lo hacen por fórmula. Los dos van a salir con nuevas herramientas.', hora: '10:00 – 12:00h' },
-  { num: '02', marca: '100×100 ALEXIS', nombre: 'Alexis García', resultado: 'Vas a entender la química que hay detrás de cada masa — por qué los ingredientes reaccionan entre sí de una manera y no de otra, y cómo usar esa lógica para tomar decisiones en tu obrador.', para: 'No importa si haces pan, hojaldre o pastelería. La magia es la misma. Entenderla lo cambia todo.', hora: '14:00 – 16:00h' },
-  { num: '03', marca: 'RON AREHUCAS · Coctelería atlántica', nombre: 'Óscar Lafuente', resultado: 'Vas a entender cómo el territorio se convierte en argumento de venta — y cómo aplicar esa lógica a tu producto, sea un cóctel, un pan o un plato.', para: 'Una ponencia sobre identidad, narrativa y producto. Más transversal de lo que parece.', hora: '16:30 – 17:30h' },
+  { num: '01', marca: 'SOSA INGREDIENTS · Cocinera', nombre: 'Silma Ayres', ig: 'silmaayres', resultado: 'Vas a entender por qué dos elaboraciones con los mismos ingredientes pueden dar resultados completamente distintos — y cómo usar esa diferencia a tu favor desde el día siguiente.', para: 'Para quienes trabajan por intuición y para quienes lo hacen por fórmula. Los dos van a salir con nuevas herramientas.', hora: '10:00 – 12:00h' },
+  { num: '02', marca: '100×100 ALEXIS', nombre: 'Alexis García', ig: null, resultado: 'Vas a entender la química que hay detrás de cada masa — por qué los ingredientes reaccionan entre sí de una manera y no de otra, y cómo usar esa lógica para tomar decisiones en tu obrador.', para: 'No importa si haces pan, hojaldre o pastelería. La magia es la misma. Entenderla lo cambia todo.', hora: '14:00 – 16:00h' },
+  { num: '03', marca: 'RON AREHUCAS · Coctelería atlántica', nombre: 'Óscar Lafuente', ig: null, resultado: 'Vas a entender cómo el territorio se convierte en argumento de venta — y cómo aplicar esa lógica a tu producto, sea un cóctel, un pan o un plato.', para: 'Una ponencia sobre identidad, narrativa y producto. Más transversal de lo que parece.', hora: '16:30 – 17:30h' },
 ]
 
 const JORNADA = [
   { hora: '9:30h', titulo: 'Bienvenida y café', ponente: null, desc: 'Llegada, primer contacto con el espacio y con el producto. Momento para orientarse antes de empezar.', tipo: 'outline' },
-  { hora: '10:00h', titulo: 'Ingredientes técnicos en la cocina contemporánea', ponente: 'Edu Azuaza · SOSA', desc: 'Entenderás qué hay detrás de los ingredientes que cambian el resultado de una elaboración.', resultado: 'Al salir: sabrás qué ingredientes incorporar, para qué y cómo argumentarlo ante tu cliente.', tipo: 'pill' },
+  { hora: '10:00h', titulo: 'Ingredientes técnicos en la cocina contemporánea', ponente: 'Silma Ayres · SOSA Ingredients', desc: 'Entenderás qué hay detrás de los ingredientes que cambian el resultado de una elaboración.', resultado: 'Al salir: sabrás qué ingredientes incorporar, para qué y cómo argumentarlo ante tu cliente.', tipo: 'pill' },
   { hora: '12:00h', titulo: 'Brunch con producto en escena', ponente: null, desc: 'El portfolio de AVA en mesa para verlo, probarlo y entenderlo en contexto.', tipo: 'pill-alt' },
   { hora: '14:00h', titulo: 'La alquimia de la masa', ponente: 'Alexis García · 100×100 Alexis', desc: 'La química entre los ingredientes de cualquier masa — pan, hojaldre, pastelería.', resultado: 'Al salir: entenderás por qué tu masa se comporta como se comporta.', tipo: 'pill' },
   { hora: '16:00h', titulo: 'Pausa · producto y café', ponente: null, desc: 'Momento de descanso entre bloques.', tipo: 'outline' },
@@ -367,17 +367,44 @@ export default function LandingClient({ locale }: Props) {
             </div>
             <span className="yca-section-count" style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '5rem', fontWeight: 300, color: 'var(--crema3)', lineHeight: 1 }}>03</span>
           </div>
-          <div>
+          {/* Cards verticales — una por ponente, separadas por línea negra */}
+          <div className="yca-ponentes-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0', border: '2px solid var(--negro)' }}>
             {PONENTES.map((p, idx) => (
-              <div key={idx} className="yca-ponente" style={{ display: 'grid', gridTemplateColumns: '50px 1fr auto', gap: '2rem', alignItems: 'start', padding: '3rem 0', borderTop: '1px solid var(--crema3)', borderBottom: idx === PONENTES.length - 1 ? '1px solid var(--crema3)' : undefined }}>
-                <span style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1rem', color: 'var(--gris-l)', paddingTop: '0.5rem' }}>{p.num}</span>
-                <div>
-                  <p style={{ fontSize: '0.6rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--gris)', marginBottom: '0.3rem' }}>{p.marca}</p>
-                  <p style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '2rem', fontWeight: 400, color: 'var(--negro)', lineHeight: 1.1, marginBottom: '0.75rem' }}>{p.nombre}</p>
-                  <p style={{ fontSize: '0.82rem', color: 'var(--negro)', fontWeight: 400, lineHeight: 1.65, padding: '0.6rem 0.9rem', background: 'var(--amarillo)', display: 'inline-block', marginBottom: '0.5rem' }}>{p.resultado}</p>
-                  <p style={{ fontSize: '0.75rem', color: 'var(--gris)', lineHeight: 1.65, fontStyle: 'italic', marginTop: '0.5rem' }}>{p.para}</p>
+              <div key={idx} style={{
+                padding: '2.5rem 2rem',
+                borderRight: idx < PONENTES.length - 1 ? '2px solid var(--negro)' : undefined,
+                display: 'flex', flexDirection: 'column', gap: '1.25rem',
+                background: 'var(--blanco)',
+              }}>
+                {/* Número + hora */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <span style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '3rem', fontWeight: 300, color: 'var(--crema3)', lineHeight: 1 }}>{p.num}</span>
+                  <span style={{ fontSize: '0.58rem', letterSpacing: '0.2em', textTransform: 'uppercase', background: 'var(--negro)', color: 'var(--crema)', padding: '0.35rem 0.8rem', fontFamily: 'DM Sans, sans-serif', whiteSpace: 'nowrap' }}>{p.hora}</span>
                 </div>
-                <span className="yca-ponente-hora" style={{ fontSize: '0.6rem', letterSpacing: '0.2em', textTransform: 'uppercase', border: '1px solid var(--crema3)', color: 'var(--gris)', padding: '0.4rem 1rem', whiteSpace: 'nowrap', marginTop: '0.5rem' }}>{p.hora}</span>
+
+                {/* Marca */}
+                <p style={{ fontSize: '0.6rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--gris)', fontFamily: 'DM Sans, sans-serif' }}>{p.marca}</p>
+
+                {/* Nombre */}
+                <p style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 'clamp(1.8rem,2.2vw,2.5rem)', fontWeight: 400, color: 'var(--negro)', lineHeight: 1.05 }}>{p.nombre}</p>
+
+                {/* Instagram */}
+                {p.ig && (
+                  <a href={`https://www.instagram.com/${p.ig}/`} target="_blank" rel="noopener noreferrer"
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.68rem', color: 'var(--gris)', textDecoration: 'none', letterSpacing: '0.05em' }}>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+                    @{p.ig}
+                  </a>
+                )}
+
+                {/* Separador negro */}
+                <div style={{ height: 2, background: 'var(--negro)', margin: '0.25rem 0' }} />
+
+                {/* Resultado */}
+                <p style={{ fontSize: '0.82rem', color: 'var(--negro)', lineHeight: 1.7, flex: 1 }}>{p.resultado}</p>
+
+                {/* Para quién */}
+                <p style={{ fontSize: '0.75rem', color: 'var(--gris)', lineHeight: 1.65, fontStyle: 'italic', borderTop: '1px solid var(--crema3)', paddingTop: '1rem' }}>{p.para}</p>
               </div>
             ))}
           </div>
@@ -418,14 +445,22 @@ export default function LandingClient({ locale }: Props) {
           </div>
           <div>
             {JORNADA.map((item, i) => (
-              <div key={i} className="yca-jornada-item" style={{ display: 'grid', gridTemplateColumns: '100px 1fr', gap: '2rem', padding: '2rem 0', borderTop: '1px solid var(--crema3)', borderBottom: i === JORNADA.length - 1 ? '1px solid var(--crema3)' : undefined }}>
-                <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1rem', color: 'var(--gris)', lineHeight: 1.5, paddingTop: '0.1rem' }}>{item.hora}</div>
+              <div key={i} className="yca-jornada-item" style={{
+                display: 'grid', gridTemplateColumns: '100px 1fr', gap: '2rem', padding: '2rem 0',
+                borderTop: `2px solid ${item.ponente ? 'var(--negro)' : 'var(--crema3)'}`,
+                borderBottom: i === JORNADA.length - 1 ? `2px solid ${item.ponente ? 'var(--negro)' : 'var(--crema3)'}` : undefined,
+              }}>
+                <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1rem', color: item.ponente ? 'var(--negro)' : 'var(--gris)', lineHeight: 1.5, paddingTop: '0.1rem', fontWeight: item.ponente ? 400 : 300 }}>{item.hora}</div>
                 <div>
-                  {item.ponente && <p style={{ fontSize: '0.72rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--gris-l)', marginBottom: '0.4rem' }}>{item.ponente}</p>}
-                  <p style={{ fontSize: '0.9rem', fontWeight: 500, color: 'var(--negro)', marginBottom: '0.35rem' }}>{item.titulo}</p>
+                  {item.ponente && (
+                    <p style={{ fontSize: '0.62rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gris)', marginBottom: '0.4rem', fontFamily: 'DM Sans, sans-serif' }}>{item.ponente}</p>
+                  )}
+                  <p style={{ fontSize: '0.9rem', fontWeight: item.ponente ? 500 : 400, color: 'var(--negro)', marginBottom: '0.35rem' }}>{item.titulo}</p>
                   <p style={{ fontSize: '0.8rem', color: 'var(--gris)', lineHeight: 1.7 }}>{item.desc}</p>
-                  {item.resultado && <p style={{ fontSize: '0.78rem', color: 'var(--negro)', fontWeight: 500, marginTop: '0.5rem', padding: '0.5rem 0.75rem', background: 'var(--amarillo)', display: 'inline-block' }}>{item.resultado}</p>}
-                  <span style={{ display: 'inline-block', marginTop: '0.5rem', fontSize: '0.58rem', letterSpacing: '0.22em', textTransform: 'uppercase', ...(item.tipo === 'pill' ? { background: 'var(--amarillo)', color: 'var(--negro)', padding: '0.2rem 0.7rem', fontWeight: 500 } : item.tipo === 'pill-alt' ? { background: 'var(--amarillo)', color: 'var(--negro)', padding: '0.2rem 0.7rem', fontWeight: 500 } : { border: '1px solid var(--crema3)', color: 'var(--gris)', padding: '0.2rem 0.7rem' }) }}>
+                  {item.resultado && (
+                    <p style={{ fontSize: '0.78rem', color: 'var(--negro)', fontWeight: 500, marginTop: '0.5rem', padding: '0.5rem 0.75rem', background: 'var(--amarillo)', display: 'inline-block' }}>{item.resultado}</p>
+                  )}
+                  <span style={{ display: 'inline-block', marginTop: '0.5rem', fontSize: '0.58rem', letterSpacing: '0.22em', textTransform: 'uppercase', fontFamily: 'DM Sans, sans-serif', ...(item.tipo === 'pill' || item.tipo === 'pill-alt' ? { background: 'var(--negro)', color: 'var(--crema)', padding: '0.2rem 0.7rem', fontWeight: 500 } : { border: '1px solid var(--crema3)', color: 'var(--gris)', padding: '0.2rem 0.7rem' }) }}>
                     {item.tipo === 'pill' ? 'Ponencia técnica' : item.tipo === 'pill-alt' ? 'Producto · Networking' : 'Acceso libre'}
                   </span>
                 </div>
@@ -504,6 +539,14 @@ export default function LandingClient({ locale }: Props) {
 
       <style>{`
         @keyframes strip { from { transform:translateX(0); } to { transform:translateX(-33.333%); } }
+
+        /* ── Cards ponentes responsive ── */
+        .yca-ponentes-grid { display: grid; grid-template-columns: repeat(3,1fr) !important; }
+        @media (max-width: 900px) {
+          .yca-ponentes-grid { grid-template-columns: 1fr !important; }
+          .yca-ponentes-grid > div { border-right: none !important; border-bottom: 2px solid var(--negro) !important; }
+          .yca-ponentes-grid > div:last-child { border-bottom: none !important; }
+        }
 
         /* ── Tablet 768px ── */
         @media (max-width: 768px) {

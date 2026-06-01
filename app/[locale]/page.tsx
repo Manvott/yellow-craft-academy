@@ -6,12 +6,19 @@ import type { Producto, Proveedor } from '@/lib/types'
 
 export default async function HomePage() {
   const t = await getTranslations('home')
-  const supabase = await createClient()
 
-  const [{ data: proveedores }, { data: productos }] = await Promise.all([
-    supabase.from('proveedores').select('*').eq('activo', true).order('orden'),
-    supabase.from('productos').select('*, proveedor:proveedores(*)').eq('disponible', true).order('orden'),
-  ])
+  let proveedores: Proveedor[] = []
+  let productos: Producto[] = []
+
+  try {
+    const supabase = await createClient()
+    const [{ data: p }, { data: pr }] = await Promise.all([
+      supabase.from('proveedores').select('*').eq('activo', true).order('orden'),
+      supabase.from('productos').select('*, proveedor:proveedores(*)').eq('disponible', true).order('orden'),
+    ])
+    proveedores = (p as Proveedor[]) ?? []
+    productos = (pr as Producto[]) ?? []
+  } catch {}
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -41,10 +48,7 @@ export default async function HomePage() {
       {/* Catálogo */}
       <main style={{ flex: 1, background: 'var(--crema)', padding: '5rem 2.5rem' }}>
         <div style={{ maxWidth: 1300, margin: '0 auto' }}>
-          <CatalogoClient
-            productos={(productos as Producto[]) ?? []}
-            proveedores={(proveedores as Proveedor[]) ?? []}
-          />
+          <CatalogoClient productos={productos} proveedores={proveedores} />
         </div>
       </main>
 

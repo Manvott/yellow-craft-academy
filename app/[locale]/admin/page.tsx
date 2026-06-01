@@ -3,28 +3,32 @@ import Link from 'next/link'
 
 export default async function AdminDashboard({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
-  const supabase = await createClient()
 
-  const [
-    { count: registros },
-    { count: solicitudes },
-    { count: proveedores },
-    { count: productos },
-    { count: pildoras },
-  ] = await Promise.all([
-    supabase.from('registros').select('*', { count: 'exact', head: true }),
-    supabase.from('solicitudes_info').select('*', { count: 'exact', head: true }),
-    supabase.from('proveedores').select('*', { count: 'exact', head: true }),
-    supabase.from('productos').select('*', { count: 'exact', head: true }),
-    supabase.from('pildoras').select('*', { count: 'exact', head: true }),
-  ])
+  let counts = { registros: 0, solicitudes: 0, proveedores: 0, productos: 0, pildoras: 0 }
+  try {
+    const supabase = await createClient()
+    const [r, s, prov, prod, pil] = await Promise.all([
+      supabase.from('registros').select('*', { count: 'exact', head: true }),
+      supabase.from('solicitudes_info').select('*', { count: 'exact', head: true }),
+      supabase.from('proveedores').select('*', { count: 'exact', head: true }),
+      supabase.from('productos').select('*', { count: 'exact', head: true }),
+      supabase.from('pildoras').select('*', { count: 'exact', head: true }),
+    ])
+    counts = {
+      registros: r.count ?? 0,
+      solicitudes: s.count ?? 0,
+      proveedores: prov.count ?? 0,
+      productos: prod.count ?? 0,
+      pildoras: pil.count ?? 0,
+    }
+  } catch {}
 
   const stats = [
-    { label: 'Asistentes registrados', value: registros ?? 0, href: `/${locale}/admin/registros`, accent: true },
-    { label: 'Solicitudes de producto', value: solicitudes ?? 0, href: `/${locale}/admin/solicitudes`, accent: false },
-    { label: 'Proveedores', value: proveedores ?? 0, href: `/${locale}/admin/proveedores`, accent: false },
-    { label: 'Productos', value: productos ?? 0, href: `/${locale}/admin/productos`, accent: false },
-    { label: 'Píldoras', value: pildoras ?? 0, href: `/${locale}/admin/pildoras`, accent: false },
+    { label: 'Asistentes registrados', value: counts.registros, href: `/${locale}/admin/registros`, accent: true },
+    { label: 'Solicitudes de producto', value: counts.solicitudes, href: `/${locale}/admin/solicitudes`, accent: false },
+    { label: 'Proveedores', value: counts.proveedores, href: `/${locale}/admin/proveedores`, accent: false },
+    { label: 'Productos', value: counts.productos, href: `/${locale}/admin/productos`, accent: false },
+    { label: 'Píldoras', value: counts.pildoras, href: `/${locale}/admin/pildoras`, accent: false },
   ]
 
   return (
@@ -42,7 +46,6 @@ export default async function AdminDashboard({ params }: { params: Promise<{ loc
               background: s.accent ? 'var(--amarillo)' : 'var(--blanco)',
               border: '1px solid var(--crema3)',
               padding: '1.5rem',
-              transition: 'border-color 0.2s',
             }}>
               <p style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '3rem', fontWeight: 300, color: 'var(--negro)', lineHeight: 1 }}>
                 {s.value}

@@ -5,10 +5,14 @@ export interface Registro {
   id: string
   nombre: string
   empresa: string | null
+  cargo: string | null
   perfil: string | null
   email: string
   telefono: string | null
   isla: string | null
+  instagram: string | null
+  primera_vez: boolean
+  cliente_ava: boolean
   bloques: string[] | null
   acepta_whatsapp: boolean
   wa_confirmado: boolean

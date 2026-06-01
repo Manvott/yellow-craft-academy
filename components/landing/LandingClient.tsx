@@ -173,6 +173,44 @@ function RegistroForm() {
         ))}
       </select>
 
+      <input name="cargo" placeholder="Cargo que ocupas" style={S.input} />
+
+      <input
+        name="instagram"
+        placeholder="Instagram (opcional) — @tunombre"
+        style={S.input}
+      />
+
+      {/* Primera vez en evento AVA */}
+      <div>
+        <p style={{ fontSize: '0.65rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--gris)', marginBottom: '0.5rem', fontFamily: 'DM Sans, sans-serif' }}>
+          ¿Es la primera vez que vienes a un evento AVA?
+        </p>
+        <div style={{ display: 'flex', gap: '0.75rem' }}>
+          {[{ value: 'si', label: 'Sí, primera vez' }, { value: 'no', label: 'Ya he venido antes' }].map(opt => (
+            <label key={opt.value} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', padding: '0.75rem 1.1rem', background: 'var(--blanco)', border: '1px solid var(--crema3)', flex: 1, fontSize: '0.82rem', color: 'var(--grafito)' }}>
+              <input type="radio" name="primera_vez" value={opt.value} defaultChecked={opt.value === 'si'} style={{ accentColor: 'var(--negro)', width: 14, height: 14 }} />
+              {opt.label}
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Cliente de AVA */}
+      <div>
+        <p style={{ fontSize: '0.65rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--gris)', marginBottom: '0.5rem', fontFamily: 'DM Sans, sans-serif' }}>
+          ¿Eres cliente de AVA?
+        </p>
+        <div style={{ display: 'flex', gap: '0.75rem' }}>
+          {[{ value: 'si', label: 'Sí, soy cliente' }, { value: 'no', label: 'Todavía no' }].map(opt => (
+            <label key={opt.value} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', padding: '0.75rem 1.1rem', background: 'var(--blanco)', border: '1px solid var(--crema3)', flex: 1, fontSize: '0.82rem', color: 'var(--grafito)' }}>
+              <input type="radio" name="cliente_ava" value={opt.value} defaultChecked={opt.value === 'no'} style={{ accentColor: 'var(--negro)', width: 14, height: 14 }} />
+              {opt.label}
+            </label>
+          ))}
+        </div>
+      </div>
+
       <p style={{ fontSize: '0.65rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--gris)', marginTop: '0.5rem' }}>
         ¿A qué bloques vas a asistir?
       </p>

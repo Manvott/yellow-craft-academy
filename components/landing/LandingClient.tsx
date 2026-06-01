@@ -8,7 +8,7 @@ interface Props { locale: string }
 
 const BLOQUES = [
   { value: '10:00 – 12:00h · Silma Ayres · SOSA', hora: '10:00 – 12:00h', nombre: 'Ponencia · Silma Ayres · SOSA', sub: 'Ingredientes técnicos en la cocina contemporánea' },
-  { value: '12:00 – 13:30h · Brunch con producto', hora: '12:00 – 13:30h', nombre: 'Brunch con producto en escena', sub: 'Networking · selección de AVA AVA en mesa' },
+  { value: '12:00 – 13:30h · Brunch con producto', hora: '12:00 – 13:30h', nombre: 'Brunch con producto en escena', sub: 'Networking · selección de AVA en mesa' },
   { value: '14:00 – 16:00h · Alexis García · 100×100', hora: '14:00 – 16:00h', nombre: 'Ponencia · Alexis García · 100×100 Alexis', sub: 'La alquimia de la masa' },
   { value: '16:30 – 17:30h · Óscar Lafuente · Ron Arehucas', hora: '16:30 – 17:30h', nombre: 'Ponencia · Óscar Lafuente · Ron Arehucas', sub: 'El Atlántico en copa · coctelería y maridaje' },
   { value: '18:00 – 21:00h · Tardeo · cóctel · atardecer', hora: '18:00 – 21:00h', nombre: 'Tardeo · cóctel · atardecer', sub: 'Cierre experiencial · gastronomía y música' },
@@ -53,7 +53,7 @@ const PONENTES = [
 const JORNADA = [
   { hora: '9:30h', titulo: 'Bienvenida y café', ponente: null, desc: 'Llegada, primer contacto con el espacio y con el producto. Momento para orientarse antes de empezar.', tipo: 'outline' },
   { hora: '10:00h', titulo: 'Ingredientes técnicos en la cocina contemporánea', ponente: 'Silma Ayres · SOSA Ingredients', desc: 'Entenderás qué hay detrás de los ingredientes que cambian el resultado de una elaboración.', resultado: 'Al salir: sabrás qué ingredientes incorporar, para qué y cómo argumentarlo ante tu cliente.', tipo: 'pill' },
-  { hora: '12:00h', titulo: 'Brunch con producto en escena', ponente: null, desc: 'El selección de AVA de AVA en mesa para verlo, probarlo y entenderlo en contexto.', tipo: 'pill-alt' },
+  { hora: '12:00h', titulo: 'Brunch con producto en escena', ponente: null, desc: 'La selección de AVA en mesa para verlo, probarlo y entenderlo en contexto.', tipo: 'pill-alt' },
   { hora: '14:00h', titulo: 'La alquimia de la masa', ponente: 'Alexis García · 100×100 Alexis', desc: 'La química entre los ingredientes de cualquier masa — pan, hojaldre, pastelería.', resultado: 'Al salir: entenderás por qué tu masa se comporta como se comporta.', tipo: 'pill' },
   { hora: '16:00h', titulo: 'Pausa · producto y café', ponente: null, desc: 'Momento de descanso entre bloques.', tipo: 'outline' },
   { hora: '16:30h', titulo: 'El Atlántico en copa', ponente: 'Óscar Lafuente · Ron Arehucas', desc: 'Territorio, identidad y producto. Cómo el origen se convierte en argumento de venta.', resultado: 'Al salir: una manera diferente de hablar de tu producto.', tipo: 'pill' },
@@ -600,7 +600,8 @@ export default function LandingClient({ locale }: Props) {
           </div>
           <div>
             <p style={{ fontSize: '0.58rem', letterSpacing: '0.35em', textTransform: 'uppercase', color: 'rgba(247,243,238,0.22)', marginBottom: '1.2rem' }}>Contacto</p>
-            <a href="mailto:hola@avagastrum.com" style={{ display: 'block', fontSize: '0.78rem', color: 'rgba(247,243,238,0.4)', textDecoration: 'none', lineHeight: 2.2 }}>hola@avagastrum.com</a>
+            <a href="mailto:marketing@avaseleccion.com" style={{ display: 'block', fontSize: '0.78rem', color: 'rgba(247,243,238,0.4)', textDecoration: 'none', lineHeight: 2.2 }}>marketing@avaseleccion.com</a>
+            <a href="https://wa.me/34608649038" target="_blank" rel="noopener noreferrer" style={{ display: 'block', fontSize: '0.78rem', color: 'rgba(247,243,238,0.4)', textDecoration: 'none', lineHeight: 2.2 }}>+34 608 649 038</a>
             <span style={{ display: 'block', fontSize: '0.78rem', color: 'rgba(247,243,238,0.4)', lineHeight: 2.2 }}>Puerto del Carmen · Lanzarote</span>
           </div>
         </div>

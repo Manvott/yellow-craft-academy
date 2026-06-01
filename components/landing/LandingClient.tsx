@@ -41,7 +41,7 @@ const PONENTES = [
     num: '03',
     marca: 'RON AREHUCAS · Coctelería atlántica',
     nombre: 'Óscar Lafuente',
-    foto: '/ponentes/oscar-lafuente.jpg',
+    foto: '/ponentes/oscar-final.jpg',
     ig: null,
     premio: 'Best Rum Bartender del Mundo 2024 — The Ultimate Awards',
     resultado: 'Vas a entender cómo el territorio se convierte en argumento de venta — y cómo aplicar esa lógica a tu producto, sea un cóctel, un pan o un plato.',

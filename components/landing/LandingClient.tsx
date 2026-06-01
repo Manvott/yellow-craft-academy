@@ -152,6 +152,24 @@ function RegistroForm() {
         Av. de las Playas · Puerto del Carmen · Lanzarote — Ver en Google Maps
       </a>
 
+      {/* Aceptación canal WhatsApp — obligatorio */}
+      <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.85rem', cursor: 'pointer', padding: '1rem 1.1rem', background: 'var(--blanco)', border: '1px solid var(--amarillo)', marginTop: '0.5rem' }}>
+        <input
+          type="checkbox"
+          name="whatsapp_canal"
+          required
+          style={{ marginTop: '0.2rem', accentColor: 'var(--negro)', width: 16, height: 16, flexShrink: 0, cursor: 'pointer' }}
+        />
+        <div>
+          <p style={{ fontSize: '0.82rem', color: 'var(--negro)', fontWeight: 400, lineHeight: 1.5, marginBottom: '0.25rem' }}>
+            Acepto unirme al canal de difusión de WhatsApp de Yellow Craft Academy
+          </p>
+          <p style={{ fontSize: '0.72rem', color: 'var(--gris)', lineHeight: 1.6 }}>
+            Recibirás información del evento, cambios de programa y novedades directamente en WhatsApp. Sin grupos, solo difusión. Puedes salir cuando quieras.
+          </p>
+        </div>
+      </label>
+
       {error && (
         <p style={{ fontSize: '0.8rem', color: '#c0392b', padding: '0.75rem 1rem', background: '#fef2f2', border: '1px solid #fca5a5' }}>{error}</p>
       )}

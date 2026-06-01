@@ -26,6 +26,7 @@ export async function GET(request: NextRequest) {
     'Empresa': r.empresa ?? '',
     'Perfil profesional': r.perfil ?? '',
     'Teléfono WhatsApp': r.telefono ?? '',
+    'Acepta canal WhatsApp': r.acepta_whatsapp ? 'Sí' : 'No',
     'Bloques seleccionados': (r.bloques ?? []).join(' | '),
   }))
 

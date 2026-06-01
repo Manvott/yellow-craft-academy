@@ -11,6 +11,7 @@ const schema = z.object({
   email: z.string().email(),
   telefono: z.string().max(30).optional().nullable(),
   bloques: z.array(z.string()).optional().nullable(),
+  acepta_whatsapp: z.boolean(),
 })
 
 export async function registrarAsistente(formData: FormData) {
@@ -24,6 +25,7 @@ export async function registrarAsistente(formData: FormData) {
     email: formData.get('email') as string,
     telefono: (formData.get('telefono') as string) || null,
     bloques: formData.getAll('bloques') as string[],
+    acepta_whatsapp: formData.get('whatsapp_canal') === 'on',
   }
 
   const result = schema.safeParse({
@@ -33,6 +35,11 @@ export async function registrarAsistente(formData: FormData) {
 
   if (!result.success) {
     return { ok: false, error: 'Datos inválidos. Revisa el formulario.' }
+  }
+
+  // El checkbox es obligatorio en el frontend, pero verificamos también aquí
+  if (!result.data.acepta_whatsapp) {
+    return { ok: false, error: 'Debes aceptar el canal de WhatsApp para reservar tu plaza.' }
   }
 
   try {

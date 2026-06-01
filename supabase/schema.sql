@@ -76,8 +76,9 @@ CREATE TABLE registros (
   perfil      text,
   email       text NOT NULL,
   telefono    text,
-  bloques     text[],           -- array de nombres de bloques seleccionados
-  ip_origen   text,
+  bloques          text[],
+  acepta_whatsapp  bool DEFAULT false,
+  ip_origen        text,
   created_at  timestamptz DEFAULT now()
 );
 

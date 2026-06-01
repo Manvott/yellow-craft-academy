@@ -301,7 +301,7 @@ function RegistroForm() {
           </p>
           <p style={{ fontSize: '0.7rem', color: 'var(--gris)', lineHeight: 1.65 }}>
             Al marcar esta casilla autorizas a <strong style={{ color: 'var(--grafito)' }}>Grupo Azul Difusión Gastronómica S.L.U.</strong> a captar y usar tu imagen (foto/vídeo) durante Yellow Craft Academy el 15 de junio en Puerto del Carmen, para documentación del evento, redes sociales y materiales de AVA, sin límite geográfico ni temporal. Tus datos se tratan conforme al <strong style={{ color: 'var(--grafito)' }}>RGPD</strong> y la LOPDGDD, usándose únicamente para gestionar el evento y comunicaciones de AVA. Puedes ejercer tus derechos de acceso, rectificación, supresión y oposición en{' '}
-            <a href="mailto:hola@avagastrum.com" style={{ color: 'var(--negro)' }}>hola@avagastrum.com</a>.
+            <a href="mailto:soporte@avaseleccion.com" style={{ color: 'var(--negro)' }}>soporte@avaseleccion.com</a>.
             {' '}Si no deseas que tu imagen sea utilizada, comunícalo por escrito antes del evento a esa misma dirección.
           </p>
         </div>

@@ -10,8 +10,12 @@ export default async function AdminLayout({
   params: Promise<{ locale: string }>
 }) {
   const { locale } = await params
-  const supabase = await createClient()
-  const { data: { session } } = await supabase.auth.getSession()
+  let session = null
+  try {
+    const supabase = await createClient()
+    const { data } = await supabase.auth.getSession()
+    session = data.session
+  } catch {}
 
   if (!session) redirect(`/${locale}/admin/login`)
 

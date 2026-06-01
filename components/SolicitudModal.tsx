@@ -12,6 +12,18 @@ interface Props {
 
 const ISLAS = ['lanzarote', 'fuerteventura', 'gran_canaria', 'tenerife', 'la_palma', 'la_gomera', 'el_hierro', 'otra']
 
+const inputStyle: React.CSSProperties = {
+  background: 'var(--blanco)',
+  border: '1px solid var(--crema3)',
+  color: 'var(--grafito)',
+  padding: '0.85rem 1.1rem',
+  fontFamily: 'DM Sans, sans-serif',
+  fontSize: '0.82rem',
+  fontWeight: 300,
+  outline: 'none',
+  width: '100%',
+}
+
 export default function SolicitudModal({ open, onClose, producto }: Props) {
   const t = useTranslations('solicitud')
   const [loading, setLoading] = useState(false)
@@ -27,16 +39,11 @@ export default function SolicitudModal({ open, onClose, producto }: Props) {
     e.preventDefault()
     setLoading(true)
     setError('')
-
     try {
       const res = await fetch('/api/solicitudes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...form,
-          producto_id: producto.id,
-          proveedor_id: producto.proveedor_id,
-        }),
+        body: JSON.stringify({ ...form, producto_id: producto.id, proveedor_id: producto.proveedor_id }),
       })
       if (!res.ok) throw new Error()
       setSuccess(true)
@@ -54,111 +61,92 @@ export default function SolicitudModal({ open, onClose, producto }: Props) {
     onClose()
   }
 
+  const labelStyle: React.CSSProperties = {
+    fontSize: '0.6rem', letterSpacing: '0.3em', textTransform: 'uppercase',
+    color: 'var(--gris)', display: 'block', marginBottom: '0.4rem',
+    fontFamily: 'DM Sans, sans-serif',
+  }
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50" onClick={handleClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="bg-yellow-400 px-6 py-4 rounded-t-2xl">
-          <div className="flex items-start justify-between">
+    <div style={{ position: 'fixed', inset: 0, zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+      <div style={{ position: 'absolute', inset: 0, background: 'rgba(10,10,8,0.7)' }} onClick={handleClose} />
+      <div style={{ position: 'relative', background: 'var(--blanco)', width: '100%', maxWidth: 520, maxHeight: '90vh', overflowY: 'auto' }}>
+        {/* Header */}
+        <div style={{ background: 'var(--negro)', padding: '1.5rem 1.75rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
-              <h2 className="font-black text-gray-900 text-lg">{t('title')}</h2>
-              <p className="text-gray-700 text-sm">{producto.nombre}</p>
+              <p style={{ fontSize: '0.58rem', letterSpacing: '0.35em', textTransform: 'uppercase', color: 'rgba(247,243,238,0.35)', marginBottom: '0.4rem', fontFamily: 'DM Sans, sans-serif' }}>
+                {t('title')}
+              </p>
+              <h2 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1.6rem', fontWeight: 300, color: 'var(--crema)', lineHeight: 1.1 }}>
+                {producto.nombre}
+              </h2>
+              <p style={{ fontSize: '0.7rem', color: 'rgba(245,197,24,0.7)', marginTop: '0.25rem', fontFamily: 'DM Sans, sans-serif' }}>
+                {producto.proveedor?.nombre}
+              </p>
             </div>
-            <button onClick={handleClose} className="text-gray-900 hover:text-gray-600 text-2xl leading-none">&times;</button>
+            <button onClick={handleClose} style={{ color: 'rgba(247,243,238,0.4)', background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', lineHeight: 1 }}>×</button>
           </div>
         </div>
 
         {success ? (
-          <div className="p-8 text-center">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-3xl">✓</span>
-            </div>
-            <p className="font-semibold text-gray-900">{t('success')}</p>
-            <button onClick={handleClose} className="mt-6 bg-yellow-400 text-gray-900 font-bold px-6 py-2 rounded-xl">
+          <div style={{ padding: '4rem 2rem', textAlign: 'center' }}>
+            <div style={{ width: 56, height: 56, background: 'var(--amarillo)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', fontSize: '1.5rem' }}>✓</div>
+            <p style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1.5rem', fontWeight: 300, color: 'var(--negro)', marginBottom: '0.5rem' }}>Solicitud enviada</p>
+            <p style={{ fontSize: '0.82rem', color: 'var(--gris)', lineHeight: 1.7 }}>{t('success')}</p>
+            <button onClick={handleClose} style={{ marginTop: '2rem', background: 'var(--negro)', color: 'var(--crema)', border: 'none', padding: '0.75rem 2rem', fontSize: '0.72rem', letterSpacing: '0.2em', textTransform: 'uppercase', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
               Cerrar
             </button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="p-6 space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="col-span-2">
-                <label className="text-sm font-semibold text-gray-700 block mb-1">
-                  {t('nombre')} <span className="text-red-500">*</span>
-                </label>
-                <input
-                  required
-                  value={form.nombre}
-                  onChange={e => setForm(f => ({ ...f, nombre: e.target.value }))}
-                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                />
+          <form onSubmit={handleSubmit} style={{ padding: '1.75rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+              <div style={{ gridColumn: '1/-1' }}>
+                <label style={labelStyle}>{t('nombre')} <span style={{ color: 'var(--amarillo)' }}>*</span></label>
+                <input required value={form.nombre} onChange={e => setForm(f => ({ ...f, nombre: e.target.value }))} style={inputStyle} />
               </div>
-              <div className="col-span-2">
-                <label className="text-sm font-semibold text-gray-700 block mb-1">
-                  {t('email')} <span className="text-red-500">*</span>
-                </label>
-                <input
-                  required
-                  type="email"
-                  value={form.email}
-                  onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                />
+              <div style={{ gridColumn: '1/-1' }}>
+                <label style={labelStyle}>{t('email')} <span style={{ color: 'var(--amarillo)' }}>*</span></label>
+                <input required type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} style={inputStyle} />
               </div>
               <div>
-                <label className="text-sm font-semibold text-gray-700 block mb-1">{t('telefono')}</label>
-                <input
-                  type="tel"
-                  value={form.telefono}
-                  onChange={e => setForm(f => ({ ...f, telefono: e.target.value }))}
-                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                />
+                <label style={labelStyle}>{t('telefono')}</label>
+                <input type="tel" value={form.telefono} onChange={e => setForm(f => ({ ...f, telefono: e.target.value }))} style={inputStyle} />
               </div>
               <div>
-                <label className="text-sm font-semibold text-gray-700 block mb-1">{t('isla')}</label>
-                <select
-                  value={form.isla}
-                  onChange={e => setForm(f => ({ ...f, isla: e.target.value }))}
-                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-white"
-                >
+                <label style={labelStyle}>{t('isla')}</label>
+                <select value={form.isla} onChange={e => setForm(f => ({ ...f, isla: e.target.value }))} style={{ ...inputStyle, cursor: 'pointer' }}>
                   <option value="">—</option>
-                  {ISLAS.map(i => (
-                    <option key={i} value={i}>{t(`islas.${i}`)}</option>
-                  ))}
+                  {ISLAS.map(i => <option key={i} value={i}>{t(`islas.${i}`)}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-sm font-semibold text-gray-700 block mb-1">{t('empresa')}</label>
-                <input
-                  value={form.empresa}
-                  onChange={e => setForm(f => ({ ...f, empresa: e.target.value }))}
-                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                />
+                <label style={labelStyle}>{t('empresa')}</label>
+                <input value={form.empresa} onChange={e => setForm(f => ({ ...f, empresa: e.target.value }))} style={inputStyle} />
               </div>
               <div>
-                <label className="text-sm font-semibold text-gray-700 block mb-1">{t('cargo')}</label>
-                <input
-                  value={form.cargo}
-                  onChange={e => setForm(f => ({ ...f, cargo: e.target.value }))}
-                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                />
+                <label style={labelStyle}>{t('cargo')}</label>
+                <input value={form.cargo} onChange={e => setForm(f => ({ ...f, cargo: e.target.value }))} style={inputStyle} />
               </div>
-              <div className="col-span-2">
-                <label className="text-sm font-semibold text-gray-700 block mb-1">{t('mensaje')}</label>
-                <textarea
-                  rows={3}
-                  value={form.mensaje}
-                  onChange={e => setForm(f => ({ ...f, mensaje: e.target.value }))}
-                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 resize-none"
-                />
+              <div style={{ gridColumn: '1/-1' }}>
+                <label style={labelStyle}>{t('mensaje')}</label>
+                <textarea rows={3} value={form.mensaje} onChange={e => setForm(f => ({ ...f, mensaje: e.target.value }))} style={{ ...inputStyle, resize: 'none' }} />
               </div>
             </div>
 
-            {error && <p className="text-red-500 text-sm">{error}</p>}
+            {error && <p style={{ color: '#c0392b', fontSize: '0.8rem', marginTop: '0.75rem' }}>{error}</p>}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold py-3 rounded-xl transition-colors disabled:opacity-50"
+              style={{
+                marginTop: '1.25rem', width: '100%',
+                background: 'var(--negro)', color: 'var(--crema)',
+                border: 'none', padding: '1rem',
+                fontSize: '0.72rem', letterSpacing: '0.25em', textTransform: 'uppercase',
+                fontWeight: 500, cursor: loading ? 'not-allowed' : 'pointer',
+                opacity: loading ? 0.5 : 1, fontFamily: 'DM Sans, sans-serif',
+              }}
             >
               {loading ? '...' : t('submit')}
             </button>

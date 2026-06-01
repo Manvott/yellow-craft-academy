@@ -6,60 +6,78 @@ import { useState } from 'react'
 import type { Producto } from '@/lib/types'
 import SolicitudModal from './SolicitudModal'
 
-interface Props {
-  producto: Producto
-}
+interface Props { producto: Producto }
 
 export default function ProductCard({ producto }: Props) {
   const t = useTranslations('home')
-  const tp = useTranslations('product')
   const [modalOpen, setModalOpen] = useState(false)
+  const [hovered, setHovered] = useState(false)
 
   return (
     <>
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200 overflow-hidden group">
-        <div className="relative h-48 bg-gray-50">
+      <div
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        style={{
+          background: 'var(--blanco)',
+          border: '1px solid var(--crema3)',
+          overflow: 'hidden',
+          transition: 'border-color 0.3s, box-shadow 0.3s',
+          borderColor: hovered ? 'var(--gris-l)' : 'var(--crema3)',
+          boxShadow: hovered ? '0 4px 24px rgba(10,10,8,0.07)' : 'none',
+        }}
+      >
+        {/* Imagen */}
+        <div style={{ position: 'relative', height: 200, background: 'var(--crema2)', overflow: 'hidden' }}>
           {producto.imagen_url ? (
             <Image
               src={producto.imagen_url}
               alt={producto.nombre}
               fill
-              className="object-cover group-hover:scale-105 transition-transform duration-300"
+              style={{ objectFit: 'cover', transform: hovered ? 'scale(1.04)' : 'scale(1)', transition: 'transform 0.4s' }}
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center">
-                <span className="text-2xl">🍽️</span>
+            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ width: 60, height: 60, background: 'var(--crema3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ fontSize: '0.55rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gris-l)', textAlign: 'center', lineHeight: 1.8 }}>
+                  Sin<br />imagen
+                </span>
               </div>
             </div>
           )}
           {producto.categoria && (
-            <span className="absolute top-3 left-3 bg-yellow-400 text-gray-900 text-xs font-bold px-2 py-1 rounded-full">
+            <span style={{
+              position: 'absolute', top: 12, left: 12,
+              background: 'var(--amarillo)', color: 'var(--negro)',
+              fontSize: '0.58rem', letterSpacing: '0.22em', textTransform: 'uppercase',
+              padding: '0.2rem 0.7rem', fontWeight: 500, fontFamily: 'DM Sans, sans-serif',
+            }}>
               {producto.categoria}
             </span>
           )}
         </div>
 
-        <div className="p-4">
-          <p className="text-xs text-gray-400 font-medium mb-1">
+        {/* Info */}
+        <div style={{ padding: '1.25rem 1.25rem 1.5rem' }}>
+          <p style={{ fontSize: '0.6rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--gris-l)', marginBottom: '0.4rem', fontFamily: 'DM Sans, sans-serif' }}>
             {producto.proveedor?.nombre}
           </p>
-          <h3 className="font-bold text-gray-900 text-base mb-1 line-clamp-1">
+          <h3 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1.35rem', fontWeight: 400, color: 'var(--negro)', marginBottom: '0.5rem', lineHeight: 1.15 }}>
             {producto.nombre}
           </h3>
           {producto.descripcion && (
-            <p className="text-gray-500 text-sm mb-3 line-clamp-2">
+            <p style={{ fontSize: '0.78rem', color: 'var(--gris)', lineHeight: 1.7, marginBottom: '1.25rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
               {producto.descripcion}
             </p>
           )}
 
-          <div className="flex items-center justify-between">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
             <div>
               {producto.precio_orientativo && (
-                <p className="text-sm font-semibold text-gray-900">
+                <p style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--negro)', fontFamily: 'DM Sans, sans-serif' }}>
                   {producto.precio_orientativo.toFixed(2)} €
                   {producto.unidad_venta && (
-                    <span className="text-xs text-gray-400 font-normal ml-1">
+                    <span style={{ fontSize: '0.7rem', color: 'var(--gris-l)', fontWeight: 300, marginLeft: 4 }}>
                       / {producto.unidad_venta}
                     </span>
                   )}
@@ -68,7 +86,12 @@ export default function ProductCard({ producto }: Props) {
             </div>
             <button
               onClick={() => setModalOpen(true)}
-              className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-semibold text-xs px-3 py-2 rounded-xl transition-colors"
+              style={{
+                background: 'var(--negro)', color: 'var(--crema)',
+                fontSize: '0.62rem', letterSpacing: '0.18em', textTransform: 'uppercase',
+                padding: '0.5rem 1.1rem', fontWeight: 500, border: 'none', cursor: 'pointer',
+                fontFamily: 'DM Sans, sans-serif', transition: 'background 0.2s',
+              }}
             >
               {t('request_info')}
             </button>
@@ -76,11 +99,7 @@ export default function ProductCard({ producto }: Props) {
         </div>
       </div>
 
-      <SolicitudModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        producto={producto}
-      />
+      <SolicitudModal open={modalOpen} onClose={() => setModalOpen(false)} producto={producto} />
     </>
   )
 }

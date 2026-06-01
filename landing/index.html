@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Yellow Craft Academy · AVA · 15 de junio · Lanzarote</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --crema:    #F7F3EE;
+  --crema2:   #EEE8DF;
+  --crema3:   #DDD7CE;
+  --negro:    #0A0A08;
+  --grafito:  #2C2C28;
+  --gris:     #8A8880;
+  --gris-l:   #C2BDB6;
+  --amarillo: #F5C518;
+  --amarillo2:#E8B800;
+  --blanco:   #FDFBF8;
+}
+html { scroll-behavior: smooth; }
+body { background: var(--crema); color: var(--grafito); font-family: 'DM Sans', sans-serif; font-weight: 300; overflow-x: hidden; }
+
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1.5rem 4rem;
+  background: rgba(247,243,238,0.92); backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0,0,0,0.07);
+}
+.nav-logo-wrap { display: flex; align-items: center; gap: 0.75rem; }
+.nav-logo-svg { width: 36px; height: 36px; }
+.nav-tagline { font-family: 'DM Sans', sans-serif; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gris); }
+.nav-pill { font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; background: var(--negro); color: var(--crema); padding: 0.45rem 1.3rem; font-weight: 500; text-decoration: none; transition: background 0.2s; }
+.nav-pill:hover { background: var(--grafito); }
+
+/* HERO */
+.hero { height: 100vh; display: grid; grid-template-columns: 1fr 1fr; padding-top: 72px; }
+.hero-left { display: flex; flex-direction: column; justify-content: center; padding: 3rem 4rem; overflow: hidden; }
+.hero-eyebrow { font-size: 0.65rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--gris); margin-bottom: 2.5rem; opacity: 0; animation: fadeUp 0.7s 0.2s forwards; display: flex; align-items: center; gap: 1rem; }
+.hero-eyebrow::before { content: ''; width: 30px; height: 1px; background: var(--gris-l); }
+.hero-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(3.8rem, 6vw, 6.5rem); font-weight: 300; line-height: 0.95; color: var(--negro); margin-bottom: 2.5rem; opacity: 0; animation: fadeUp 0.8s 0.35s forwards; }
+.hero-title .italic { font-style: italic; color: var(--grafito); }
+.hero-title .dot { display: inline-block; width: 0.5em; height: 0.5em; background: var(--amarillo); border-radius: 50%; vertical-align: middle; margin-left: 0.1em; position: relative; top: -0.35em; }
+.hero-desc { font-size: 1rem; line-height: 1.75; color: var(--gris); max-width: 420px; margin-bottom: 3rem; opacity: 0; animation: fadeUp 0.8s 0.5s forwards; }
+.hero-actions { display: flex; gap: 1.5rem; align-items: center; opacity: 0; animation: fadeUp 0.8s 0.65s forwards; }
+.btn-main { background: var(--negro); color: var(--crema); padding: 0.9rem 2.2rem; font-family: 'DM Sans', sans-serif; font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 500; text-decoration: none; transition: background 0.25s, transform 0.2s; display: inline-block; cursor: pointer; border: none; }
+.btn-main:hover { background: var(--grafito); transform: translateY(-1px); }
+.btn-text { font-size: 0.78rem; letter-spacing: 0.08em; color: var(--gris); text-decoration: none; border-bottom: 1px solid var(--gris-l); padding-bottom: 2px; transition: color 0.2s, border-color 0.2s; }
+.btn-text:hover { color: var(--negro); border-color: var(--negro); }
+
+.hero-right-logo { position: relative; z-index: 2; display: flex; justify-content: center; align-items: center; padding: 2rem 0 1.5rem; border-bottom: 1px solid rgba(247,243,238,0.06); flex: 1; }
+.ava-logo-svg { width: 160px; height: 160px; }
+.hero-right { background: var(--negro); position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-start; padding: 0; opacity: 0; animation: fadeIn 1s 0.5s forwards; height: 100%; }
+.hero-right-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 60% at 60% 30%, rgba(245,197,24,0.1) 0%, transparent 65%), radial-gradient(ellipse 50% 50% at 20% 80%, rgba(245,197,24,0.05) 0%, transparent 60%); }
+.hero-right-text { position: relative; z-index: 2; padding: 2rem 3.5rem 3rem; }
+.hero-right-quote { font-family: 'Cormorant Garamond', serif; font-size: clamp(1.4rem, 2.2vw, 2rem); font-weight: 300; font-style: italic; color: rgba(247,243,238,0.7); line-height: 1.5; margin-bottom: 2.5rem; }
+.hero-meta-row { display: flex; justify-content: space-between; align-items: baseline; padding: 0.8rem 0; border-top: 1px solid rgba(247,243,238,0.07); font-size: 0.75rem; gap: 1rem; }
+.hero-meta-row span:first-child { color: rgba(247,243,238,0.3); text-transform: uppercase; letter-spacing: 0.25em; font-size: 0.6rem; white-space: nowrap; }
+.hero-meta-row span:last-child { color: rgba(247,243,238,0.75); text-align: right; }
+.hero-meta-row a { color: rgba(245,197,24,0.7); text-decoration: none; font-size: 0.72rem; transition: color 0.2s; }
+.hero-meta-row a:hover { color: var(--amarillo); }
+
+/* STRIP */
+.strip { background: var(--amarillo); padding: 1rem 0; overflow: hidden; }
+.strip-track { display: flex; animation: strip 28s linear infinite; width: max-content; }
+.strip-item { display: flex; align-items: center; gap: 2rem; padding: 0 2rem; white-space: nowrap; }
+.strip-item span { font-size: 0.7rem; font-weight: 500; letter-spacing: 0.25em; text-transform: uppercase; color: var(--negro); }
+.strip-dot { width: 4px; height: 4px; background: var(--negro); border-radius: 50%; opacity: 0.25; }
+
+/* SECTIONS */
+.section { padding: 8rem 4rem; max-width: 1300px; margin: 0 auto; }
+.section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 5rem; }
+.section-eyebrow { font-size: 0.62rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--gris); margin-bottom: 1rem; }
+.section-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.5rem, 4vw, 4rem); font-weight: 300; line-height: 1.05; color: var(--negro); }
+.section-title em { font-style: italic; color: var(--gris); }
+.section-count { font-family: 'Cormorant Garamond', serif; font-size: 5rem; font-weight: 300; color: var(--crema3); line-height: 1; }
+
+/* PONENTES */
+.ponentes-list { display: flex; flex-direction: column; }
+.ponente-row { display: grid; grid-template-columns: 60px 1fr 1fr auto; gap: 3rem; align-items: center; padding: 2.5rem 0; border-top: 1px solid var(--crema3); position: relative; }
+.ponente-row:last-child { border-bottom: 1px solid var(--crema3); }
+.ponente-row::before { content: ''; position: absolute; left: -4rem; right: -4rem; top: 0; bottom: 0; background: var(--crema2); opacity: 0; transition: opacity 0.3s; z-index: 0; }
+.ponente-row:hover::before { opacity: 1; }
+.ponente-row > * { position: relative; z-index: 1; }
+.p-num { font-family: 'Cormorant Garamond', serif; font-size: 1rem; color: var(--gris-l); }
+.p-marca { font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gris); margin-bottom: 0.3rem; }
+.p-nombre { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 400; color: var(--negro); line-height: 1.1; }
+.p-concepto { font-size: 0.85rem; color: var(--gris); line-height: 1.65; max-width: 380px; }
+.p-tag { font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; border: 1px solid var(--crema3); color: var(--gris); padding: 0.4rem 1rem; white-space: nowrap; transition: border-color 0.3s, color 0.3s; }
+.ponente-row:hover .p-tag { border-color: var(--negro); color: var(--negro); }
+
+/* FRANJA FILOSOFIA */
+.filosofia-band { background: var(--negro); padding: 7rem 4rem; position: relative; overflow: hidden; }
+.filosofia-band-inner { max-width: 900px; margin: 0 auto; position: relative; z-index: 1; }
+.filosofia-band p { font-family: 'Cormorant Garamond', serif; font-size: clamp(1.9rem, 3.2vw, 3rem); font-weight: 300; line-height: 1.5; color: rgba(247,243,238,0.75); }
+.filosofia-band p em { color: var(--amarillo); font-style: italic; }
+.filosofia-band .attrib { margin-top: 3rem; font-size: 0.65rem; letter-spacing: 0.35em; text-transform: uppercase; color: rgba(247,243,238,0.2); }
+
+/* JORNADA */
+.jornada-wrap { background: var(--blanco); padding: 8rem 4rem; border-top: 1px solid var(--crema3); border-bottom: 1px solid var(--crema3); }
+.jornada-inner { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1.5fr; gap: 8rem; align-items: start; }
+.jornada-left h2 { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.2rem, 3.5vw, 3.5rem); font-weight: 300; line-height: 1.1; color: var(--negro); margin-bottom: 1.5rem; }
+.jornada-left h2 em { font-style: italic; color: var(--gris); }
+.jornada-left p { font-size: 0.87rem; color: var(--gris); line-height: 1.8; }
+.jornada-left .fecha-bloque { margin-top: 2.5rem; padding: 1.5rem; background: var(--crema); border-left: 2px solid var(--amarillo); }
+.jornada-left .fecha-bloque p { font-size: 0.8rem; color: var(--gris); line-height: 1.7; }
+.jornada-left .fecha-bloque strong { color: var(--negro); font-weight: 500; display: block; margin-bottom: 0.3rem; font-size: 0.85rem; }
+
+.jornada-items { display: flex; flex-direction: column; }
+.jornada-item { display: grid; grid-template-columns: 100px 1fr; gap: 2rem; padding: 2rem 0; border-top: 1px solid var(--crema3); }
+.jornada-item:last-child { border-bottom: 1px solid var(--crema3); }
+.j-hora { font-family: 'Cormorant Garamond', serif; font-size: 0.82rem; color: var(--gris-l); padding-top: 0.1rem; line-height: 1.5; }
+.j-hora strong { display: block; font-size: 1rem; color: var(--gris); font-weight: 400; }
+.j-titulo { font-size: 0.9rem; font-weight: 500; color: var(--negro); margin-bottom: 0.35rem; letter-spacing: 0.01em; }
+.j-ponente { font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gris-l); margin-bottom: 0.4rem; }
+.j-desc { font-size: 0.8rem; color: var(--gris); line-height: 1.7; }
+.j-pill { display: inline-block; margin-top: 0.5rem; font-size: 0.58rem; letter-spacing: 0.22em; text-transform: uppercase; background: var(--amarillo); color: var(--negro); padding: 0.2rem 0.7rem; font-weight: 500; }
+.j-pill-outline { display: inline-block; margin-top: 0.5rem; font-size: 0.58rem; letter-spacing: 0.22em; text-transform: uppercase; border: 1px solid var(--crema3); color: var(--gris); padding: 0.2rem 0.7rem; }
+
+/* RAZONES */
+.razones-wrap { background: var(--crema); }
+.razones { padding: 8rem 4rem; max-width: 1300px; margin: 0 auto; }
+.razones-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 4rem; margin-top: 5rem; }
+.razon-item { display: flex; flex-direction: column; gap: 1rem; }
+.razon-num { font-family: 'Cormorant Garamond', serif; font-size: 3.5rem; font-weight: 300; color: var(--crema3); line-height: 1; }
+.razon-titulo { font-family: 'Cormorant Garamond', serif; font-size: 1.45rem; font-weight: 400; color: var(--negro); }
+.razon-desc { font-size: 0.82rem; color: var(--gris); line-height: 1.8; }
+
+/* REGISTRO */
+.registro-wrap { background: var(--crema2); padding: 8rem 4rem; border-top: 1px solid var(--crema3); }
+.registro-inner { max-width: 580px; margin: 0 auto; }
+.registro-inner h2 { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.5rem, 4vw, 3.8rem); font-weight: 300; color: var(--negro); line-height: 1.05; margin-bottom: 1rem; }
+.registro-inner h2 em { font-style: italic; color: var(--gris); }
+.registro-inner > p { font-size: 0.87rem; color: var(--gris); line-height: 1.75; margin-bottom: 3rem; }
+
+.form-fields { display: flex; flex-direction: column; gap: 0.75rem; }
+.form-fields input, .form-fields select {
+  background: var(--blanco); border: 1px solid var(--crema3); color: var(--grafito);
+  padding: 0.95rem 1.2rem; font-family: 'DM Sans', sans-serif; font-size: 0.85rem;
+  font-weight: 300; outline: none; transition: border-color 0.25s; -webkit-appearance: none; width: 100%;
+}
+.form-fields input::placeholder { color: var(--gris-l); }
+.form-fields input:focus, .form-fields select:focus { border-color: var(--negro); }
+.form-fields select { color: var(--gris); cursor: pointer; }
+.form-fields select option { color: var(--grafito); }
+
+.bloques-label { font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gris); margin-top: 0.5rem; margin-bottom: 0.5rem; }
+.bloques-grid { display: flex; flex-direction: column; gap: 0.5rem; }
+.bloque-check { display: flex; align-items: flex-start; gap: 0.75rem; cursor: pointer; padding: 0.85rem 1rem; background: var(--blanco); border: 1px solid var(--crema3); transition: border-color 0.2s; }
+.bloque-check:hover { border-color: var(--gris-l); }
+.bloque-check input[type="checkbox"] { margin-top: 0.15rem; accent-color: var(--negro); width: 14px; height: 14px; flex-shrink: 0; cursor: pointer; }
+.bloque-check-info { display: flex; flex-direction: column; gap: 0.15rem; }
+.bloque-hora { font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gris-l); }
+.bloque-nombre { font-size: 0.85rem; color: var(--grafito); font-weight: 400; }
+.bloque-sub { font-size: 0.75rem; color: var(--gris); }
+.bloques-nota { font-size: 0.75rem; color: var(--gris); line-height: 1.6; margin-top: 0.75rem; font-style: italic; }
+
+.mapa-link { display: flex; align-items: center; gap: 0.6rem; font-size: 0.75rem; color: var(--gris); text-decoration: none; margin-top: 0.5rem; padding: 0.85rem 1rem; background: var(--blanco); border: 1px solid var(--crema3); transition: border-color 0.2s, color 0.2s; }
+.mapa-link:hover { border-color: var(--negro); color: var(--negro); }
+.mapa-link svg { flex-shrink: 0; }
+
+.plazas-aviso { margin-top: 1.5rem; font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gris-l); text-align: center; }
+
+/* FOOTER */
+footer { background: var(--negro); padding: 4rem 4rem 3rem; }
+.footer-top { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 4rem; padding-bottom: 3rem; border-bottom: 1px solid rgba(247,243,238,0.07); }
+.footer-brand h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 300; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(247,243,238,0.65); margin-bottom: 1rem; }
+.footer-brand p { font-size: 0.78rem; color: rgba(247,243,238,0.28); line-height: 1.9; }
+.footer-col h4 { font-size: 0.58rem; letter-spacing: 0.35em; text-transform: uppercase; color: rgba(247,243,238,0.22); margin-bottom: 1.2rem; }
+.footer-col a { display: block; font-size: 0.78rem; color: rgba(247,243,238,0.4); text-decoration: none; line-height: 2.2; transition: color 0.2s; }
+.footer-col a:hover { color: var(--amarillo); }
+.footer-bottom { max-width: 1300px; margin: 0 auto; padding-top: 2rem; display: flex; justify-content: space-between; align-items: center; }
+.footer-bottom p { font-size: 0.68rem; color: rgba(247,243,238,0.16); line-height: 1.7; }
+.footer-coords { font-family: 'Cormorant Garamond', serif; font-size: 0.9rem; color: rgba(245,197,24,0.3); letter-spacing: 0.1em; }
+
+.j-resultado { font-size: 0.78rem; color: var(--negro); font-weight: 500; margin-top: 0.5rem; padding: 0.5rem 0.75rem; background: var(--amarillo); display: inline-block; }
+.j-imagen-placeholder { margin: 1rem 0 0.5rem; background: var(--crema2); border: 1px dashed var(--crema3); height: 120px; display: flex; align-items: center; justify-content: center; }
+.j-imagen-placeholder span { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gris-l); text-align: center; line-height: 1.8; }
+
+.ponente-row--expanded { grid-template-columns: 50px 130px 1fr auto; gap: 2rem; align-items: start; padding: 3rem 0; }
+.p-foto-wrap { display: flex; flex-direction: column; gap: 0.6rem; width: 130px; flex-shrink: 0; }
+.p-foto-placeholder { background: var(--crema2); border: 1px dashed var(--crema3); aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; width: 100%; }
+.p-foto-placeholder span { font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gris-l); text-align: center; line-height: 1.8; }
+.p-social-btn { display: flex; align-items: center; gap: 0.4rem; font-size: 0.65rem; letter-spacing: 0.1em; color: var(--gris); text-decoration: none; border: 1px solid var(--crema3); padding: 0.4rem 0.6rem; transition: border-color 0.2s, color 0.2s; white-space: nowrap; }
+.p-social-btn:hover { border-color: var(--negro); color: var(--negro); }
+.p-resultado { font-size: 0.82rem; color: var(--negro); font-weight: 400; line-height: 1.65; margin-top: 0.75rem; padding: 0.6rem 0.9rem; background: var(--amarillo); display: inline-block; }
+.p-para { font-size: 0.75rem; color: var(--gris); line-height: 1.65; margin-top: 0.75rem; font-style: italic; }
+
+/* SPONSORS */
+.sponsors-wrap { background: var(--blanco); padding: 5rem 4rem; border-top: 1px solid var(--crema3); }
+.sponsors-inner { max-width: 1300px; margin: 0 auto; }
+.sponsors-block { margin-bottom: 3.5rem; }
+.sponsors-block:last-child { margin-bottom: 0; }
+.sponsors-eyebrow { font-size: 0.6rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--gris); margin-bottom: 1.8rem; display: flex; align-items: center; gap: 1rem; }
+.sponsors-eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--crema3); }
+.sponsors-logos { display: flex; align-items: center; gap: 3rem; flex-wrap: wrap; }
+.sponsor-logo-box { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+.sponsor-placeholder { width: 120px; height: 56px; background: var(--crema2); border: 1px dashed var(--crema3); display: flex; align-items: center; justify-content: center; }
+.sponsor-placeholder span { font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gris-l); text-align: center; line-height: 1.6; }
+.sponsor-name { font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gris-l); }
+.collab-placeholder { width: 100px; height: 48px; background: var(--crema2); border: 1px dashed var(--crema3); display: flex; align-items: center; justify-content: center; }
+.collab-placeholder span { font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gris-l); text-align: center; line-height: 1.5; }
+
+/* Estado del formulario */
+#form-success { display: none; text-align: center; padding: 3rem 0; }
+#form-success .success-icon { width: 56px; height: 56px; background: var(--amarillo); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 1.5rem; }
+#form-error { display: none; font-size: 0.8rem; color: #c0392b; padding: 0.75rem 1rem; background: #fef2f2; border: 1px solid #fca5a5; margin-top: 0.5rem; }
+.btn-main:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+@keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+@keyframes strip { from { transform:translateX(0); } to { transform:translateX(-50%); } }
+.reveal { opacity:0; transform:translateY(24px); transition: opacity 0.75s, transform 0.75s; }
+.reveal.visible { opacity:1; transform:translateY(0); }
+
+/* RESPONSIVE */
+@media screen and (max-width: 768px) {
+  nav { padding: 1rem 1.5rem; }
+  .nav-tagline { display: none; }
+  .hero { height: auto; min-height: 100svh; grid-template-columns: 1fr; display: flex; flex-direction: column; padding-top: 60px; }
+  .hero-left { order: 1; padding: 2.5rem 1.5rem 2rem; }
+  .hero-title { font-size: clamp(2.6rem, 10vw, 3.8rem); margin-bottom: 1.2rem; }
+  .hero-desc { font-size: 0.92rem; margin-bottom: 2rem; }
+  .hero-actions { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .btn-main { width: 100%; text-align: center; padding: 1rem; }
+  .hero-right { order: 2; height: auto; display: flex; flex-direction: row; opacity: 1; animation: none; }
+  .hero-right-logo { flex: 0 0 100px; padding: 1rem; border-right: 1px solid rgba(247,243,238,0.08); border-bottom: none; }
+  .ava-logo-svg { width: 72px; height: 72px; }
+  .hero-right-text { flex: 1; padding: 1rem 1.2rem; margin-top: 0; }
+  .hero-right-quote { display: none; }
+  .hero-meta-row { padding: 0.45rem 0; font-size: 0.68rem; }
+  .section { padding: 4rem 1.5rem; }
+  .section-header { flex-direction: column; align-items: flex-start; }
+  .section-count { display: none; }
+  .ponente-row--expanded { grid-template-columns: 36px 1fr; gap: 1rem; }
+  .p-foto-wrap { display: none; }
+  .p-concepto { display: none; }
+  .p-tag { display: none; }
+  .p-nombre { font-size: 1.5rem; }
+  .filosofia-band { padding: 4rem 1.5rem; }
+  .filosofia-band p { font-size: clamp(1.4rem, 4.5vw, 2.2rem); }
+  .jornada-wrap { padding: 4rem 1.5rem; }
+  .jornada-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+  .jornada-item { grid-template-columns: 76px 1fr; gap: 1rem; }
+  .razones { padding: 4rem 1.5rem; }
+  .razones-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+  .registro-wrap { padding: 4rem 1.5rem; }
+  .registro-inner { max-width: 100%; }
+  .sponsors-wrap { padding: 3rem 1.5rem; }
+  .footer-top { grid-template-columns: 1fr; gap: 2rem; }
+  .footer-bottom { flex-direction: column; gap: 0.75rem; text-align: center; }
+  footer { padding: 3rem 1.5rem 2rem; }
+}
+@media screen and (max-width: 480px) {
+  nav { padding: 0.8rem 1rem; }
+  .hero-left { padding: 2rem 1.2rem 2.5rem; }
+  .hero-title { font-size: clamp(2.4rem, 12vw, 3.2rem); }
+  .section { padding: 3.5rem 1.2rem; }
+  .p-nombre { font-size: 1.3rem; }
+  .registro-inner h2 { font-size: clamp(2rem, 9vw, 2.8rem); }
+  .filosofia-band { padding: 3.5rem 1.2rem; }
+  footer { padding: 2.5rem 1.2rem 2rem; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo-wrap">
+    <svg viewBox="0 0 560 560" xmlns="http://www.w3.org/2000/svg" class="nav-logo-svg">
+      <circle cx="280" cy="280" r="268" fill="#F0EAE0"/>
+      <circle cx="280" cy="92" r="32" fill="#F5C518"/>
+      <text x="280" y="242" font-family="Helvetica Neue, Arial, sans-serif" font-size="72" font-weight="200" letter-spacing="7" fill="#0A0A08" text-anchor="middle" dominant-baseline="middle">YELLOW</text>
+      <text x="280" y="318" font-family="Helvetica Neue, Arial, sans-serif" font-size="60" font-weight="600" letter-spacing="14" fill="#0A0A08" text-anchor="middle" dominant-baseline="middle">CRAFT</text>
+      <text x="280" y="378" font-family="Helvetica Neue, Arial, sans-serif" font-size="18" font-weight="400" letter-spacing="9" fill="#0A0A08" text-anchor="middle" dominant-baseline="middle" opacity="0.38">ACADEMY</text>
+    </svg>
+    <span class="nav-tagline">Organizado por AVA · Lanzarote</span>
+  </div>
+  <a href="#registro" class="nav-pill">Reservar plaza</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">Primera edición · 15 de junio · Lanzarote</div>
+    <h1 class="hero-title">
+      Yellow<br>
+      <span class="italic">Craft</span><br>
+      Academy<span class="dot"></span>
+    </h1>
+    <p class="hero-desc">Una jornada de formación técnica gastronómica para profesionales que quieren entender el oficio. No solo practicarlo.</p>
+    <div class="hero-actions">
+      <a href="#registro" class="btn-main">Reservar plaza</a>
+      <a href="#ponentes" class="btn-text">Ver ponentes</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-right-bg"></div>
+    <div class="hero-right-logo">
+      <svg viewBox="0 0 560 560" xmlns="http://www.w3.org/2000/svg" class="ava-logo-svg">
+        <circle cx="280" cy="280" r="268" fill="#F0EAE0"/>
+        <circle cx="280" cy="280" r="265" fill="none" stroke="#0A0A08" stroke-width="1.5" opacity="0.1"/>
+        <circle cx="280" cy="92" r="32" fill="#F5C518"/>
+        <line x1="98" y1="152" x2="462" y2="152" stroke="#0A0A08" stroke-width="1.5" opacity="0.15"/>
+        <text x="280" y="242" font-family="Helvetica Neue, Arial, sans-serif" font-size="72" font-weight="200" letter-spacing="7" fill="#0A0A08" text-anchor="middle" dominant-baseline="middle">YELLOW</text>
+        <text x="280" y="318" font-family="Helvetica Neue, Arial, sans-serif" font-size="60" font-weight="600" letter-spacing="14" fill="#0A0A08" text-anchor="middle" dominant-baseline="middle">CRAFT</text>
+        <line x1="160" y1="350" x2="400" y2="350" stroke="#0A0A08" stroke-width="0.7" opacity="0.15"/>
+        <text x="280" y="378" font-family="Helvetica Neue, Arial, sans-serif" font-size="18" font-weight="400" letter-spacing="9" fill="#0A0A08" text-anchor="middle" dominant-baseline="middle" opacity="0.38">ACADEMY</text>
+      </svg>
+    </div>
+    <div class="hero-right-text">
+      <p class="hero-right-quote">"Hay conocimiento que no se aprende en cursos. Se aprende en salas como esta."</p>
+      <div class="hero-meta-row"><span>Fecha</span><span>15 de junio de 2026</span></div>
+      <div class="hero-meta-row"><span>Lugar</span><span>Av. de las Playas · Puerto del Carmen · Lanzarote</span></div>
+      <div class="hero-meta-row"><span>Horario</span><span>9:30h – 21:00h</span></div>
+      <div class="hero-meta-row"><span>Acceso</span><span>Gratuito · Plaza reservada</span></div>
+      <div class="hero-meta-row"><span>Cómo llegar</span><a href="https://maps.google.com/?q=Avenida+de+las+Playas+Puerto+del+Carmen+Lanzarote" target="_blank">Ver en Google Maps →</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- STRIP -->
+<div class="strip">
+  <div class="strip-track">
+    <div class="strip-item"><span>Yellow Craft Academy</span><div class="strip-dot"></div><span>15 de junio · Lanzarote</span><div class="strip-dot"></div><span>Formación técnica gastronómica</span><div class="strip-dot"></div><span>Entrada gratuita · Plazas limitadas</span><div class="strip-dot"></div><span>AVA Identidad</span><div class="strip-dot"></div></div>
+    <div class="strip-item"><span>Yellow Craft Academy</span><div class="strip-dot"></div><span>15 de junio · Lanzarote</span><div class="strip-dot"></div><span>Formación técnica gastronómica</span><div class="strip-dot"></div><span>Entrada gratuita · Plazas limitadas</span><div class="strip-dot"></div><span>AVA Identidad</span><div class="strip-dot"></div></div>
+    <div class="strip-item"><span>Yellow Craft Academy</span><div class="strip-dot"></div><span>15 de junio · Lanzarote</span><div class="strip-dot"></div><span>Formación técnica gastronómica</span><div class="strip-dot"></div><span>Entrada gratuita · Plazas limitadas</span><div class="strip-dot"></div><span>AVA Identidad</span><div class="strip-dot"></div></div>
+  </div>
+</div>
+
+<!-- PONENTES -->
+<div style="background: var(--blanco);">
+<section class="section" id="ponentes">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-eyebrow">Ponentes confirmados</div>
+      <h2 class="section-title">Tres voces.<br><em>Un mismo criterio.</em></h2>
+    </div>
+    <div class="section-count">03</div>
+  </div>
+  <div class="ponentes-list">
+    <div class="ponente-row ponente-row--expanded reveal">
+      <div class="p-num">01</div>
+      <div class="p-foto-wrap">
+        <div class="p-foto-placeholder"><span>Foto<br>Edu Azuaza</span></div>
+        <a href="https://www.instagram.com/USUARIO_EDU_AZUAZA" target="_blank" class="p-social-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+          Ver en Instagram
+        </a>
+      </div>
+      <div>
+        <div class="p-marca">SOSA · Director Técnico</div>
+        <div class="p-nombre">Edu Azuaza</div>
+        <div class="p-resultado">Vas a entender por qué dos elaboraciones con los mismos ingredientes pueden dar resultados completamente distintos — y cómo usar esa diferencia a tu favor desde el día siguiente.</div>
+        <div class="p-para">Para quienes trabajan por intuición y para quienes lo hacen por fórmula. Los dos van a salir con nuevas herramientas.</div>
+      </div>
+      <div class="p-tag">10:00 – 12:00h</div>
+    </div>
+    <div class="ponente-row ponente-row--expanded reveal">
+      <div class="p-num">02</div>
+      <div class="p-foto-wrap">
+        <div class="p-foto-placeholder"><span>Foto<br>Alexis García</span></div>
+        <a href="https://www.instagram.com/USUARIO_ALEXIS_GARCIA" target="_blank" class="p-social-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+          Ver en Instagram
+        </a>
+      </div>
+      <div>
+        <div class="p-marca">100×100 ALEXIS</div>
+        <div class="p-nombre">Alexis García</div>
+        <div class="p-resultado">Vas a entender la química que hay detrás de cada masa — por qué los ingredientes reaccionan entre sí de una manera y no de otra, y cómo usar esa lógica para tomar decisiones en tu obrador, hagas lo que hagas.</div>
+        <div class="p-para">No importa si haces pan, hojaldre o pastelería. La magia es la misma. Entenderla lo cambia todo.</div>
+      </div>
+      <div class="p-tag">14:00 – 16:00h</div>
+    </div>
+    <div class="ponente-row ponente-row--expanded reveal">
+      <div class="p-num">03</div>
+      <div class="p-foto-wrap">
+        <div class="p-foto-placeholder"><span>Foto<br>Óscar Lafuente</span></div>
+        <a href="https://www.instagram.com/USUARIO_OSCAR_LAFUENTE" target="_blank" class="p-social-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+          Ver en Instagram
+        </a>
+      </div>
+      <div>
+        <div class="p-marca">RON AREHUCAS · Coctelería atlántica</div>
+        <div class="p-nombre">Óscar Lafuente</div>
+        <div class="p-resultado">Vas a entender cómo el territorio se convierte en argumento de venta — y cómo aplicar esa lógica a tu producto, sea un cóctel, un pan o un plato.</div>
+        <div class="p-para">Una ponencia sobre identidad, narrativa y producto. Más transversal de lo que parece.</div>
+      </div>
+      <div class="p-tag">16:30 – 17:30h</div>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- FILOSOFIA BAND -->
+<div class="filosofia-band reveal">
+  <div class="filosofia-band-inner">
+    <p>Hay eventos que te dan ideas.<br><em>Este está diseñado para que el día siguiente</em><br>trabajes diferente.</p>
+    <div class="attrib">AVA · Yellow Craft Academy · Lanzarote · 2026</div>
+  </div>
+</div>
+
+<!-- JORNADA -->
+<div class="jornada-wrap" id="jornada">
+  <div class="jornada-inner">
+    <div class="reveal">
+      <div class="section-eyebrow">Programa del día</div>
+      <h2>Una jornada<br>con <em>tres tiempos</em></h2>
+      <p style="margin-top:1.5rem;">Conocimiento técnico, producto en mesa y cierre experiencial con atardecer. Una jornada que no termina en el aula.</p>
+      <div class="fecha-bloque">
+        <strong>15 de junio de 2026</strong>
+        <p>Avenida de las Playas · Puerto del Carmen · Lanzarote<br>Puertas abiertas desde las 9:30h</p>
+      </div>
+    </div>
+    <div class="jornada-items reveal">
+      <div class="jornada-item">
+        <div class="j-hora"><strong>9:30h</strong>Apertura</div>
+        <div>
+          <div class="j-titulo">Bienvenida y café</div>
+          <div class="j-desc">Llegada, primer contacto con el espacio y con el producto.</div>
+          <span class="j-pill-outline">Acceso libre</span>
+        </div>
+      </div>
+      <div class="jornada-item">
+        <div class="j-hora"><strong>10:00h</strong>hasta las 12:00h</div>
+        <div>
+          <div class="j-ponente">Edu Azuaza · SOSA</div>
+          <div class="j-titulo">Ingredientes técnicos en la cocina contemporánea</div>
+          <div class="j-desc">Entenderás qué hay detrás de los ingredientes que cambian el resultado de una elaboración.</div>
+          <div class="j-resultado">Al salir: sabrás qué ingredientes incorporar, para qué y cómo argumentarlo ante tu cliente.</div>
+          <span class="j-pill">Ponencia técnica</span>
+        </div>
+      </div>
+      <div class="jornada-item">
+        <div class="j-hora"><strong>12:00h</strong>hasta las 13:30h</div>
+        <div>
+          <div class="j-titulo">Brunch con producto en escena</div>
+          <div class="j-desc">El portfolio de AVA en mesa para verlo, probarlo y entenderlo en contexto.</div>
+          <span class="j-pill">Producto · Networking</span>
+        </div>
+      </div>
+      <div class="jornada-item">
+        <div class="j-hora"><strong>14:00h</strong>hasta las 16:00h</div>
+        <div>
+          <div class="j-ponente">Alexis García · 100×100 Alexis</div>
+          <div class="j-titulo">La alquimia de la masa</div>
+          <div class="j-desc">La química entre los ingredientes de cualquier masa — pan, hojaldre, pastelería.</div>
+          <div class="j-resultado">Al salir: entenderás por qué tu masa se comporta como se comporta.</div>
+          <span class="j-pill">Ponencia técnica</span>
+        </div>
+      </div>
+      <div class="jornada-item">
+        <div class="j-hora"><strong>16:30h</strong>hasta las 17:30h</div>
+        <div>
+          <div class="j-ponente">Óscar Lafuente · Ron Arehucas</div>
+          <div class="j-titulo">El Atlántico en copa</div>
+          <div class="j-desc">Territorio, identidad y producto. Cómo el origen se convierte en argumento de venta.</div>
+          <div class="j-resultado">Al salir: una manera diferente de hablar de tu producto y de lo que lo hace único.</div>
+          <span class="j-pill">Ponencia técnica</span>
+        </div>
+      </div>
+      <div class="jornada-item">
+        <div class="j-hora"><strong>18:00h</strong>hasta las 21:00h</div>
+        <div>
+          <div class="j-titulo">Tardeo · cóctel · atardecer</div>
+          <div class="j-desc">Cierre experiencial con gastronomía, coctelería atlántica y música.</div>
+          <span class="j-pill">Experiencia · Cierre</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RAZONES -->
+<div class="razones-wrap">
+<section class="razones reveal">
+  <div class="section-eyebrow">Por qué importa</div>
+  <h2 class="section-title" style="max-width:600px; margin-top:0.5rem;">No enseñamos a usar productos.<br><em>Enseñamos a comprenderlos.</em></h2>
+  <div class="razones-grid">
+    <div class="razon-item">
+      <div class="razon-num">01</div>
+      <div class="razon-titulo">Técnica con propósito</div>
+      <div class="razon-desc">Cada ponencia está seleccionada con criterio estratégico. Conocimiento que transforma la manera de operar en cocina y en negocio.</div>
+    </div>
+    <div class="razon-item">
+      <div class="razon-num">02</div>
+      <div class="razon-titulo">Producto en contexto real</div>
+      <div class="razon-desc">El producto no se presenta en catálogo. Se pone en mesa, se explica desde la técnica y se prueba desde la experiencia.</div>
+    </div>
+    <div class="razon-item">
+      <div class="razon-num">03</div>
+      <div class="razon-titulo">Comunidad de criterio</div>
+      <div class="razon-desc">El espacio donde se encuentran los profesionales que construyen la gastronomía de Canarias con exigencia real.</div>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- REGISTRO -->
+<div class="registro-wrap" id="registro">
+  <div class="registro-inner reveal">
+    <div class="section-eyebrow">Entrada gratuita · Plazas limitadas</div>
+    <h2>Reserva tu<br><em>plaza</em></h2>
+    <p>Indica a qué bloques vas a asistir para que podamos organizarlo bien. Ven a lo que puedas — cada bloque tiene valor por sí solo.</p>
+
+    <form id="registro-form" class="form-fields">
+      <input type="text" id="f-nombre" placeholder="Nombre y apellidos" required>
+      <input type="text" id="f-empresa" placeholder="Empresa o proyecto">
+      <select id="f-perfil">
+        <option value="" disabled selected>Tu perfil profesional</option>
+        <option>Chef / Cocinero</option>
+        <option>Pastelero / Obrador</option>
+        <option>Hotel / Hospitality</option>
+        <option>Restaurante / Gastronomía</option>
+        <option>Specialty Coffee / Brunch</option>
+        <option>Consultor / Asesor gastronómico</option>
+        <option>Otro</option>
+      </select>
+      <input type="email" id="f-email" placeholder="Email de contacto" required>
+      <div>
+        <input type="tel" id="f-telefono" placeholder="Teléfono WhatsApp" style="width:100%;">
+        <div style="font-size:0.68rem; color:var(--gris); margin-top:0.3rem; padding-left:0.2rem;">Usaremos este número solo para confirmarte la plaza por WhatsApp.</div>
+      </div>
+
+      <div class="bloques-label">¿A qué bloques vas a asistir?</div>
+      <div class="bloques-grid">
+        <label class="bloque-check">
+          <input type="checkbox" name="bloque" value="10:00 – 12:00h · Edu Azuaza · SOSA">
+          <div class="bloque-check-info">
+            <span class="bloque-hora">10:00 – 12:00h</span>
+            <span class="bloque-nombre">Ponencia · Edu Azuaza · SOSA</span>
+            <span class="bloque-sub">Ingredientes técnicos en la cocina contemporánea</span>
+          </div>
+        </label>
+        <label class="bloque-check">
+          <input type="checkbox" name="bloque" value="12:00 – 13:30h · Brunch con producto">
+          <div class="bloque-check-info">
+            <span class="bloque-hora">12:00 – 13:30h</span>
+            <span class="bloque-nombre">Brunch con producto en escena</span>
+            <span class="bloque-sub">Networking · portfolio AVA en mesa</span>
+          </div>
+        </label>
+        <label class="bloque-check">
+          <input type="checkbox" name="bloque" value="14:00 – 16:00h · Alexis García · 100×100">
+          <div class="bloque-check-info">
+            <span class="bloque-hora">14:00 – 16:00h</span>
+            <span class="bloque-nombre">Ponencia · Alexis García · 100×100 Alexis</span>
+            <span class="bloque-sub">La alquimia de la masa</span>
+          </div>
+        </label>
+        <label class="bloque-check">
+          <input type="checkbox" name="bloque" value="16:30 – 17:30h · Óscar Lafuente · Ron Arehucas">
+          <div class="bloque-check-info">
+            <span class="bloque-hora">16:30 – 17:30h</span>
+            <span class="bloque-nombre">Ponencia · Óscar Lafuente · Ron Arehucas</span>
+            <span class="bloque-sub">El Atlántico en copa · coctelería y maridaje</span>
+          </div>
+        </label>
+        <label class="bloque-check">
+          <input type="checkbox" name="bloque" value="18:00 – 21:00h · Tardeo · cóctel · atardecer">
+          <div class="bloque-check-info">
+            <span class="bloque-hora">18:00 – 21:00h</span>
+            <span class="bloque-nombre">Tardeo · cóctel · atardecer</span>
+            <span class="bloque-sub">Cierre experiencial · gastronomía y música</span>
+          </div>
+        </label>
+      </div>
+
+      <p class="bloques-nota">Selecciona todos los bloques a los que prevés asistir. Puedes cambiar escribiéndonos directamente.</p>
+
+      <a href="https://maps.google.com/?q=Avenida+de+las+Playas+Puerto+del+Carmen+Lanzarote" target="_blank" class="mapa-link">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+        Av. de las Playas · Puerto del Carmen · Lanzarote — Ver en Google Maps
+      </a>
+
+      <div id="form-error"></div>
+
+      <button type="submit" id="btn-submit" class="btn-main" style="text-align:center; margin-top:0.75rem;">
+        Reservar plaza
+      </button>
+    </form>
+
+    <div id="form-success">
+      <div class="success-icon">✓</div>
+      <p style="font-family:'Cormorant Garamond',serif; font-size:1.8rem; font-weight:300; color:var(--negro); margin-bottom:0.5rem;">Plaza reservada</p>
+      <p style="font-size:0.85rem; color:var(--gris); line-height:1.75;">Gracias por inscribirte. Te confirmaremos tu plaza por WhatsApp o email en las próximas horas.</p>
+      <a href="#ponentes" style="display:inline-block; margin-top:1.5rem; font-size:0.72rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--negro); border-bottom:1px solid var(--crema3); text-decoration:none; padding-bottom:2px;">Ver ponentes →</a>
+    </div>
+
+    <div class="plazas-aviso">Entrada gratuita · Confirmación por orden de registro</div>
+  </div>
+</div>
+
+<!-- SPONSORS -->
+<div class="sponsors-wrap reveal">
+  <div class="sponsors-inner">
+    <div class="sponsors-block">
+      <div class="sponsors-eyebrow">Patrocinadores</div>
+      <div class="sponsors-logos">
+        <div class="sponsor-logo-box">
+          <div class="sponsor-placeholder"><span>Logo<br>SOSA</span></div>
+          <span class="sponsor-name">Sosa</span>
+        </div>
+        <div class="sponsor-logo-box">
+          <div class="sponsor-placeholder"><span>Logo<br>Valrhona</span></div>
+          <span class="sponsor-name">Valrhona Selección</span>
+        </div>
+      </div>
+    </div>
+    <div class="sponsors-block">
+      <div class="sponsors-eyebrow">Colaboradores</div>
+      <div class="sponsors-logos">
+        <div class="sponsor-logo-box">
+          <div class="collab-placeholder"><span>Logo<br>Triticum</span></div>
+          <span class="sponsor-name">Triticum</span>
+        </div>
+        <div class="sponsor-logo-box">
+          <div class="collab-placeholder"><span>Logo<br>Pavese</span></div>
+          <span class="sponsor-name">Pavese</span>
+        </div>
+        <div class="sponsor-logo-box">
+          <div class="collab-placeholder"><span>Logo<br>Ron Arehucas</span></div>
+          <span class="sponsor-name">Ron Arehucas</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <svg viewBox="0 0 560 560" xmlns="http://www.w3.org/2000/svg" style="width:70px;height:70px;margin-bottom:1.2rem;opacity:0.7;">
+        <circle cx="280" cy="280" r="268" fill="#F0EAE0"/>
+        <circle cx="280" cy="92" r="32" fill="#F5C518"/>
+        <text x="280" y="242" font-family="Helvetica Neue, Arial, sans-serif" font-size="72" font-weight="200" letter-spacing="7" fill="#0A0A08" text-anchor="middle" dominant-baseline="middle">YELLOW</text>
+        <text x="280" y="318" font-family="Helvetica Neue, Arial, sans-serif" font-size="60" font-weight="600" letter-spacing="14" fill="#0A0A08" text-anchor="middle" dominant-baseline="middle">CRAFT</text>
+        <text x="280" y="378" font-family="Helvetica Neue, Arial, sans-serif" font-size="18" font-weight="400" letter-spacing="9" fill="#0A0A08" text-anchor="middle" dominant-baseline="middle" opacity="0.38">ACADEMY</text>
+      </svg>
+      <p>Una iniciativa de AVA.<br>Formación técnica gastronómica.<br>Canarias · Atlántico Medio · 2026.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Yellow Craft Academy</h4>
+      <a href="#ponentes">Ponentes</a>
+      <a href="#jornada">Programa del día</a>
+      <a href="#registro">Reservar plaza</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contacto</h4>
+      <a href="mailto:hola@avagastrum.com">hola@avagastrum.com</a>
+      <a href="https://maps.google.com/?q=Avenida+de+las+Playas+Puerto+del+Carmen+Lanzarote" target="_blank">Puerto del Carmen · Lanzarote</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>AVA Identidad · Lanzarote · Canarias · 2026</p>
+    <div class="footer-coords">29°02'N · 13°36'W</div>
+  </div>
+</footer>
+
+<script>
+// ── Scroll reveal ──
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08, rootMargin: '0px 0px -50px 0px' });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+// ── Formulario de registro → API del portal ──
+// IMPORTANTE: sustituir por la URL de producción cuando esté lista
+const PORTAL_API = 'https://yellow-craft-academy.vercel.app/api/registros';
+
+document.getElementById('registro-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const btn = document.getElementById('btn-submit');
+  const errDiv = document.getElementById('form-error');
+  errDiv.style.display = 'none';
+  btn.disabled = true;
+  btn.textContent = '...';
+
+  const bloques = Array.from(document.querySelectorAll('input[name="bloque"]:checked')).map(cb => cb.value);
+
+  const payload = {
+    nombre:   document.getElementById('f-nombre').value.trim(),
+    empresa:  document.getElementById('f-empresa').value.trim() || null,
+    perfil:   document.getElementById('f-perfil').value || null,
+    email:    document.getElementById('f-email').value.trim(),
+    telefono: document.getElementById('f-telefono').value.trim() || null,
+    bloques:  bloques.length ? bloques : null,
+  };
+
+  try {
+    const res = await fetch(PORTAL_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || 'Error al enviar');
+    }
+    document.getElementById('registro-form').style.display = 'none';
+    document.getElementById('form-success').style.display = 'block';
+  } catch (err) {
+    errDiv.textContent = 'Ha ocurrido un error. Por favor inténtalo de nuevo o escríbenos a hola@avagastrum.com';
+    errDiv.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Reservar plaza';
+  }
+});
+</script>
+</body>
+</html>

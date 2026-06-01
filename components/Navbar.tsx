@@ -12,44 +12,43 @@ export default function Navbar() {
 
   function switchLocale() {
     const next = locale === 'es' ? 'en' : 'es'
-    const newPath = pathname.replace(`/${locale}`, `/${next}`)
-    router.push(newPath)
+    router.push(pathname.replace(`/${locale}`, `/${next}`))
   }
 
   return (
-    <nav className="bg-yellow-400 shadow-sm sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <Link href={`/${locale}`} className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gray-900 rounded-full flex items-center justify-center">
-              <span className="text-yellow-400 font-black text-xs">YC</span>
-            </div>
-            <span className="font-black text-gray-900 text-lg tracking-tight hidden sm:block">
-              Yellow Craft Academy
-            </span>
-          </Link>
+    <nav style={{
+      position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
+      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+      padding: '1.25rem 2.5rem',
+      background: 'rgba(247,243,238,0.94)', backdropFilter: 'blur(12px)',
+      borderBottom: '1px solid rgba(0,0,0,0.07)',
+    }}>
+      <Link href={`/${locale}`} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
+        <svg viewBox="0 0 560 560" xmlns="http://www.w3.org/2000/svg" style={{ width: 36, height: 36 }}>
+          <circle cx="280" cy="280" r="268" fill="#F0EAE0"/>
+          <circle cx="280" cy="92" r="32" fill="#F5C518"/>
+          <text x="280" y="242" fontFamily="Helvetica Neue, Arial, sans-serif" fontSize="72" fontWeight="200" letterSpacing="7" fill="#0A0A08" textAnchor="middle" dominantBaseline="middle">YELLOW</text>
+          <text x="280" y="318" fontFamily="Helvetica Neue, Arial, sans-serif" fontSize="60" fontWeight="600" letterSpacing="14" fill="#0A0A08" textAnchor="middle" dominantBaseline="middle">CRAFT</text>
+          <text x="280" y="378" fontFamily="Helvetica Neue, Arial, sans-serif" fontSize="18" fontWeight="400" letterSpacing="9" fill="#0A0A08" textAnchor="middle" dominantBaseline="middle" opacity="0.38">ACADEMY</text>
+        </svg>
+        <span style={{ fontSize: '0.7rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gris)', fontFamily: 'DM Sans, sans-serif' }}>
+          Organizado por AVA · Lanzarote
+        </span>
+      </Link>
 
-          <div className="flex items-center gap-6">
-            <Link
-              href={`/${locale}`}
-              className="text-gray-900 font-medium hover:text-gray-600 transition-colors text-sm"
-            >
-              {t('productos')}
-            </Link>
-            <Link
-              href={`/${locale}/pildoras`}
-              className="text-gray-900 font-medium hover:text-gray-600 transition-colors text-sm"
-            >
-              {t('pildoras')}
-            </Link>
-            <button
-              onClick={switchLocale}
-              className="text-xs font-bold bg-gray-900 text-yellow-400 px-3 py-1.5 rounded-full hover:bg-gray-700 transition-colors"
-            >
-              {locale === 'es' ? 'EN' : 'ES'}
-            </button>
-          </div>
-        </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+        <Link href={`/${locale}`} style={{ fontSize: '0.72rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--gris)', textDecoration: 'none', fontFamily: 'DM Sans, sans-serif' }}>
+          {t('productos')}
+        </Link>
+        <Link href={`/${locale}/pildoras`} style={{ fontSize: '0.72rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--gris)', textDecoration: 'none', fontFamily: 'DM Sans, sans-serif' }}>
+          {t('pildoras')}
+        </Link>
+        <button
+          onClick={switchLocale}
+          style={{ fontSize: '0.65rem', letterSpacing: '0.2em', textTransform: 'uppercase', background: 'var(--negro)', color: 'var(--crema)', padding: '0.4rem 1rem', fontWeight: 500, border: 'none', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}
+        >
+          {locale === 'es' ? 'EN' : 'ES'}
+        </button>
       </div>
     </nav>
   )

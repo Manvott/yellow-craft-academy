@@ -15,24 +15,33 @@ export default async function PillorasPage() {
     .order('orden')
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Navbar />
 
-      <div className="bg-yellow-400 py-14 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl font-black text-gray-900 mb-3">{t('title')}</h1>
-          <p className="text-lg text-gray-700">{t('subtitle')}</p>
+      {/* Hero */}
+      <div style={{ background: 'var(--negro)', paddingTop: 72, minHeight: '32vh', display: 'flex', alignItems: 'center', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 50% 70% at 20% 50%, rgba(245,197,24,0.06) 0%, transparent 70%)' }} />
+        <div style={{ maxWidth: 900, margin: '0 auto', padding: '4rem 2.5rem', position: 'relative', zIndex: 1 }}>
+          <p style={{ fontSize: '0.62rem', letterSpacing: '0.4em', textTransform: 'uppercase', color: 'var(--gris)', marginBottom: '1.5rem', fontFamily: 'DM Sans, sans-serif' }}>
+            Conocimiento · Yellow Craft Academy
+          </p>
+          <h1 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 'clamp(2.8rem,4.5vw,4.5rem)', fontWeight: 300, lineHeight: 1.05, color: 'var(--crema)', marginBottom: '1rem' }}>
+            {t('title')}
+          </h1>
+          <p style={{ fontSize: '0.87rem', color: 'rgba(247,243,238,0.4)', lineHeight: 1.75, fontFamily: 'DM Sans, sans-serif' }}>
+            {t('subtitle')}
+          </p>
         </div>
       </div>
 
-      <main className="flex-1 bg-gray-50 py-12 px-4">
-        <div className="max-w-4xl mx-auto">
+      <main style={{ flex: 1, background: 'var(--crema)', padding: '5rem 2.5rem' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <PillorasClient secciones={(secciones as SeccionPildora[]) ?? []} />
         </div>
       </main>
 
-      <footer className="bg-gray-900 text-gray-400 text-center py-6 text-sm">
-        <p>© 2026 Yellow Craft Academy · Ava Selección · Lanzarote</p>
+      <footer style={{ background: 'var(--negro)', color: 'rgba(247,243,238,0.25)', textAlign: 'center', padding: '2.5rem', fontSize: '0.72rem', letterSpacing: '0.1em', fontFamily: 'DM Sans, sans-serif' }}>
+        <p>© 2026 Yellow Craft Academy · AVA Identidad · Lanzarote</p>
       </footer>
     </div>
   )

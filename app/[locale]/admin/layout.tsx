@@ -17,6 +17,7 @@ export default async function AdminLayout({
 
   const navItems = [
     { href: `/${locale}/admin`, label: 'Dashboard' },
+    { href: `/${locale}/admin/registros`, label: 'Asistentes' },
     { href: `/${locale}/admin/solicitudes`, label: 'Solicitudes' },
     { href: `/${locale}/admin/proveedores`, label: 'Proveedores' },
     { href: `/${locale}/admin/productos`, label: 'Productos' },
@@ -24,32 +25,41 @@ export default async function AdminLayout({
   ]
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
+    <div style={{ minHeight: '100vh', display: 'flex', background: 'var(--crema)' }}>
       {/* Sidebar */}
-      <aside className="w-56 bg-gray-900 text-white flex flex-col flex-shrink-0">
-        <div className="p-5 border-b border-gray-800">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-yellow-400 rounded-full flex items-center justify-center">
-              <span className="text-gray-900 font-black text-xs">YC</span>
+      <aside style={{ width: 220, background: 'var(--negro)', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
+        <div style={{ padding: '1.5rem 1.25rem', borderBottom: '1px solid rgba(247,243,238,0.07)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            <div style={{ width: 28, height: 28, background: 'var(--amarillo)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ fontSize: '0.55rem', fontWeight: 700, color: 'var(--negro)', letterSpacing: '0.05em' }}>YC</span>
             </div>
-            <span className="font-bold text-sm">Admin Panel</span>
+            <div>
+              <p style={{ fontSize: '0.65rem', fontWeight: 500, color: 'var(--crema)', fontFamily: 'DM Sans, sans-serif', letterSpacing: '0.05em' }}>Admin</p>
+              <p style={{ fontSize: '0.58rem', color: 'rgba(247,243,238,0.3)', fontFamily: 'DM Sans, sans-serif' }}>Yellow Craft Academy</p>
+            </div>
           </div>
         </div>
-        <nav className="flex-1 p-3 space-y-1">
+        <nav style={{ flex: 1, padding: '0.75rem 0' }}>
           {navItems.map(item => (
             <Link
               key={item.href}
               href={item.href}
-              className="block px-3 py-2 rounded-lg text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
+              style={{
+                display: 'block', padding: '0.65rem 1.25rem',
+                fontSize: '0.72rem', color: 'rgba(247,243,238,0.5)',
+                textDecoration: 'none', letterSpacing: '0.05em',
+                fontFamily: 'DM Sans, sans-serif',
+                transition: 'color 0.2s',
+              }}
             >
               {item.label}
             </Link>
           ))}
         </nav>
-        <div className="p-3 border-t border-gray-800">
+        <div style={{ padding: '1rem 1.25rem', borderTop: '1px solid rgba(247,243,238,0.07)' }}>
           <Link
             href={`/${locale}`}
-            className="block px-3 py-2 rounded-lg text-xs text-gray-400 hover:text-white transition-colors"
+            style={{ fontSize: '0.65rem', color: 'rgba(247,243,238,0.25)', textDecoration: 'none', fontFamily: 'DM Sans, sans-serif' }}
           >
             ← Ver portal
           </Link>
@@ -57,7 +67,7 @@ export default async function AdminLayout({
       </aside>
 
       {/* Main */}
-      <main className="flex-1 p-8 overflow-auto">
+      <main style={{ flex: 1, padding: '3rem', overflowAuto: 'auto' } as React.CSSProperties}>
         {children}
       </main>
     </div>

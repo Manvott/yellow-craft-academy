@@ -68,6 +68,19 @@ CREATE TABLE pildoras (
   created_at  timestamptz DEFAULT now()
 );
 
+-- Registros de asistentes (desde la landing)
+CREATE TABLE registros (
+  id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  nombre      text NOT NULL,
+  empresa     text,
+  perfil      text,
+  email       text NOT NULL,
+  telefono    text,
+  bloques     text[],           -- array de nombres de bloques seleccionados
+  ip_origen   text,
+  created_at  timestamptz DEFAULT now()
+);
+
 -- ===== RLS =====
 
 ALTER TABLE proveedores ENABLE ROW LEVEL SECURITY;
@@ -89,6 +102,10 @@ CREATE POLICY "admin_all"    ON secciones_pildoras FOR ALL   USING (auth.role() 
 ALTER TABLE pildoras ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "public_read"  ON pildoras FOR SELECT USING (activo = true);
 CREATE POLICY "admin_all"    ON pildoras FOR ALL   USING (auth.role() = 'authenticated');
+
+ALTER TABLE registros ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "public_insert" ON registros FOR INSERT WITH CHECK (true);
+CREATE POLICY "admin_read"    ON registros FOR SELECT USING (auth.role() = 'authenticated');
 
 -- ===== Storage bucket para imágenes =====
 -- Ejecutar desde Supabase Dashboard > Storage > New bucket

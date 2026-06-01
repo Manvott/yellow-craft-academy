@@ -31,54 +31,68 @@ export default function CatalogoClient({ productos, proveedores }: Props) {
     })
   }, [productos, search, proveedorFiltro, categoriaFiltro])
 
+  const inputStyle: React.CSSProperties = {
+    background: 'var(--blanco)',
+    border: '1px solid var(--crema3)',
+    color: 'var(--grafito)',
+    padding: '0.8rem 1.1rem',
+    fontFamily: 'DM Sans, sans-serif',
+    fontSize: '0.82rem',
+    fontWeight: 300,
+    outline: 'none',
+  }
+
   return (
     <div>
-      {/* Filtros */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-8">
-        <input
-          type="text"
-          placeholder={t('search_placeholder')}
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-white"
-        />
-        <select
-          value={proveedorFiltro}
-          onChange={e => setProveedorFiltro(e.target.value)}
-          className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-white"
-        >
-          <option value="all">{t('all_suppliers')}</option>
-          {proveedores.map(p => (
-            <option key={p.id} value={p.id}>{p.nombre}</option>
-          ))}
-        </select>
-        <select
-          value={categoriaFiltro}
-          onChange={e => setCategoriaFiltro(e.target.value)}
-          className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-white"
-        >
-          <option value="all">{t('all_categories')}</option>
-          {categorias.map(c => (
-            <option key={c} value={c}>{c}</option>
-          ))}
-        </select>
+      {/* Eyebrow */}
+      <div style={{ marginBottom: '3rem' }}>
+        <p style={{ fontSize: '0.62rem', letterSpacing: '0.4em', textTransform: 'uppercase', color: 'var(--gris)', marginBottom: '0.75rem', fontFamily: 'DM Sans, sans-serif' }}>
+          {proveedores.length} proveedores · {productos.length} productos
+        </p>
+        <h2 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 'clamp(2rem,3vw,2.8rem)', fontWeight: 300, color: 'var(--negro)', lineHeight: 1.05, marginBottom: '2rem' }}>
+          Descubre el<br /><em style={{ fontStyle: 'italic', color: 'var(--gris)' }}>portfolio</em>
+        </h2>
+        {/* Filtros */}
+        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <input
+            type="text"
+            placeholder={t('search_placeholder')}
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            style={{ ...inputStyle, flex: '1 1 200px', minWidth: 180 }}
+          />
+          <select
+            value={proveedorFiltro}
+            onChange={e => setProveedorFiltro(e.target.value)}
+            style={{ ...inputStyle, background: 'var(--blanco)', cursor: 'pointer', minWidth: 160 }}
+          >
+            <option value="all">{t('all_suppliers')}</option>
+            {proveedores.map(p => <option key={p.id} value={p.id}>{p.nombre}</option>)}
+          </select>
+          <select
+            value={categoriaFiltro}
+            onChange={e => setCategoriaFiltro(e.target.value)}
+            style={{ ...inputStyle, background: 'var(--blanco)', cursor: 'pointer', minWidth: 160 }}
+          >
+            <option value="all">{t('all_categories')}</option>
+            {categorias.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+        </div>
       </div>
 
       {/* Grid */}
       {filtered.length === 0 ? (
-        <div className="text-center py-24 text-gray-400">
-          <p className="text-5xl mb-4">🔍</p>
-          <p className="font-medium">{t('no_products')}</p>
+        <div style={{ textAlign: 'center', padding: '8rem 0', color: 'var(--gris)' }}>
+          <p style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '2rem', fontWeight: 300, marginBottom: '0.5rem' }}>Sin resultados</p>
+          <p style={{ fontSize: '0.82rem' }}>{t('no_products')}</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filtered.map(p => (
-            <ProductCard key={p.id} producto={p} />
-          ))}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '1.5rem' }}>
+          {filtered.map(p => <ProductCard key={p.id} producto={p} />)}
         </div>
       )}
 
-      <p className="text-center text-gray-400 text-sm mt-8">
+      <p style={{ textAlign: 'center', color: 'var(--gris-l)', fontSize: '0.68rem', letterSpacing: '0.25em', textTransform: 'uppercase', marginTop: '3rem', fontFamily: 'DM Sans, sans-serif' }}>
         {filtered.length} productos
       </p>
     </div>

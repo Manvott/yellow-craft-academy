@@ -27,6 +27,7 @@ export async function GET(request: NextRequest) {
     'Perfil profesional': r.perfil ?? '',
     'Teléfono WhatsApp': r.telefono ?? '',
     'Acepta canal WhatsApp': r.acepta_whatsapp ? 'Sí' : 'No',
+    'Añadido a lista WA': r.wa_confirmado ? 'Sí' : 'No',
     'Bloques seleccionados': (r.bloques ?? []).join(' | '),
   }))
 

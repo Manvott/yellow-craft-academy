@@ -186,7 +186,7 @@ function RegistroForm() {
         <p style={{ fontSize: '0.65rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--gris)', marginBottom: '0.5rem', fontFamily: 'DM Sans, sans-serif' }}>
           ¿Es la primera vez que vienes a un evento AVA?
         </p>
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
+        <div className="yca-radio-group" style={{ display: 'flex', gap: '0.75rem' }}>
           {[{ value: 'si', label: 'Sí, primera vez' }, { value: 'no', label: 'Ya he venido antes' }].map(opt => (
             <label key={opt.value} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', padding: '0.75rem 1.1rem', background: 'var(--blanco)', border: '1px solid var(--crema3)', flex: 1, fontSize: '0.82rem', color: 'var(--grafito)' }}>
               <input type="radio" name="primera_vez" value={opt.value} defaultChecked={opt.value === 'si'} style={{ accentColor: 'var(--negro)', width: 14, height: 14 }} />
@@ -201,7 +201,7 @@ function RegistroForm() {
         <p style={{ fontSize: '0.65rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--gris)', marginBottom: '0.5rem', fontFamily: 'DM Sans, sans-serif' }}>
           ¿Eres cliente de AVA?
         </p>
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
+        <div className="yca-radio-group" style={{ display: 'flex', gap: '0.75rem' }}>
           {[{ value: 'si', label: 'Sí, soy cliente' }, { value: 'no', label: 'Todavía no' }].map(opt => (
             <label key={opt.value} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', padding: '0.75rem 1.1rem', background: 'var(--blanco)', border: '1px solid var(--crema3)', flex: 1, fontSize: '0.82rem', color: 'var(--grafito)' }}>
               <input type="radio" name="cliente_ava" value={opt.value} defaultChecked={opt.value === 'no'} style={{ accentColor: 'var(--negro)', width: 14, height: 14 }} />
@@ -277,7 +277,7 @@ export default function LandingClient({ locale }: Props) {
           <YCLogo size={34} />
           <span style={{ fontSize: '0.7rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gris)' }}>Organizado por AVA</span>
         </Link>
-        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+        <div className="yca-nav-links" style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
           <Link href={`/${locale}`} style={{ fontSize: '0.7rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--gris)', textDecoration: 'none' }}>Catálogo</Link>
           <Link href={`/${locale}/pildoras`} style={{ fontSize: '0.7rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--gris)', textDecoration: 'none' }}>Píldoras</Link>
           <a href="#registro" style={{ fontSize: '0.68rem', letterSpacing: '0.2em', textTransform: 'uppercase', background: 'var(--negro)', color: 'var(--crema)', padding: '0.45rem 1.3rem', fontWeight: 500, textDecoration: 'none' }}>Reservar plaza</a>
@@ -285,28 +285,28 @@ export default function LandingClient({ locale }: Props) {
       </nav>
 
       {/* HERO */}
-      <section style={{ minHeight: '100vh', display: 'grid', gridTemplateColumns: '1fr 1fr', paddingTop: 72 }}>
-        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '3rem 4rem' }}>
+      <section className="yca-hero" style={{ minHeight: '100vh', display: 'grid', gridTemplateColumns: '1fr 1fr', paddingTop: 72 }}>
+        <div className="yca-hero-left" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '3rem 4rem' }}>
           <p style={{ ...S.eyebrow, marginBottom: '2.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <span style={{ width: 30, height: 1, background: 'var(--gris-l)', display: 'inline-block' }} />
             Primera edición · 15 de junio · Lanzarote
           </p>
-          <h1 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 'clamp(3.8rem,6vw,6.5rem)', fontWeight: 300, lineHeight: 0.95, color: 'var(--negro)', marginBottom: '2.5rem' }}>
+          <h1 className="yca-hero-title" style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 'clamp(3.8rem,6vw,6.5rem)', fontWeight: 300, lineHeight: 0.95, color: 'var(--negro)', marginBottom: '2.5rem' }}>
             Yellow<br /><em style={{ fontStyle: 'italic', color: 'var(--grafito)' }}>Craft</em><br />
             Academy<span style={{ display: 'inline-block', width: '0.45em', height: '0.45em', background: 'var(--amarillo)', borderRadius: '50%', verticalAlign: 'middle', marginLeft: '0.1em', position: 'relative', top: '-0.35em' }} />
           </h1>
           <p style={{ fontSize: '1rem', lineHeight: 1.75, color: 'var(--gris)', maxWidth: 420, marginBottom: '3rem' }}>
             Una jornada de formación técnica gastronómica para profesionales que quieren entender el oficio. No solo practicarlo.
           </p>
-          <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+          <div className="yca-hero-actions" style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
             <a href="#registro" style={{ background: 'var(--negro)', color: 'var(--crema)', padding: '0.9rem 2.2rem', fontSize: '0.75rem', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 500, textDecoration: 'none' }}>Reservar plaza</a>
             <a href="#ponentes" style={{ fontSize: '0.78rem', color: 'var(--gris)', textDecoration: 'none', borderBottom: '1px solid var(--gris-l)', paddingBottom: 2 }}>Ver ponentes</a>
           </div>
         </div>
 
-        <div style={{ background: 'var(--negro)', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+        <div className="yca-hero-right" style={{ background: 'var(--negro)', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
           <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 70% 60% at 60% 30%, rgba(245,197,24,0.1) 0%, transparent 65%)' }} />
-          <div style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '2.5rem 0 1.5rem', borderBottom: '1px solid rgba(247,243,238,0.06)' }}>
+          <div className="yca-hero-logo" style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '2.5rem 0 1.5rem', borderBottom: '1px solid rgba(247,243,238,0.06)' }}>
             <svg viewBox="0 0 560 560" xmlns="http://www.w3.org/2000/svg" style={{ width: 160, height: 160 }}>
               <circle cx="280" cy="280" r="268" fill="#F0EAE0" />
               <circle cx="280" cy="280" r="265" fill="none" stroke="#0A0A08" strokeWidth="1.5" opacity="0.1" />
@@ -318,8 +318,8 @@ export default function LandingClient({ locale }: Props) {
               <text x="280" y="378" fontFamily="Helvetica Neue, Arial, sans-serif" fontSize="18" fontWeight="400" letterSpacing="9" fill="#0A0A08" textAnchor="middle" dominantBaseline="middle" opacity="0.38">ACADEMY</text>
             </svg>
           </div>
-          <div style={{ position: 'relative', zIndex: 2, padding: '2rem 3rem 3rem' }}>
-            <p style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 'clamp(1.4rem,2.2vw,2rem)', fontWeight: 300, fontStyle: 'italic', color: 'rgba(247,243,238,0.7)', lineHeight: 1.5, marginBottom: '2.5rem' }}>
+          <div className="yca-hero-text" style={{ position: 'relative', zIndex: 2, padding: '2rem 3rem 3rem' }}>
+            <p className="yca-hero-quote" style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 'clamp(1.4rem,2.2vw,2rem)', fontWeight: 300, fontStyle: 'italic', color: 'rgba(247,243,238,0.7)', lineHeight: 1.5, marginBottom: '2.5rem' }}>
               "Hay conocimiento que no se aprende en cursos. Se aprende en salas como esta."
             </p>
             {[
@@ -359,17 +359,17 @@ export default function LandingClient({ locale }: Props) {
 
       {/* PONENTES */}
       <div style={{ background: 'var(--blanco)' }} id="ponentes">
-        <div style={{ padding: '8rem 4rem', maxWidth: 1300, margin: '0 auto' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '5rem' }}>
+        <div className="yca-section" style={{ padding: '8rem 4rem', maxWidth: 1300, margin: '0 auto' }}>
+          <div className="yca-section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '5rem' }}>
             <div>
               <p style={{ ...S.eyebrow, marginBottom: '1rem' }}>Ponentes confirmados</p>
               <h2 style={{ ...S.sectionTitle, fontSize: 'clamp(2.5rem,4vw,4rem)' }}>Tres voces.<br /><em style={{ fontStyle: 'italic', color: 'var(--gris)' }}>Un mismo criterio.</em></h2>
             </div>
-            <span style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '5rem', fontWeight: 300, color: 'var(--crema3)', lineHeight: 1 }}>03</span>
+            <span className="yca-section-count" style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '5rem', fontWeight: 300, color: 'var(--crema3)', lineHeight: 1 }}>03</span>
           </div>
           <div>
             {PONENTES.map((p, idx) => (
-              <div key={idx} style={{ display: 'grid', gridTemplateColumns: '50px 1fr auto', gap: '2rem', alignItems: 'start', padding: '3rem 0', borderTop: '1px solid var(--crema3)', borderBottom: idx === PONENTES.length - 1 ? '1px solid var(--crema3)' : undefined }}>
+              <div key={idx} className="yca-ponente" style={{ display: 'grid', gridTemplateColumns: '50px 1fr auto', gap: '2rem', alignItems: 'start', padding: '3rem 0', borderTop: '1px solid var(--crema3)', borderBottom: idx === PONENTES.length - 1 ? '1px solid var(--crema3)' : undefined }}>
                 <span style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1rem', color: 'var(--gris-l)', paddingTop: '0.5rem' }}>{p.num}</span>
                 <div>
                   <p style={{ fontSize: '0.6rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--gris)', marginBottom: '0.3rem' }}>{p.marca}</p>
@@ -377,7 +377,7 @@ export default function LandingClient({ locale }: Props) {
                   <p style={{ fontSize: '0.82rem', color: 'var(--negro)', fontWeight: 400, lineHeight: 1.65, padding: '0.6rem 0.9rem', background: 'var(--amarillo)', display: 'inline-block', marginBottom: '0.5rem' }}>{p.resultado}</p>
                   <p style={{ fontSize: '0.75rem', color: 'var(--gris)', lineHeight: 1.65, fontStyle: 'italic', marginTop: '0.5rem' }}>{p.para}</p>
                 </div>
-                <span style={{ fontSize: '0.6rem', letterSpacing: '0.2em', textTransform: 'uppercase', border: '1px solid var(--crema3)', color: 'var(--gris)', padding: '0.4rem 1rem', whiteSpace: 'nowrap', marginTop: '0.5rem' }}>{p.hora}</span>
+                <span className="yca-ponente-hora" style={{ fontSize: '0.6rem', letterSpacing: '0.2em', textTransform: 'uppercase', border: '1px solid var(--crema3)', color: 'var(--gris)', padding: '0.4rem 1rem', whiteSpace: 'nowrap', marginTop: '0.5rem' }}>{p.hora}</span>
               </div>
             ))}
           </div>
@@ -399,8 +399,8 @@ export default function LandingClient({ locale }: Props) {
       </div>
 
       {/* JORNADA */}
-      <div style={{ background: 'var(--blanco)', padding: '8rem 4rem', borderTop: '1px solid var(--crema3)' }} id="jornada">
-        <div style={{ maxWidth: 1300, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: '8rem', alignItems: 'start' }}>
+      <div className="yca-jornada-wrap" style={{ background: 'var(--blanco)', padding: '8rem 4rem', borderTop: '1px solid var(--crema3)' }} id="jornada">
+        <div className="yca-jornada" style={{ maxWidth: 1300, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: '8rem', alignItems: 'start' }}>
           <div>
             <p style={{ ...S.eyebrow, marginBottom: '1rem' }}>Programa del día</p>
             <h2 style={{ ...S.sectionTitle, fontSize: 'clamp(2.2rem,3.5vw,3.5rem)', marginBottom: '1.5rem' }}>
@@ -418,7 +418,7 @@ export default function LandingClient({ locale }: Props) {
           </div>
           <div>
             {JORNADA.map((item, i) => (
-              <div key={i} style={{ display: 'grid', gridTemplateColumns: '100px 1fr', gap: '2rem', padding: '2rem 0', borderTop: '1px solid var(--crema3)', borderBottom: i === JORNADA.length - 1 ? '1px solid var(--crema3)' : undefined }}>
+              <div key={i} className="yca-jornada-item" style={{ display: 'grid', gridTemplateColumns: '100px 1fr', gap: '2rem', padding: '2rem 0', borderTop: '1px solid var(--crema3)', borderBottom: i === JORNADA.length - 1 ? '1px solid var(--crema3)' : undefined }}>
                 <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1rem', color: 'var(--gris)', lineHeight: 1.5, paddingTop: '0.1rem' }}>{item.hora}</div>
                 <div>
                   {item.ponente && <p style={{ fontSize: '0.72rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--gris-l)', marginBottom: '0.4rem' }}>{item.ponente}</p>}
@@ -436,13 +436,13 @@ export default function LandingClient({ locale }: Props) {
       </div>
 
       {/* RAZONES */}
-      <div style={{ background: 'var(--crema)', padding: '8rem 4rem' }}>
+      <div className="yca-razones" style={{ background: 'var(--crema)', padding: '8rem 4rem' }}>
         <div style={{ maxWidth: 1300, margin: '0 auto' }}>
           <p style={{ ...S.eyebrow, marginBottom: '0.5rem' }}>Por qué importa</p>
           <h2 style={{ ...S.sectionTitle, fontSize: 'clamp(2.5rem,4vw,4rem)', maxWidth: 600, marginBottom: '5rem' }}>
             No enseñamos a usar productos.<br /><em style={{ fontStyle: 'italic', color: 'var(--gris)' }}>Enseñamos a comprenderlos.</em>
           </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '4rem' }}>
+          <div className="yca-razones-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '4rem' }}>
             {[
               { num: '01', titulo: 'Técnica con propósito', desc: 'Cada ponencia está seleccionada con criterio estratégico. Conocimiento que transforma la manera de operar en cocina y en negocio.' },
               { num: '02', titulo: 'Producto en contexto real', desc: 'El producto no se presenta en catálogo. Se pone en mesa, se explica desde la técnica y se prueba desde la experiencia. Así es como se decide bien.' },
@@ -459,7 +459,7 @@ export default function LandingClient({ locale }: Props) {
       </div>
 
       {/* REGISTRO */}
-      <div style={{ background: 'var(--crema2)', padding: '8rem 4rem', borderTop: '1px solid var(--crema3)' }} id="registro">
+      <div className="yca-registro" style={{ background: 'var(--crema2)', padding: '8rem 4rem', borderTop: '1px solid var(--crema3)' }} id="registro">
         <div style={{ maxWidth: 580, margin: '0 auto' }}>
           <p style={{ ...S.eyebrow, marginBottom: '1rem' }}>Entrada gratuita · Plazas limitadas</p>
           <h2 style={{ ...S.sectionTitle, fontSize: 'clamp(2.5rem,4vw,3.8rem)', marginBottom: '1rem' }}>
@@ -477,7 +477,7 @@ export default function LandingClient({ locale }: Props) {
 
       {/* FOOTER */}
       <footer style={{ background: 'var(--negro)', padding: '4rem 4rem 3rem' }}>
-        <div style={{ maxWidth: 1300, margin: '0 auto', display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr', gap: '4rem', paddingBottom: '3rem', borderBottom: '1px solid rgba(247,243,238,0.07)' }}>
+        <div className="yca-footer-grid" style={{ maxWidth: 1300, margin: '0 auto', display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr', gap: '4rem', paddingBottom: '3rem', borderBottom: '1px solid rgba(247,243,238,0.07)' }}>
           <div>
             <YCLogo size={64} />
             <p style={{ fontSize: '0.78rem', color: 'rgba(247,243,238,0.28)', lineHeight: 1.9, marginTop: '1.2rem' }}>
@@ -496,7 +496,7 @@ export default function LandingClient({ locale }: Props) {
             <span style={{ display: 'block', fontSize: '0.78rem', color: 'rgba(247,243,238,0.4)', lineHeight: 2.2 }}>Puerto del Carmen · Lanzarote</span>
           </div>
         </div>
-        <div style={{ maxWidth: 1300, margin: '0 auto', paddingTop: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="yca-footer-bottom" style={{ maxWidth: 1300, margin: '0 auto', paddingTop: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <p style={{ fontSize: '0.68rem', color: 'rgba(247,243,238,0.16)' }}>AVA Identidad · Lanzarote · Canarias · 2026</p>
           <span style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '0.9rem', color: 'rgba(245,197,24,0.3)', letterSpacing: '0.1em' }}>29°02′N · 13°36′W</span>
         </div>
@@ -504,18 +504,64 @@ export default function LandingClient({ locale }: Props) {
 
       <style>{`
         @keyframes strip { from { transform:translateX(0); } to { transform:translateX(-33.333%); } }
+
+        /* ── Tablet 768px ── */
         @media (max-width: 768px) {
-          section[style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; height: auto !important; min-height: 100svh !important; }
-          div[style*="grid-template-columns: 1fr 1.5fr"] { grid-template-columns: 1fr !important; gap: 2.5rem !important; }
-          div[style*="grid-template-columns: repeat(3"] { grid-template-columns: 1fr !important; }
-          div[style*="grid-template-columns: 1.5fr 1fr 1fr"] { grid-template-columns: 1fr !important; gap: 2rem !important; }
-          nav { padding: 1rem 1.5rem !important; }
-          nav > div:first-child > span { display: none; }
-        }
-        @media (max-width: 480px) {
-          div[style*="padding: 8rem 4rem"] { padding: 4rem 1.5rem !important; }
-          div[style*="padding: 7rem 4rem"] { padding: 4rem 1.5rem !important; }
+          /* Hero: columna única */
+          .yca-hero { grid-template-columns: 1fr !important; height: auto !important; min-height: 100svh !important; }
+          .yca-hero-right { flex-direction: row !important; }
+          .yca-hero-logo { flex: 0 0 90px !important; padding: 1rem !important; border-right: 1px solid rgba(247,243,238,0.08) !important; border-bottom: none !important; }
+          .yca-hero-logo svg { width: 64px !important; height: 64px !important; }
+          .yca-hero-quote { display: none !important; }
+          .yca-hero-text { padding: 1rem 1.25rem !important; }
+          /* Nav */
+          nav { padding: 0.85rem 1.25rem !important; }
+          .yca-nav-tagline { display: none !important; }
+          .yca-nav-links a:not(:last-child) { display: none !important; }
+          /* Secciones */
+          .yca-section { padding: 4rem 1.5rem !important; }
+          .yca-section-header { flex-direction: column !important; gap: 0.5rem !important; }
+          .yca-section-count { display: none !important; }
+          /* Ponentes */
+          .yca-ponente { grid-template-columns: 36px 1fr !important; gap: 1rem !important; padding: 2rem 0 !important; }
+          .yca-ponente-hora { display: none !important; }
+          /* Jornada */
+          .yca-jornada { grid-template-columns: 1fr !important; gap: 2rem !important; }
+          .yca-jornada-item { grid-template-columns: 72px 1fr !important; gap: 1rem !important; }
+          /* Razones */
+          .yca-razones-grid { grid-template-columns: 1fr !important; gap: 2.5rem !important; }
+          /* Footer */
+          .yca-footer-grid { grid-template-columns: 1fr !important; gap: 2rem !important; }
+          .yca-footer-bottom { flex-direction: column !important; gap: 0.5rem !important; text-align: center !important; }
           footer { padding: 3rem 1.5rem 2rem !important; }
+        }
+
+        /* ── Mobile 480px ── */
+        @media (max-width: 480px) {
+          .yca-hero-left { padding: 2rem 1.25rem 2.5rem !important; }
+          .yca-hero-title { font-size: clamp(2.6rem,12vw,3.5rem) !important; }
+          .yca-hero-actions { flex-direction: column !important; gap: 0.75rem !important; }
+          .yca-hero-actions a:first-child { width: 100% !important; text-align: center !important; }
+          .yca-section { padding: 3.5rem 1.25rem !important; }
+          .yca-registro { padding: 3.5rem 1.25rem !important; }
+          .yca-filosofia { padding: 4rem 1.25rem !important; }
+          .yca-jornada-wrap { padding: 3.5rem 1.25rem !important; }
+          .yca-razones { padding: 3.5rem 1.25rem !important; }
+          .yca-radio-group { flex-direction: column !important; }
+        }
+
+        /* ── iPhone SE / small 375px ── */
+        @media (max-width: 390px) {
+          .yca-hero-logo { flex: 0 0 72px !important; }
+          .yca-hero-logo svg { width: 52px !important; height: 52px !important; }
+          .yca-hero-title { font-size: clamp(2.3rem, 13vw, 3rem) !important; }
+          nav svg { width: 28px !important; height: 28px !important; }
+        }
+
+        /* ── Landscape mobile ── */
+        @media (max-height: 500px) and (orientation: landscape) {
+          .yca-hero { min-height: auto !important; }
+          .yca-hero-left { padding: 1.5rem 1.25rem !important; }
         }
       `}</style>
     </div>

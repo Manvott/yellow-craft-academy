@@ -23,7 +23,7 @@ export default function Navbar() {
       background: 'rgba(247,243,238,0.94)', backdropFilter: 'blur(12px)',
       borderBottom: '1px solid rgba(0,0,0,0.07)',
     }}>
-      <Link href={`/${locale}`} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
+      <Link href={`/${locale}/evento`} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
         <svg viewBox="0 0 560 560" xmlns="http://www.w3.org/2000/svg" style={{ width: 36, height: 36 }}>
           <circle cx="280" cy="280" r="268" fill="#F0EAE0"/>
           <circle cx="280" cy="92" r="32" fill="#F5C518"/>
@@ -37,6 +37,9 @@ export default function Navbar() {
       </Link>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+        <Link href={`/${locale}/evento`} style={{ fontSize: '0.72rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--gris)', textDecoration: 'none', fontFamily: 'DM Sans, sans-serif' }}>
+          {locale === 'es' ? 'Evento' : 'Event'}
+        </Link>
         <Link href={`/${locale}`} style={{ fontSize: '0.72rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--gris)', textDecoration: 'none', fontFamily: 'DM Sans, sans-serif' }}>
           {t('productos')}
         </Link>

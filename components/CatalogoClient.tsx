@@ -50,7 +50,7 @@ export default function CatalogoClient({ productos, proveedores }: Props) {
           {proveedores.length} proveedores · {productos.length} productos
         </p>
         <h2 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 'clamp(2rem,3vw,2.8rem)', fontWeight: 300, color: 'var(--negro)', lineHeight: 1.05, marginBottom: '2rem' }}>
-          Descubre el<br /><em style={{ fontStyle: 'italic', color: 'var(--gris)' }}>portfolio</em>
+          Descubre el<br /><em style={{ fontStyle: 'italic', color: 'var(--gris)' }}>selección de AVA</em>
         </h2>
         {/* Filtros */}
         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>

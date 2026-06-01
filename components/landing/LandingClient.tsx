@@ -218,7 +218,7 @@ function RegistroForm() {
 
       <select name="isla" required defaultValue="" style={{ ...S.input, cursor: 'pointer', color: 'var(--gris)' }}>
         <option value="" disabled>Tu isla *</option>
-        {['Lanzarote', 'Fuerteventura', 'Gran Canaria', 'Tenerife', 'La Palma', 'La Gomera', 'El Hierro', 'Fuera de Canarias'].map(i => (
+        {['Lanzarote', 'La Graciosa', 'Fuerteventura', 'Gran Canaria', 'Tenerife', 'La Palma', 'La Gomera', 'El Hierro', 'Fuera de Canarias'].map(i => (
           <option key={i} value={i} style={{ color: 'var(--grafito)' }}>{i}</option>
         ))}
       </select>
@@ -286,6 +286,26 @@ function RegistroForm() {
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" /><circle cx="12" cy="9" r="2.5" /></svg>
         Av. de las Playas · Puerto del Carmen · Lanzarote — Ver en Google Maps
       </a>
+
+      {/* Aceptación imagen y RGPD — obligatorio */}
+      <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.85rem', cursor: 'pointer', padding: '1rem 1.1rem', background: 'var(--blanco)', border: '1px solid var(--crema3)', marginTop: '0.5rem' }}>
+        <input
+          type="checkbox"
+          name="acepta_imagen_rgpd"
+          required
+          style={{ marginTop: '0.2rem', accentColor: 'var(--negro)', width: 16, height: 16, flexShrink: 0, cursor: 'pointer' }}
+        />
+        <div>
+          <p style={{ fontSize: '0.82rem', color: 'var(--negro)', fontWeight: 400, lineHeight: 1.5, marginBottom: '0.4rem' }}>
+            Acepto los términos de imagen, datos y participación <span style={{ color: 'var(--amarillo)', fontWeight: 700 }}>*</span>
+          </p>
+          <p style={{ fontSize: '0.7rem', color: 'var(--gris)', lineHeight: 1.65 }}>
+            Al marcar esta casilla autorizas a <strong style={{ color: 'var(--grafito)' }}>Grupo Azul Difusión Gastronómica S.L.U.</strong> a captar y usar tu imagen (foto/vídeo) durante Yellow Craft Academy el 15 de junio en Puerto del Carmen, para documentación del evento, redes sociales y materiales de AVA, sin límite geográfico ni temporal. Tus datos se tratan conforme al <strong style={{ color: 'var(--grafito)' }}>RGPD</strong> y la LOPDGDD, usándose únicamente para gestionar el evento y comunicaciones de AVA. Puedes ejercer tus derechos de acceso, rectificación, supresión y oposición en{' '}
+            <a href="mailto:hola@avagastrum.com" style={{ color: 'var(--negro)' }}>hola@avagastrum.com</a>.
+            {' '}Si no deseas que tu imagen sea utilizada, comunícalo por escrito antes del evento a esa misma dirección.
+          </p>
+        </div>
+      </label>
 
       {/* Aceptación canal WhatsApp — obligatorio */}
       <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.85rem', cursor: 'pointer', padding: '1rem 1.1rem', background: 'var(--blanco)', border: '1px solid var(--amarillo)', marginTop: '0.5rem' }}>

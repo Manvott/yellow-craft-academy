@@ -16,6 +16,7 @@ const schema = z.object({
   primera_vez: z.boolean(),
   cliente_ava: z.boolean(),
   bloques: z.array(z.string()).optional().nullable(),
+  acepta_imagen_rgpd: z.boolean(),
   acepta_whatsapp: z.boolean(),
 })
 
@@ -41,6 +42,7 @@ export async function registrarAsistente(formData: FormData) {
     primera_vez:   formData.get('primera_vez') === 'si',
     cliente_ava:   formData.get('cliente_ava') === 'si',
     bloques:       formData.getAll('bloques') as string[],
+    acepta_imagen_rgpd: formData.get('acepta_imagen_rgpd') === 'on',
     acepta_whatsapp: formData.get('whatsapp_canal') === 'on',
   }
 

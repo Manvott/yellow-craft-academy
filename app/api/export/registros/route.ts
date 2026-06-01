@@ -31,6 +31,7 @@ export async function GET(request: NextRequest) {
     'Instagram': r.instagram ?? '',
     'Primera vez en evento AVA': r.primera_vez ? 'Sí' : 'No',
     'Cliente AVA': r.cliente_ava ? 'Sí' : 'No',
+    'Acepta imagen y RGPD': r.acepta_imagen_rgpd ? 'Sí' : 'No',
     'Acepta canal WhatsApp': r.acepta_whatsapp ? 'Sí' : 'No',
     'Añadido a lista WA': r.wa_confirmado ? 'Sí' : 'No',
     'Bloques seleccionados': (r.bloques ?? []).join(' | '),

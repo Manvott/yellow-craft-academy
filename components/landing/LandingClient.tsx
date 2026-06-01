@@ -57,11 +57,14 @@ function RegistroForm() {
   const [isPending, startTransition] = useTransition()
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState('')
+  const [nombreInscritos, setNombreInscritos] = useState('')
   const formRef = useRef<HTMLFormElement>(null)
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const fd = new FormData(e.currentTarget)
+    const nombre = fd.get('nombre') as string
+    setNombreInscritos(nombre)
     startTransition(async () => {
       const result = await registrarAsistente(fd)
       if (result.ok) {
@@ -73,9 +76,8 @@ function RegistroForm() {
   }
 
   if (success) {
-    const nombre = formRef.current?.querySelector<HTMLInputElement>('[name="nombre"]')?.value ?? ''
-    const waText = encodeURIComponent(`Hola, me acabo de inscribir en Yellow Craft Academy (15 jun). Soy ${nombre}. Confirmo que acepto recibir información del evento por WhatsApp.`)
-    const waUrl = `https://wa.me/34689307818?text=${waText}`
+    const waText = encodeURIComponent(`Hola, me acabo de inscribir en Yellow Craft Academy (15 jun). Soy ${nombreInscritos}. Confirmo que acepto recibir información del evento por WhatsApp.`)
+    const waUrl = `https://wa.me/34608649038?text=${waText}`
 
     return (
       <div style={{ padding: '2.5rem 0' }}>

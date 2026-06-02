@@ -29,6 +29,7 @@ export default async function AdminLayout({
     { href: `/${locale}/admin/proveedores`, label: 'Proveedores' },
     { href: `/${locale}/admin/productos`, label: 'Productos' },
     { href: `/${locale}/admin/pildoras`, label: 'Píldoras' },
+    { href: `/${locale}/admin/ajustes`, label: '⚙ Ajustes' },
   ]
 
   return (

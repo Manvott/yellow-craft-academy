@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
-const MAX_ADMIN_USERS = 3 // 1 principal + 2 adicionales
+const MAX_ADMIN_USERS = 5 // 1 principal + 4 adicionales
 
 export async function POST(request: NextRequest) {
   // Verificar que quien llama es admin autenticado

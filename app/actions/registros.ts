@@ -64,14 +64,32 @@ export async function registrarAsistente(formData: FormData) {
       ...result.data,
       ip_origen: ip,
     })
-    if (error) throw error
+
+    if (error) {
+      // Detectar violación de restricción única (código 23505 en PostgreSQL)
+      if (error.code === '23505') {
+        const esEmail    = error.message?.includes('email')
+        const esTelefono = error.message?.includes('telefono')
+        if (esEmail && esTelefono) {
+          return { ok: false, error: 'Ya existe una inscripción con ese email y teléfono. Si crees que es un error escríbenos a marketing@avaseleccion.com' }
+        }
+        if (esEmail) {
+          return { ok: false, error: 'Este correo electrónico ya tiene una plaza reservada. Si crees que es un error escríbenos a marketing@avaseleccion.com' }
+        }
+        if (esTelefono) {
+          return { ok: false, error: 'Este número de teléfono ya tiene una plaza reservada. Si crees que es un error escríbenos a marketing@avaseleccion.com' }
+        }
+        return { ok: false, error: 'Ya existe una inscripción con estos datos. Si crees que es un error escríbenos a marketing@avaseleccion.com' }
+      }
+      throw error
+    }
 
     // Enviar WhatsApp de confirmación (no bloquea el registro si falla)
     enviarConfirmacionPlaza({
-      nombre:  result.data.nombre,
+      nombre:   result.data.nombre,
       telefono: result.data.telefono,
-      isla:    result.data.isla,
-      empresa: result.data.empresa,
+      isla:     result.data.isla,
+      empresa:  result.data.empresa,
     }).catch(e => console.error('[WA] Error en envío async:', e))
 
     return { ok: true }

@@ -89,6 +89,7 @@ function RegistroForm() {
   const [error, setError] = useState('')
   const [nombreInscrito, setNombreInscrito] = useState('')
   const [islaInscrito, setIslaInscrito] = useState('')
+  const [empresaInscrito, setEmpresaInscrito] = useState('')
   const formRef = useRef<HTMLFormElement>(null)
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -96,6 +97,7 @@ function RegistroForm() {
     const fd = new FormData(e.currentTarget)
     setNombreInscrito(fd.get('nombre') as string)
     setIslaInscrito(fd.get('isla') as string || '')
+    setEmpresaInscrito(fd.get('empresa') as string || '')
     startTransition(async () => {
       const result = await registrarAsistente(fd)
       if (result.ok) {
@@ -107,7 +109,7 @@ function RegistroForm() {
   }
 
   if (success) {
-    const etiqueta = islaInscrito ? `${nombreInscrito} - ${islaInscrito}` : nombreInscrito
+    const etiqueta = [nombreInscrito, islaInscrito, empresaInscrito].filter(Boolean).join(' - ')
     const waText = encodeURIComponent(`Hola, me acabo de inscribir en Yellow Craft Academy (15 jun). Soy ${etiqueta}. Confirmo que acepto recibir información del evento por WhatsApp.`)
     const waUrl = `https://wa.me/34608649038?text=${waText}`
 

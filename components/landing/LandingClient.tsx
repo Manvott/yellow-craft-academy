@@ -87,6 +87,7 @@ function RegistroForm() {
   const [isPending, startTransition] = useTransition()
   // paso: null = formulario | 'canal' = unirse al canal | 'plaza' = plaza confirmada
   const [paso, setPaso] = useState<null | 'canal' | 'plaza'>(null)
+  const [haPulsadoWA, setHaPulsadoWA] = useState(false)
   const [error, setError] = useState('')
   const [nombreInscrito, setNombreInscrito] = useState('')
   const [islaInscrito, setIslaInscrito] = useState('')
@@ -144,16 +145,18 @@ function RegistroForm() {
             href="https://whatsapp.com/channel/0029Vb7xaQO3LdQZWshdfx2R"
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => setHaPulsadoWA(true)}
             style={{
               display: 'inline-flex', alignItems: 'center', gap: '0.75rem',
-              background: '#25D366', color: '#fff',
+              background: haPulsadoWA ? '#1aab52' : '#25D366', color: '#fff',
               padding: '1rem 1.75rem',
               fontSize: '0.82rem', fontWeight: 500, letterSpacing: '0.05em',
               textDecoration: 'none', fontFamily: 'DM Sans, sans-serif',
+              transition: 'background 0.2s',
             }}
           >
             {WA_ICON}
-            Seguir canal Yellow Craft Academy
+            {haPulsadoWA ? '✓ Canal abierto — vuelve aquí' : 'Seguir canal Yellow Craft Academy'}
           </a>
           <p style={{ fontSize: '0.68rem', color: 'rgba(247,243,238,0.35)', marginTop: '0.75rem', lineHeight: 1.5 }}>
             Se abre WhatsApp → pulsa <strong style={{ color: 'rgba(247,243,238,0.7)' }}>Seguir</strong> → vuelve aquí
@@ -166,17 +169,28 @@ function RegistroForm() {
             Después de pulsar <strong>Seguir</strong> en WhatsApp, confirma tu plaza aquí:
           </p>
           <button
-            onClick={() => setPaso('plaza')}
+            onClick={() => haPulsadoWA && setPaso('plaza')}
+            disabled={!haPulsadoWA}
+            title={!haPulsadoWA ? 'Primero únete al canal de WhatsApp' : undefined}
             style={{
-              background: 'var(--negro)', color: 'var(--crema)',
+              background: haPulsadoWA ? 'var(--negro)' : 'var(--crema3)',
+              color: haPulsadoWA ? 'var(--crema)' : 'var(--gris)',
               border: 'none', padding: '1rem 2rem',
               fontSize: '0.75rem', letterSpacing: '0.2em', textTransform: 'uppercase',
-              fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif',
+              fontWeight: 500,
+              cursor: haPulsadoWA ? 'pointer' : 'not-allowed',
+              fontFamily: 'DM Sans, sans-serif',
               width: '100%',
+              transition: 'background 0.3s, color 0.3s',
             }}
           >
-            ✓ Ya me uní al canal — Confirmar plaza
+            {haPulsadoWA ? '✓ Ya me uní al canal — Confirmar plaza' : '🔒 Únete primero al canal de WhatsApp'}
           </button>
+          {!haPulsadoWA && (
+            <p style={{ fontSize: '0.7rem', color: '#dc2626', marginTop: '0.5rem', textAlign: 'center' }}>
+              Debes pulsar el botón verde y unirte al canal antes de confirmar.
+            </p>
+          )}
         </div>
       </div>
     )

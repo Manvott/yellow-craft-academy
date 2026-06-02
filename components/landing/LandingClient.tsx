@@ -44,7 +44,7 @@ const PONENTES = [
     foto: '/ponentes/oscar-final.jpg',
     ig: null,
     premio: 'Best Rum Bartender del Mundo 2024 — The Ultimate Awards',
-    resultado: 'Vas a entender cómo el territorio se convierte en argumento de venta — y cómo aplicar esa lógica a tu producto, sea un cóctel, un pan o un plato.',
+    resultado: 'Vanguardia y rentabilidad de la coctelería en la restauración. Gastronomía circular. Porque un cóctel aperitivo, en maridaje, incorporado en el plato o de postre, nos hace atractivos para los comensales y crea una experiencia.',
     para: 'Una ponencia sobre identidad, narrativa y producto. Más transversal de lo que parece.',
     hora: '16:30 – 17:30h',
   },

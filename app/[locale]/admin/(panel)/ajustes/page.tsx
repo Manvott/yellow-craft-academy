@@ -1,15 +1,7 @@
 import AjustesAdmin from '@/components/admin/AjustesAdmin'
 import GestionUsuarios from '@/components/admin/GestionUsuarios'
-import { createClient } from '@/lib/supabase/server'
 
-export default async function AjustesPage() {
-  let usuarios: any[] = []
-  try {
-    const supabase = await createClient()
-    const { data } = await supabase.from('admin_roles').select('*').order('created_at')
-    usuarios = data ?? []
-  } catch {}
-
+export default function AjustesPage() {
   return (
     <div style={{ maxWidth: 700 }}>
       <p style={{ fontSize: '0.6rem', letterSpacing: '0.4em', textTransform: 'uppercase', color: 'var(--gris)', marginBottom: '0.5rem', fontFamily: 'DM Sans, sans-serif' }}>
@@ -20,7 +12,7 @@ export default async function AjustesPage() {
       </h1>
       <AjustesAdmin />
       <div style={{ marginTop: '2rem' }}>
-        <GestionUsuarios usuarios={usuarios} />
+        <GestionUsuarios />
       </div>
     </div>
   )

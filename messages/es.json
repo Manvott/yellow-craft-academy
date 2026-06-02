@@ -1,6 +1,6 @@
 {
   "nav": {
-    "productos": "Productos",
+    "productos": "Marcas",
     "pildoras": "Píldoras de Conocimiento",
     "admin": "Admin"
   },
@@ -9,7 +9,7 @@
     "subtitle": "Descubre los mejores productos para tu negocio HORECA",
     "event_date": "15 de Junio, 2026",
     "event_location": "Lanzarote, Islas Canarias",
-    "all_suppliers": "Todos los proveedores",
+    "all_suppliers": "Todas las marcas",
     "all_categories": "Todas las categorías",
     "search_placeholder": "Buscar producto...",
     "request_info": "Solicitar información",
@@ -19,11 +19,11 @@
     "price_from": "Precio orientativo",
     "unit": "Unidad de venta",
     "category": "Categoría",
-    "supplier": "Proveedor"
+    "supplier": "Marca"
   },
   "solicitud": {
     "title": "Solicitar información",
-    "subtitle": "Te ponemos en contacto con el proveedor",
+    "subtitle": "Te ponemos en contacto con la marca",
     "nombre": "Nombre y apellidos",
     "email": "Correo electrónico",
     "telefono": "Teléfono",
@@ -32,7 +32,7 @@
     "cargo": "Cargo",
     "mensaje": "Mensaje (opcional)",
     "submit": "Enviar solicitud",
-    "success": "¡Solicitud enviada! El proveedor se pondrá en contacto contigo.",
+    "success": "¡Solicitud enviada! La marca se pondrá en contacto contigo.",
     "error": "Error al enviar. Inténtalo de nuevo.",
     "required": "Campo obligatorio",
     "islas": {
@@ -64,7 +64,7 @@
     "dashboard": {
       "title": "Panel de administración",
       "solicitudes": "Solicitudes recibidas",
-      "proveedores": "Proveedores",
+      "proveedores": "Marcas",
       "productos": "Productos",
       "pildoras": "Píldoras"
     }

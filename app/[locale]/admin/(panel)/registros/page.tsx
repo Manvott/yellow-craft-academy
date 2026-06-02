@@ -40,6 +40,12 @@ export default async function RegistrosPage() {
     })
   })
 
+  const islasCount: Record<string, number> = {}
+  registros.forEach(r => {
+    const isla = r.isla ?? 'Sin especificar'
+    islasCount[isla] = (islasCount[isla] ?? 0) + 1
+  })
+
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem' }}>
@@ -73,22 +79,43 @@ export default async function RegistrosPage() {
         </a>
       </div>
 
-      {/* Resumen por bloques */}
-      {Object.keys(bloquesCount).length > 0 && (
-        <div style={{ background: 'var(--blanco)', border: '1px solid var(--crema3)', padding: '1.25rem 1.5rem', marginBottom: '2rem' }}>
+      {/* Resúmenes: bloques + islas en paralelo */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
+
+        {/* Por bloque */}
+        <div style={{ background: 'var(--blanco)', border: '1px solid var(--crema3)', padding: '1.25rem 1.5rem' }}>
           <p style={{ fontSize: '0.6rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--gris)', marginBottom: '1rem', fontFamily: 'DM Sans, sans-serif' }}>
             Asistencia prevista por bloque
           </p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
-            {Object.entries(bloquesCount).sort((a, b) => b[1] - a[1]).map(([bloque, count]) => (
-              <div key={bloque} style={{ background: 'var(--crema2)', padding: '0.5rem 1rem', display: 'flex', gap: '0.75rem', alignItems: 'center', border: '1px solid var(--crema3)' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem' }}>
+            {Object.keys(bloquesCount).length === 0 ? (
+              <span style={{ fontSize: '0.78rem', color: 'var(--gris-l)', fontFamily: 'DM Sans, sans-serif' }}>Sin datos</span>
+            ) : Object.entries(bloquesCount).sort((a, b) => b[1] - a[1]).map(([bloque, count]) => (
+              <div key={bloque} style={{ background: 'var(--crema2)', padding: '0.5rem 0.9rem', display: 'flex', gap: '0.6rem', alignItems: 'center', border: '1px solid var(--crema3)' }}>
                 <span style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1.4rem', fontWeight: 600, color: 'var(--negro)' }}>{count}</span>
-                <span style={{ fontSize: '0.72rem', color: 'var(--gris)', fontFamily: 'DM Sans, sans-serif' }}>{bloque.split('·')[0].trim()}</span>
+                <span style={{ fontSize: '0.68rem', color: 'var(--gris)', fontFamily: 'DM Sans, sans-serif' }}>{bloque.split('·')[0].trim()}</span>
               </div>
             ))}
           </div>
         </div>
-      )}
+
+        {/* Por isla */}
+        <div style={{ background: 'var(--blanco)', border: '1px solid var(--crema3)', padding: '1.25rem 1.5rem' }}>
+          <p style={{ fontSize: '0.6rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--gris)', marginBottom: '1rem', fontFamily: 'DM Sans, sans-serif' }}>
+            Inscritos por isla
+          </p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem' }}>
+            {Object.keys(islasCount).length === 0 ? (
+              <span style={{ fontSize: '0.78rem', color: 'var(--gris-l)', fontFamily: 'DM Sans, sans-serif' }}>Sin datos</span>
+            ) : Object.entries(islasCount).sort((a, b) => b[1] - a[1]).map(([isla, count]) => (
+              <div key={isla} style={{ background: count === Math.max(...Object.values(islasCount)) ? 'var(--amarillo)' : 'var(--crema2)', padding: '0.5rem 0.9rem', display: 'flex', gap: '0.6rem', alignItems: 'center', border: '1px solid var(--crema3)' }}>
+                <span style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1.4rem', fontWeight: 600, color: 'var(--negro)' }}>{count}</span>
+                <span style={{ fontSize: '0.68rem', color: 'var(--negro)', fontFamily: 'DM Sans, sans-serif', fontWeight: 500 }}>{isla}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
       <RegistrosAdmin registros={registros} />
     </div>

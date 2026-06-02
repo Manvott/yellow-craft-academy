@@ -270,9 +270,9 @@ function RegistroForm() {
   return (
     <form ref={formRef} onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
       <input name="nombre" placeholder="Nombre y apellidos" required style={S.input} />
-      <input name="empresa" placeholder="Empresa o proyecto" style={S.input} />
-      <select name="perfil" defaultValue="" style={{ ...S.input, cursor: 'pointer', color: 'var(--gris)' }}>
-        <option value="" disabled>Tu perfil profesional</option>
+      <input name="empresa" placeholder="Empresa o proyecto *" required style={S.input} />
+      <select name="perfil" required defaultValue="" style={{ ...S.input, cursor: 'pointer', color: 'var(--gris)' }}>
+        <option value="" disabled>Tu perfil profesional *</option>
         {['Chef / Cocinero', 'Pastelero / Obrador', 'Hotel / Hospitality', 'Restaurante / Gastronomía', 'Specialty Coffee / Brunch', 'Consultor / Asesor gastronómico', 'Otro'].map(o => (
           <option key={o} value={o}>{o}</option>
         ))}
@@ -313,7 +313,7 @@ function RegistroForm() {
         ))}
       </select>
 
-      <input name="cargo" placeholder="Cargo que ocupas" style={S.input} />
+      <input name="cargo" placeholder="Cargo que ocupas *" required style={S.input} />
 
       <input
         name="instagram"

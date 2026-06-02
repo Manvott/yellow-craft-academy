@@ -3,28 +3,33 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
-import type { ProductoFicha } from '@/app/[locale]/admin/(panel)/fichas/page'
+import type { ProductoFicha, Combinacion } from '@/app/[locale]/admin/(panel)/fichas/page'
 import type { Proveedor } from '@/lib/types'
 
 interface Props { productos: ProductoFicha[]; proveedores: Proveedor[] }
 
+const UNIDADES = ['g', 'kg', 'ml', 'l', 'cl', 'oz', 'ud', 'ración']
+
 const emptyForm = {
   proveedor_id: '', nombre: '', descripcion: '', imagen_url: '',
-  categoria: '', precio_orientativo: '', unidad_venta: '',
-  ficha_tecnica_url: '', producto_combinar: '',
-  tiene_cargo: false, tipo_servicio: 'ambos' as 'desayuno' | 'tardeo' | 'ambos',
+  categoria: '', precio_base: '', tiene_cargo: false,
+  igic_pct: '', coste_aduana: '', coste_logistica: '',
+  tipo_servicio: 'ambos' as 'desayuno' | 'tardeo' | 'ambos',
   disponible: true, publicado_catalogo: false, orden: 0,
 }
 
+const emptyComb = (): Combinacion => ({ nombre: '', peso: '', unidad: 'g', orden: 0 })
+
 const S = {
-  input: { width: '100%', background: 'var(--crema)', border: '1px solid var(--crema3)', color: 'var(--grafito)', padding: '0.75rem 0.9rem', fontFamily: 'DM Sans, sans-serif', fontSize: '0.82rem', outline: 'none' } as React.CSSProperties,
+  input: { width: '100%', background: 'var(--crema)', border: '1px solid var(--crema3)', color: 'var(--grafito)', padding: '0.7rem 0.9rem', fontFamily: 'DM Sans, sans-serif', fontSize: '0.82rem', outline: 'none' } as React.CSSProperties,
   label: { fontSize: '0.6rem', letterSpacing: '0.25em', textTransform: 'uppercase' as const, color: 'var(--gris)', display: 'block', marginBottom: '0.3rem', fontFamily: 'DM Sans, sans-serif' },
+  section: { background: 'var(--crema)', padding: '1rem 1.25rem', marginBottom: '1rem', borderLeft: '3px solid var(--negro)' } as React.CSSProperties,
 }
 
 function Toggle({ on, label, onToggle, color = 'var(--negro)' }: { on: boolean; label: string; onToggle: () => void; color?: string }) {
   return (
-    <button onClick={onToggle} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.45rem 0.9rem', border: `1px solid ${on ? color : 'var(--crema3)'}`, background: on ? color : 'var(--crema)', cursor: 'pointer', fontSize: '0.7rem', color: on ? 'var(--crema)' : 'var(--gris)', fontFamily: 'DM Sans, sans-serif', transition: 'all 0.2s' }}>
-      <span style={{ width: 8, height: 8, borderRadius: '50%', background: on ? 'var(--amarillo)' : 'var(--gris-l)', display: 'inline-block' }} />
+    <button type="button" onClick={onToggle} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.45rem 0.9rem', border: `1px solid ${on ? color : 'var(--crema3)'}`, background: on ? color : 'var(--crema)', cursor: 'pointer', fontSize: '0.7rem', color: on ? 'var(--crema)' : 'var(--gris)', fontFamily: 'DM Sans, sans-serif', transition: 'all 0.2s' }}>
+      <span style={{ width: 8, height: 8, borderRadius: '50%', background: on ? 'var(--amarillo)' : 'var(--gris-l)', display: 'inline-block', flexShrink: 0 }} />
       {label}
     </button>
   )
@@ -33,25 +38,125 @@ function Toggle({ on, label, onToggle, color = 'var(--negro)' }: { on: boolean; 
 export default function FichasManager({ productos, proveedores }: Props) {
   const router = useRouter()
   const [form, setForm] = useState<typeof emptyForm>(emptyForm)
+  const [combinaciones, setCombinaciones] = useState<Combinacion[]>([emptyComb(), emptyComb(), emptyComb(), emptyComb(), emptyComb()])
+  const [pdfFile, setPdfFile] = useState<File | null>(null)
+  const [pdfActual, setPdfActual] = useState<string>('')
   const [editing, setEditing] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState('')
   const [filtro, setFiltro] = useState<'todos' | 'publicados' | 'borrador'>('todos')
   const [showForm, setShowForm] = useState(false)
 
-  const f = (key: keyof typeof emptyForm) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const f = (key: keyof typeof emptyForm) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setForm(prev => ({ ...prev, [key]: e.target.value }))
+
+  function updateComb(idx: number, field: keyof Combinacion, val: string) {
+    setCombinaciones(prev => prev.map((c, i) => i === idx ? { ...c, [field]: val } : c))
   }
 
+  function addComb() {
+    setCombinaciones(prev => [...prev, emptyComb()])
+  }
+
+  function removeComb(idx: number) {
+    if (combinaciones.length <= 1) return
+    setCombinaciones(prev => prev.filter((_, i) => i !== idx))
+  }
+
+  // Calcular coste total
+  const precioBase   = parseFloat(form.precio_base) || 0
+  const igic         = precioBase * ((parseFloat(form.igic_pct) || 0) / 100)
+  const aduana       = parseFloat(form.coste_aduana) || 0
+  const logistica    = parseFloat(form.coste_logistica) || 0
+  const costeTotal   = precioBase + igic + aduana + logistica
+
   async function save() {
+    if (!form.nombre || !form.proveedor_id) return
     setLoading(true)
+    setUploadProgress('')
     const supabase = createClient()
-    const data = { ...form, precio_orientativo: form.precio_orientativo ? parseFloat(form.precio_orientativo) : null, orden: Number(form.orden) }
+
+    // Subir PDF si hay uno nuevo
+    let fichaUrl = pdfActual
+    if (pdfFile) {
+      setUploadProgress('Subiendo PDF...')
+      const ext = pdfFile.name.split('.').pop()
+      const path = `${Date.now()}-${form.nombre.replace(/\s+/g, '-').toLowerCase()}.${ext}`
+      const { data: uploadData, error: uploadErr } = await supabase.storage
+        .from('fichas-tecnicas')
+        .upload(path, pdfFile, { upsert: true })
+      if (uploadErr) {
+        setUploadProgress(`Error al subir PDF: ${uploadErr.message}`)
+        setLoading(false)
+        return
+      }
+      const { data: { publicUrl } } = supabase.storage.from('fichas-tecnicas').getPublicUrl(uploadData.path)
+      fichaUrl = publicUrl
+      setUploadProgress('')
+    }
+
+    const data = {
+      proveedor_id: form.proveedor_id,
+      nombre: form.nombre,
+      descripcion: form.descripcion || null,
+      imagen_url: form.imagen_url || null,
+      categoria: form.categoria || null,
+      ficha_tecnica_url: fichaUrl || null,
+      precio_base: form.tiene_cargo && form.precio_base ? parseFloat(form.precio_base) : null,
+      tiene_cargo: form.tiene_cargo,
+      igic_pct: form.tiene_cargo && form.igic_pct ? parseFloat(form.igic_pct) : 0,
+      coste_aduana: form.tiene_cargo && form.coste_aduana ? parseFloat(form.coste_aduana) : 0,
+      coste_logistica: form.tiene_cargo && form.coste_logistica ? parseFloat(form.coste_logistica) : 0,
+      tipo_servicio: form.tipo_servicio,
+      disponible: form.disponible,
+      publicado_catalogo: form.publicado_catalogo,
+      orden: Number(form.orden),
+    }
+
+    let productoId = editing
     if (editing) {
       await supabase.from('productos').update(data).eq('id', editing)
+      await supabase.from('producto_combinaciones').delete().eq('producto_id', editing)
     } else {
-      await supabase.from('productos').insert(data)
+      const { data: nuevo } = await supabase.from('productos').insert(data).select('id').single()
+      productoId = nuevo?.id ?? null
     }
-    setForm(emptyForm); setEditing(null); setLoading(false); setShowForm(false); router.refresh()
+
+    // Guardar combinaciones no vacías
+    const combsValidas = combinaciones
+      .filter(c => c.nombre.trim())
+      .map((c, i) => ({ producto_id: productoId, nombre: c.nombre, peso: c.peso ? parseFloat(c.peso) : null, unidad: c.unidad, orden: i }))
+    if (combsValidas.length > 0 && productoId) {
+      await supabase.from('producto_combinaciones').insert(combsValidas)
+    }
+
+    resetForm(); setLoading(false); router.refresh()
+  }
+
+  function resetForm() {
+    setForm(emptyForm); setEditing(null); setShowForm(false)
+    setCombinaciones([emptyComb(), emptyComb(), emptyComb(), emptyComb(), emptyComb()])
+    setPdfFile(null); setPdfActual('')
+  }
+
+  function startEdit(p: ProductoFicha) {
+    setForm({
+      proveedor_id: p.proveedor_id, nombre: p.nombre, descripcion: p.descripcion ?? '',
+      imagen_url: p.imagen_url ?? '', categoria: p.categoria ?? '',
+      precio_base: p.precio_base?.toString() ?? '', tiene_cargo: p.tiene_cargo ?? false,
+      igic_pct: p.igic_pct?.toString() ?? '', coste_aduana: p.coste_aduana?.toString() ?? '',
+      coste_logistica: p.coste_logistica?.toString() ?? '',
+      tipo_servicio: p.tipo_servicio ?? 'ambos',
+      disponible: p.disponible, publicado_catalogo: p.publicado_catalogo ?? false, orden: p.orden,
+    })
+    const combs = (p.combinaciones ?? []).length > 0
+      ? [...(p.combinaciones ?? []).map(c => ({ ...c, peso: c.peso?.toString() ?? '', orden: c.orden })),
+         ...Array(Math.max(0, 5 - (p.combinaciones?.length ?? 0))).fill(null).map(emptyComb)]
+      : [emptyComb(), emptyComb(), emptyComb(), emptyComb(), emptyComb()]
+    setCombinaciones(combs)
+    setPdfActual(p.ficha_tecnica_url ?? '')
+    setEditing(p.id); setShowForm(true)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   async function toggleCatalogo(id: string, current: boolean) {
@@ -67,93 +172,50 @@ export default function FichasManager({ productos, proveedores }: Props) {
     router.refresh()
   }
 
-  function startEdit(p: ProductoFicha) {
-    setForm({
-      proveedor_id: p.proveedor_id, nombre: p.nombre, descripcion: p.descripcion ?? '',
-      imagen_url: p.imagen_url ?? '', categoria: p.categoria ?? '',
-      precio_orientativo: p.precio_orientativo?.toString() ?? '', unidad_venta: p.unidad_venta ?? '',
-      ficha_tecnica_url: p.ficha_tecnica_url ?? '', producto_combinar: p.producto_combinar ?? '',
-      tiene_cargo: p.tiene_cargo ?? false, tipo_servicio: p.tipo_servicio ?? 'ambos',
-      disponible: p.disponible, publicado_catalogo: p.publicado_catalogo ?? false, orden: p.orden,
-    })
-    setEditing(p.id); setShowForm(true)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
-  const filtered = productos.filter(p => {
-    if (filtro === 'publicados') return p.publicado_catalogo
-    if (filtro === 'borrador') return !p.publicado_catalogo
-    return true
-  })
-
-  const tagServicio = (t: string) => t === 'desayuno' ? { bg: '#FEF9C3', color: '#854D0E' } : t === 'tardeo' ? { bg: '#EDE9FE', color: '#5B21B6' } : { bg: 'var(--crema2)', color: 'var(--gris)' }
+  const filtered = productos.filter(p =>
+    filtro === 'publicados' ? p.publicado_catalogo :
+    filtro === 'borrador' ? !p.publicado_catalogo : true
+  )
 
   return (
     <div>
-      {/* Botón nuevo / formulario */}
       <div style={{ marginBottom: '1.5rem' }}>
-        <button onClick={() => { setShowForm(!showForm); setEditing(null); setForm(emptyForm) }}
+        <button type="button" onClick={() => { setShowForm(!showForm); if (showForm) resetForm() }}
           style={{ background: showForm ? 'var(--crema2)' : 'var(--negro)', color: showForm ? 'var(--gris)' : 'var(--crema)', border: '1px solid var(--crema3)', padding: '0.65rem 1.4rem', fontSize: '0.7rem', letterSpacing: '0.2em', textTransform: 'uppercase', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
           {showForm ? '✕ Cancelar' : '+ Nueva ficha'}
         </button>
       </div>
 
       {showForm && (
-        <div style={{ background: 'var(--blanco)', border: '2px solid var(--negro)', padding: '1.75rem', marginBottom: '2rem' }}>
-          <h2 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1.4rem', fontWeight: 300, color: 'var(--negro)', marginBottom: '1.5rem' }}>
+        <div style={{ background: 'var(--blanco)', border: '2px solid var(--negro)', padding: '2rem', marginBottom: '2rem' }}>
+          <h2 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1.5rem', fontWeight: 300, marginBottom: '1.75rem' }}>
             {editing ? 'Editar ficha' : 'Nueva ficha de producto'}
           </h2>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-            {/* Proveedor */}
+            {/* Marca */}
             <div style={{ gridColumn: '1/-1' }}>
-              <label style={S.label}>Proveedor / Marca *</label>
+              <label style={S.label}>Marca / Proveedor *</label>
               <select value={form.proveedor_id} onChange={f('proveedor_id')} style={{ ...S.input, cursor: 'pointer' }}>
-                <option value="">Seleccionar marca...</option>
+                <option value="">Seleccionar...</option>
                 {proveedores.map(p => <option key={p.id} value={p.id}>{p.nombre}</option>)}
               </select>
             </div>
 
-            {/* Nombre */}
-            <div style={{ gridColumn: '1/-1' }}>
+            {/* Nombre + Categoría */}
+            <div>
               <label style={S.label}>Nombre del producto *</label>
-              <input value={form.nombre} onChange={f('nombre')} style={S.input} placeholder="Nombre del producto" />
+              <input value={form.nombre} onChange={f('nombre')} style={S.input} placeholder="Nombre" />
             </div>
-
-            {/* Descripción */}
-            <div style={{ gridColumn: '1/-1' }}>
-              <label style={S.label}>Descripción</label>
-              <textarea value={form.descripcion} onChange={f('descripcion') as any} rows={2} style={{ ...S.input, resize: 'none' }} placeholder="Descripción breve" />
-            </div>
-
-            {/* Ficha técnica */}
-            <div style={{ gridColumn: '1/-1' }}>
-              <label style={S.label}>Ficha técnica (URL o texto)</label>
-              <input value={form.ficha_tecnica_url} onChange={f('ficha_tecnica_url')} style={S.input} placeholder="https://... o descripción técnica" />
-            </div>
-
-            {/* Producto a combinar */}
-            <div style={{ gridColumn: '1/-1' }}>
-              <label style={S.label}>Producto a combinar</label>
-              <input value={form.producto_combinar} onChange={f('producto_combinar')} style={S.input} placeholder="Ej: Maridaje con pan de centeno" />
-            </div>
-
-            {/* Categoría */}
             <div>
               <label style={S.label}>Categoría</label>
               <input value={form.categoria} onChange={f('categoria')} style={S.input} placeholder="Bebida, Alimento..." />
             </div>
 
-            {/* Precio */}
-            <div>
-              <label style={S.label}>Precio orientativo (€)</label>
-              <input type="number" value={form.precio_orientativo} onChange={f('precio_orientativo')} style={S.input} placeholder="0.00" />
-            </div>
-
-            {/* Unidad */}
-            <div>
-              <label style={S.label}>Unidad de venta</label>
-              <input value={form.unidad_venta} onChange={f('unidad_venta')} style={S.input} placeholder="Botella, Caja 6u..." />
+            {/* Descripción */}
+            <div style={{ gridColumn: '1/-1' }}>
+              <label style={S.label}>Descripción</label>
+              <textarea value={form.descripcion} onChange={f('descripcion') as any} rows={2} style={{ ...S.input, resize: 'none' }} />
             </div>
 
             {/* Imagen */}
@@ -162,108 +224,208 @@ export default function FichasManager({ productos, proveedores }: Props) {
               <input value={form.imagen_url} onChange={f('imagen_url')} style={S.input} placeholder="https://..." />
             </div>
 
-            {/* Tipo servicio */}
-            <div style={{ gridColumn: '1/-1' }}>
-              <label style={S.label}>¿Para qué servicio?</label>
-              <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.3rem' }}>
+            {/* Servicio */}
+            <div>
+              <label style={S.label}>Servicio</label>
+              <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.3rem' }}>
                 {(['desayuno', 'tardeo', 'ambos'] as const).map(t => (
-                  <button key={t} onClick={() => setForm(p => ({ ...p, tipo_servicio: t }))}
-                    style={{ padding: '0.5rem 1.2rem', border: `2px solid ${form.tipo_servicio === t ? 'var(--negro)' : 'var(--crema3)'}`, background: form.tipo_servicio === t ? 'var(--negro)' : 'var(--blanco)', color: form.tipo_servicio === t ? 'var(--crema)' : 'var(--gris)', cursor: 'pointer', fontSize: '0.72rem', letterSpacing: '0.1em', textTransform: 'uppercase', fontFamily: 'DM Sans, sans-serif', transition: 'all 0.2s' }}>
-                    {t === 'desayuno' ? '🌅 Desayuno' : t === 'tardeo' ? '🌇 Tardeo' : '⭐ Ambos'}
+                  <button key={t} type="button" onClick={() => setForm(p => ({ ...p, tipo_servicio: t }))}
+                    style={{ padding: '0.45rem 0.9rem', border: `2px solid ${form.tipo_servicio === t ? 'var(--negro)' : 'var(--crema3)'}`, background: form.tipo_servicio === t ? 'var(--negro)' : 'var(--blanco)', color: form.tipo_servicio === t ? 'var(--crema)' : 'var(--gris)', cursor: 'pointer', fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: 'DM Sans, sans-serif' }}>
+                    {t}
                   </button>
                 ))}
               </div>
             </div>
-
-            {/* Checkboxes */}
-            <div style={{ gridColumn: '1/-1', display: 'flex', gap: '0.75rem', flexWrap: 'wrap', paddingTop: '0.5rem', borderTop: '1px solid var(--crema3)' }}>
-              <Toggle on={form.tiene_cargo} label="Tiene cargo" onToggle={() => setForm(p => ({ ...p, tiene_cargo: !p.tiene_cargo }))} />
-              <Toggle on={form.disponible} label="Disponible" onToggle={() => setForm(p => ({ ...p, disponible: !p.disponible }))} />
-              <Toggle on={form.publicado_catalogo} label="✓ Publicar al catálogo" onToggle={() => setForm(p => ({ ...p, publicado_catalogo: !p.publicado_catalogo, disponible: !p.publicado_catalogo ? true : p.disponible }))} color="#16a34a" />
-            </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem' }}>
-            <button onClick={save} disabled={loading || !form.nombre || !form.proveedor_id}
-              style={{ background: 'var(--negro)', color: 'var(--crema)', border: 'none', padding: '0.85rem 2rem', fontSize: '0.72rem', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', opacity: loading || !form.nombre || !form.proveedor_id ? 0.5 : 1 }}>
-              {loading ? 'Guardando...' : editing ? 'Actualizar ficha' : 'Crear ficha'}
-            </button>
-            {form.publicado_catalogo && (
-              <span style={{ fontSize: '0.72rem', color: '#16a34a', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                ✓ Se publicará en el catálogo al guardar
-              </span>
+          {/* ── FICHA TÉCNICA PDF ── */}
+          <div style={{ ...S.section, marginTop: '1.5rem' }}>
+            <p style={{ ...S.label, marginBottom: '0.75rem', color: 'var(--negro)' }}>Ficha técnica (PDF)</p>
+            {pdfActual && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem', padding: '0.6rem 0.9rem', background: 'var(--blanco)', border: '1px solid var(--crema3)' }}>
+                <span style={{ fontSize: '1.2rem' }}>📄</span>
+                <a href={pdfActual} target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.78rem', color: '#2563eb', textDecoration: 'none', flex: 1 }}>
+                  PDF actual — ver / descargar
+                </a>
+                <button type="button" onClick={() => setPdfActual('')} style={{ fontSize: '0.65rem', color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer' }}>Quitar</button>
+              </div>
+            )}
+            <input type="file" accept="application/pdf"
+              onChange={e => setPdfFile(e.target.files?.[0] ?? null)}
+              style={{ fontSize: '0.8rem', color: 'var(--gris)', fontFamily: 'DM Sans, sans-serif' }}
+            />
+            <p style={{ fontSize: '0.68rem', color: 'var(--gris)', marginTop: '0.35rem' }}>PDF, máx. 10 MB. Se almacena en Supabase Storage.</p>
+            {uploadProgress && <p style={{ fontSize: '0.75rem', color: '#2563eb', marginTop: '0.3rem' }}>{uploadProgress}</p>}
+          </div>
+
+          {/* ── ESCANDALLO ── */}
+          <div style={{ ...S.section }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+              <p style={{ ...S.label, marginBottom: 0, color: 'var(--negro)' }}>Productos a combinar / Escandallo</p>
+              <button type="button" onClick={addComb}
+                style={{ fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase', background: 'var(--negro)', color: 'var(--crema)', border: 'none', padding: '0.3rem 0.75rem', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                + Añadir
+              </button>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto auto', gap: '0.5rem', marginBottom: '0.4rem' }}>
+              {['Producto / Ingrediente', 'Cantidad', 'Unidad', '', ''].map((h, i) => (
+                <span key={i} style={{ fontSize: '0.58rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gris)', fontFamily: 'DM Sans, sans-serif' }}>{h}</span>
+              ))}
+            </div>
+            {combinaciones.map((c, idx) => (
+              <div key={idx} style={{ display: 'grid', gridTemplateColumns: '1fr 100px 90px 24px', gap: '0.4rem', marginBottom: '0.4rem' }}>
+                <input value={c.nombre} onChange={e => updateComb(idx, 'nombre', e.target.value)}
+                  style={{ ...S.input, padding: '0.5rem 0.75rem' }} placeholder={`Ingrediente ${idx + 1}`} />
+                <input type="number" value={c.peso} onChange={e => updateComb(idx, 'peso', e.target.value)}
+                  style={{ ...S.input, padding: '0.5rem 0.6rem' }} placeholder="0" />
+                <select value={c.unidad} onChange={e => updateComb(idx, 'unidad', e.target.value)}
+                  style={{ ...S.input, padding: '0.5rem 0.4rem', cursor: 'pointer' }}>
+                  {UNIDADES.map(u => <option key={u} value={u}>{u}</option>)}
+                </select>
+                <button type="button" onClick={() => removeComb(idx)}
+                  style={{ background: 'none', border: '1px solid #fca5a5', color: '#dc2626', cursor: 'pointer', fontSize: '0.9rem', lineHeight: 1 }}>×</button>
+              </div>
+            ))}
+          </div>
+
+          {/* ── COSTES ── */}
+          <div style={{ ...S.section }}>
+            <p style={{ ...S.label, marginBottom: '0.75rem', color: 'var(--negro)' }}>Costes</p>
+            <div style={{ marginBottom: '0.75rem' }}>
+              <Toggle on={form.tiene_cargo} label="Producto con cargo económico" onToggle={() => setForm(p => ({ ...p, tiene_cargo: !p.tiene_cargo }))} />
+            </div>
+
+            {form.tiene_cargo && (
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '0.75rem', marginTop: '0.75rem' }}>
+                <div>
+                  <label style={S.label}>Precio base (€)</label>
+                  <input type="number" value={form.precio_base} onChange={f('precio_base')} style={S.input} placeholder="0.00" step="0.01" />
+                </div>
+                <div>
+                  <label style={S.label}>IGIC (%)</label>
+                  <select value={form.igic_pct} onChange={f('igic_pct')} style={{ ...S.input, cursor: 'pointer' }}>
+                    <option value="0">Sin IGIC (0%)</option>
+                    <option value="3">3% — Tipo reducido</option>
+                    <option value="7">7% — Tipo general</option>
+                    <option value="9.5">9.5% — Tipo incrementado</option>
+                    <option value="15">15% — Tipo especial</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={S.label}>Coste aduana (€)</label>
+                  <input type="number" value={form.coste_aduana} onChange={f('coste_aduana')} style={S.input} placeholder="0.00" step="0.01" />
+                </div>
+                <div>
+                  <label style={S.label}>Coste logística (€)</label>
+                  <input type="number" value={form.coste_logistica} onChange={f('coste_logistica')} style={S.input} placeholder="0.00" step="0.01" />
+                </div>
+
+                {/* Resumen coste */}
+                {precioBase > 0 && (
+                  <div style={{ gridColumn: '1/-1', background: 'var(--amarillo)', padding: '0.75rem 1rem', display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: '0.5rem' }}>
+                    {[
+                      ['Base', `${precioBase.toFixed(2)} €`],
+                      ['IGIC', `${igic.toFixed(2)} €`],
+                      ['Aduana', `${aduana.toFixed(2)} €`],
+                      ['Logística', `${logistica.toFixed(2)} €`],
+                      ['TOTAL', `${costeTotal.toFixed(2)} €`],
+                    ].map(([label, val]) => (
+                      <div key={label} style={{ textAlign: 'center' }}>
+                        <p style={{ fontSize: '0.58rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--grafito)', fontFamily: 'DM Sans, sans-serif' }}>{label}</p>
+                        <p style={{ fontSize: '1rem', fontFamily: 'Cormorant Garamond, serif', fontWeight: label === 'TOTAL' ? 600 : 300, color: 'var(--negro)' }}>{val}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             )}
           </div>
+
+          {/* Toggles finales */}
+          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', padding: '1rem 0 0' }}>
+            <Toggle on={form.disponible} label="Disponible" onToggle={() => setForm(p => ({ ...p, disponible: !p.disponible }))} />
+            <Toggle on={form.publicado_catalogo} label="✓ Publicar al catálogo" color="#16a34a"
+              onToggle={() => setForm(p => ({ ...p, publicado_catalogo: !p.publicado_catalogo, disponible: !p.publicado_catalogo ? true : p.disponible }))} />
+          </div>
+
+          <button type="button" onClick={save} disabled={loading || !form.nombre || !form.proveedor_id}
+            style={{ marginTop: '1.5rem', background: 'var(--negro)', color: 'var(--crema)', border: 'none', padding: '0.9rem 2.25rem', fontSize: '0.72rem', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', opacity: loading || !form.nombre || !form.proveedor_id ? 0.5 : 1 }}>
+            {loading ? 'Guardando...' : editing ? 'Actualizar ficha' : 'Crear ficha'}
+          </button>
         </div>
       )}
 
-      {/* Filtros + lista */}
+      {/* Filtros */}
       <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
-        {([['todos', `Todas (${productos.length})`], ['publicados', `En catálogo (${productos.filter(p => p.publicado_catalogo).length})`], ['borrador', `Borrador (${productos.filter(p => !p.publicado_catalogo).length})`]] as const).map(([key, label]) => (
-          <button key={key} onClick={() => setFiltro(key)}
+        {([['todos', `Todas (${productos.length})`], ['publicados', `En catálogo (${productos.filter(p=>p.publicado_catalogo).length})`], ['borrador', `Borrador (${productos.filter(p=>!p.publicado_catalogo).length})`]] as const).map(([key, label]) => (
+          <button key={key} type="button" onClick={() => setFiltro(key)}
             style={{ padding: '0.4rem 1rem', fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', border: '1px solid var(--crema3)', cursor: 'pointer', background: filtro === key ? 'var(--negro)' : 'var(--blanco)', color: filtro === key ? 'var(--crema)' : 'var(--gris)', fontFamily: 'DM Sans, sans-serif' }}>
             {label}
           </button>
         ))}
       </div>
 
-      {/* Tabla fichas */}
+      {/* Tabla */}
       <div style={{ background: 'var(--blanco)', border: '1px solid var(--crema3)', overflow: 'hidden' }}>
         <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', minWidth: 900, borderCollapse: 'collapse', fontSize: '0.8rem' }}>
+          <table style={{ width: '100%', minWidth: 800, borderCollapse: 'collapse', fontSize: '0.8rem' }}>
             <thead>
               <tr style={{ background: 'var(--crema2)', borderBottom: '1px solid var(--crema3)' }}>
-                {['Producto', 'Marca', 'Categoría', 'Servicio', 'Cargo', 'Catálogo', 'Acciones'].map(h => (
+                {['Producto', 'Marca', 'Servicio', 'PDF', 'Cargo', 'Catálogo', 'Acciones'].map(h => (
                   <th key={h} style={{ textAlign: 'left', padding: '0.65rem 0.9rem', fontSize: '0.58rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'var(--gris)', fontWeight: 500, whiteSpace: 'nowrap' }}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {filtered.map((p, i) => {
-                const ts = tagServicio(p.tipo_servicio ?? 'ambos')
-                return (
-                  <tr key={p.id} style={{ borderBottom: '1px solid var(--crema3)', background: i % 2 === 0 ? 'var(--blanco)' : 'var(--crema)' }}>
-                    <td style={{ padding: '0.65rem 0.9rem' }}>
-                      <p style={{ fontWeight: 500, color: 'var(--negro)', marginBottom: '0.1rem' }}>{p.nombre}</p>
-                      {p.producto_combinar && <p style={{ fontSize: '0.68rem', color: 'var(--gris)' }}>+ {p.producto_combinar}</p>}
-                    </td>
-                    <td style={{ padding: '0.65rem 0.9rem', color: 'var(--gris)', fontSize: '0.75rem', whiteSpace: 'nowrap' }}>
-                      {(p as any).proveedor?.nombre ?? '—'}
-                    </td>
-                    <td style={{ padding: '0.65rem 0.9rem', color: 'var(--gris)', fontSize: '0.75rem' }}>{p.categoria ?? '—'}</td>
-                    <td style={{ padding: '0.65rem 0.9rem' }}>
-                      <span style={{ background: ts.bg, color: ts.color, padding: '0.15rem 0.5rem', fontSize: '0.65rem', whiteSpace: 'nowrap' }}>
-                        {p.tipo_servicio === 'desayuno' ? 'Desayuno' : p.tipo_servicio === 'tardeo' ? 'Tardeo' : 'Ambos'}
-                      </span>
-                    </td>
-                    <td style={{ padding: '0.65rem 0.9rem', textAlign: 'center' }}>
-                      <span style={{ fontSize: '0.72rem', color: p.tiene_cargo ? 'var(--negro)' : 'var(--gris-l)' }}>
-                        {p.tiene_cargo ? '✓ Con cargo' : 'Sin cargo'}
-                      </span>
-                    </td>
-                    {/* Toggle publicar */}
-                    <td style={{ padding: '0.65rem 0.9rem' }}>
-                      <button onClick={() => toggleCatalogo(p.id, p.publicado_catalogo ?? false)}
-                        title={p.publicado_catalogo ? 'Quitar del catálogo' : 'Publicar en catálogo'}
-                        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', padding: '0.3rem 0.7rem', border: `1px solid ${p.publicado_catalogo ? '#16a34a' : 'var(--crema3)'}`, background: p.publicado_catalogo ? '#dcfce7' : 'var(--crema)', cursor: 'pointer', fontSize: '0.65rem', color: p.publicado_catalogo ? '#16a34a' : 'var(--gris)', fontFamily: 'DM Sans, sans-serif', transition: 'all 0.2s' }}>
-                        {p.publicado_catalogo ? '✓ Publicado' : '○ Borrador'}
-                      </button>
-                    </td>
-                    <td style={{ padding: '0.65rem 0.9rem', whiteSpace: 'nowrap' }}>
-                      <div style={{ display: 'flex', gap: '0.4rem' }}>
-                        <button onClick={() => startEdit(p)} style={{ fontSize: '0.65rem', color: '#2563eb', background: 'none', border: '1px solid #bfdbfe', padding: '0.2rem 0.6rem', cursor: 'pointer' }}>Editar</button>
-                        <button onClick={() => remove(p.id, p.nombre)} style={{ fontSize: '0.65rem', color: '#dc2626', background: 'none', border: '1px solid #fca5a5', padding: '0.2rem 0.6rem', cursor: 'pointer' }}>Eliminar</button>
-                      </div>
-                    </td>
-                  </tr>
-                )
-              })}
+              {filtered.map((p, i) => (
+                <tr key={p.id} style={{ borderBottom: '1px solid var(--crema3)', background: i % 2 === 0 ? 'var(--blanco)' : 'var(--crema)' }}>
+                  <td style={{ padding: '0.65rem 0.9rem' }}>
+                    <p style={{ fontWeight: 500, color: 'var(--negro)' }}>{p.nombre}</p>
+                    {p.categoria && <p style={{ fontSize: '0.68rem', color: 'var(--gris)' }}>{p.categoria}</p>}
+                    {(p.combinaciones?.filter(c => c.nombre).length ?? 0) > 0 && (
+                      <p style={{ fontSize: '0.65rem', color: 'var(--gris-l)', marginTop: '0.15rem' }}>
+                        {p.combinaciones?.filter(c=>c.nombre).length} ingredientes en escandallo
+                      </p>
+                    )}
+                  </td>
+                  <td style={{ padding: '0.65rem 0.9rem', color: 'var(--gris)', fontSize: '0.75rem', whiteSpace: 'nowrap' }}>
+                    {(p as any).proveedor?.nombre ?? '—'}
+                  </td>
+                  <td style={{ padding: '0.65rem 0.9rem' }}>
+                    <span style={{ fontSize: '0.65rem', padding: '0.15rem 0.45rem', background: p.tipo_servicio === 'desayuno' ? '#FEF9C3' : p.tipo_servicio === 'tardeo' ? '#EDE9FE' : 'var(--crema2)', color: p.tipo_servicio === 'desayuno' ? '#854D0E' : p.tipo_servicio === 'tardeo' ? '#5B21B6' : 'var(--gris)', whiteSpace: 'nowrap' }}>
+                      {p.tipo_servicio}
+                    </span>
+                  </td>
+                  <td style={{ padding: '0.65rem 0.9rem', textAlign: 'center' }}>
+                    {p.ficha_tecnica_url
+                      ? <a href={p.ficha_tecnica_url} target="_blank" rel="noopener noreferrer" title="Descargar PDF"
+                          style={{ fontSize: '1.2rem', textDecoration: 'none' }}>📄</a>
+                      : <span style={{ color: 'var(--gris-l)', fontSize: '0.7rem' }}>—</span>}
+                  </td>
+                  <td style={{ padding: '0.65rem 0.9rem', fontSize: '0.72rem', color: p.tiene_cargo ? 'var(--negro)' : 'var(--gris-l)' }}>
+                    {p.tiene_cargo && p.precio_base
+                      ? `${(p.precio_base + (p.precio_base*(p.igic_pct??0)/100) + (p.coste_aduana??0) + (p.coste_logistica??0)).toFixed(2)} €`
+                      : '—'}
+                  </td>
+                  <td style={{ padding: '0.65rem 0.9rem' }}>
+                    <button type="button" onClick={() => toggleCatalogo(p.id, p.publicado_catalogo ?? false)}
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', padding: '0.3rem 0.7rem', border: `1px solid ${p.publicado_catalogo ? '#16a34a' : 'var(--crema3)'}`, background: p.publicado_catalogo ? '#dcfce7' : 'var(--crema)', cursor: 'pointer', fontSize: '0.65rem', color: p.publicado_catalogo ? '#16a34a' : 'var(--gris)', fontFamily: 'DM Sans, sans-serif' }}>
+                      {p.publicado_catalogo ? '✓ Publicado' : '○ Borrador'}
+                    </button>
+                  </td>
+                  <td style={{ padding: '0.65rem 0.9rem', whiteSpace: 'nowrap' }}>
+                    <div style={{ display: 'flex', gap: '0.4rem' }}>
+                      <button type="button" onClick={() => startEdit(p)} style={{ fontSize: '0.65rem', color: '#2563eb', background: 'none', border: '1px solid #bfdbfe', padding: '0.2rem 0.6rem', cursor: 'pointer' }}>Editar</button>
+                      <button type="button" onClick={() => remove(p.id, p.nombre)} style={{ fontSize: '0.65rem', color: '#dc2626', background: 'none', border: '1px solid #fca5a5', padding: '0.2rem 0.6rem', cursor: 'pointer' }}>Eliminar</button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
           {filtered.length === 0 && (
             <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--gris-l)' }}>
               <p style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1.4rem', fontWeight: 300 }}>Sin fichas todavía</p>
-              <p style={{ fontSize: '0.78rem', marginTop: '0.5rem' }}>Pulsa "+ Nueva ficha" para empezar</p>
             </div>
           )}
         </div>

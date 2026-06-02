@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { SECCIONES_ADMIN } from '@/lib/admin-secciones'
 
@@ -27,14 +26,20 @@ export default function GestionUsuarios() {
   }, [])
 
   async function guardarPermisos(u: Usuario) {
-    const supabase = createClient()
-    await supabase.from('admin_roles').upsert({
-      user_id: u.user_id, email: u.email,
-      secciones: u.es_superadmin ? SECCIONES_ADMIN.map(s => s.key) : u.secciones,
-      es_superadmin: u.es_superadmin,
+    const secciones = u.es_superadmin ? SECCIONES_ADMIN.map(s => s.key) : u.secciones
+    const res = await fetch('/api/admin/guardar-permisos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_id: u.user_id, email: u.email, secciones, es_superadmin: u.es_superadmin }),
     })
-    setFeedback(`Permisos de ${u.email} guardados`)
-    router.refresh()
+    if (res.ok) {
+      setFeedback(`Permisos de ${u.email} guardados correctamente`)
+      // Recargar lista para reflejar cambios
+      fetch('/api/admin/listar-usuarios').then(r => r.json()).then(d => setUsuarios(d.users ?? []))
+    } else {
+      const data = await res.json()
+      setFeedback(`Error: ${data.error}`)
+    }
   }
 
   function update(id: string, patch: Partial<Usuario>) {

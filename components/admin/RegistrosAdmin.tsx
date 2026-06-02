@@ -58,19 +58,27 @@ export default function RegistrosAdmin({ registros }: Props) {
 
       <div style={{ background: 'var(--blanco)', border: '1px solid var(--crema3)', overflow: 'hidden' }}>
         <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
+          <table style={{ width: '100%', minWidth: 900, borderCollapse: 'collapse', fontSize: '0.8rem' }}>
             <thead>
               <tr style={{ background: 'var(--crema2)', borderBottom: '1px solid var(--crema3)' }}>
-                {['Fecha', 'Nombre', 'Isla', 'Email', 'Teléfono', 'Bloques', 'WA Lista', 'Acciones'].map(h => (
-                  <th key={h} style={{ textAlign: 'left', padding: '0.75rem 1rem', fontSize: '0.6rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--gris)', fontWeight: 500, whiteSpace: 'nowrap' }}>
-                    {h}
+                {[
+                  { label: 'Fecha',     w: 70  },
+                  { label: 'Nombre / Empresa', w: 180 },
+                  { label: 'Isla',      w: 110 },
+                  { label: 'Email',     w: 190 },
+                  { label: 'Teléfono', w: 130 },
+                  { label: 'Bloques',  w: 160 },
+                  { label: 'WA',       w: 44  },
+                  { label: 'Acciones', w: 130 },
+                ].map(h => (
+                  <th key={h.label} style={{ textAlign: 'left', padding: '0.6rem 0.75rem', fontSize: '0.58rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'var(--gris)', fontWeight: 500, whiteSpace: 'nowrap', width: h.w, minWidth: h.w }}>
+                    {h.label}
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {filtered.map((r, i) => {
-                const etiqueta = r.isla ? `${r.nombre} - ${r.isla}` : r.nombre
                 const waText = encodeURIComponent(`Hola ${r.nombre}, gracias por inscribirte en Yellow Craft Academy. Te confirmo tu plaza para el 15 de junio. Sala Ocean, Puerto del Carmen, Lanzarote. ¡Nos vemos allí!`)
                 const waLink = r.telefono
                   ? `https://wa.me/${r.telefono.replace(/\D/g, '')}?text=${waText}`
@@ -78,75 +86,71 @@ export default function RegistrosAdmin({ registros }: Props) {
 
                 return (
                   <tr key={r.id} style={{ borderBottom: '1px solid var(--crema3)', background: i % 2 === 0 ? 'var(--blanco)' : 'var(--crema)' }}>
-                    <td style={{ padding: '0.75rem 1rem', color: 'var(--gris-l)', whiteSpace: 'nowrap', fontSize: '0.75rem' }}>
+
+                    {/* Fecha */}
+                    <td style={{ padding: '0.65rem 0.75rem', color: 'var(--gris-l)', whiteSpace: 'nowrap', fontSize: '0.72rem' }}>
                       {new Date(r.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })}
                     </td>
-                    <td style={{ padding: '0.75rem 1rem', fontWeight: 500, color: 'var(--negro)', whiteSpace: 'nowrap' }}>{r.nombre}</td>
-                    <td style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', whiteSpace: 'nowrap' }}>
-                      {r.isla ? (
-                        <span style={{ background: 'var(--amarillo)', color: 'var(--negro)', padding: '0.15rem 0.5rem', fontSize: '0.65rem', letterSpacing: '0.08em', fontFamily: 'DM Sans, sans-serif' }}>
-                          {r.isla}
-                        </span>
-                      ) : <span style={{ color: 'var(--gris-l)' }}>—</span>}
+
+                    {/* Nombre + empresa apilados */}
+                    <td style={{ padding: '0.65rem 0.75rem' }}>
+                      <p style={{ fontWeight: 500, color: 'var(--negro)', whiteSpace: 'nowrap', marginBottom: '0.1rem' }}>{r.nombre}</p>
+                      {r.empresa && <p style={{ fontSize: '0.7rem', color: 'var(--gris)', whiteSpace: 'nowrap' }}>{r.empresa}</p>}
                     </td>
-                    <td style={{ padding: '0.75rem 1rem', color: 'var(--gris)', fontSize: '0.78rem' }}>{r.email}</td>
-                    <td style={{ padding: '0.75rem 1rem', color: 'var(--gris)', fontSize: '0.78rem' }}>{r.empresa ?? '—'}</td>
-                    <td style={{ padding: '0.75rem 1rem', color: 'var(--gris)', whiteSpace: 'nowrap', fontSize: '0.78rem' }}>{r.telefono ?? '—'}</td>
-                    <td style={{ padding: '0.75rem 1rem', maxWidth: 240 }}>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem' }}>
+
+                    {/* Isla */}
+                    <td style={{ padding: '0.65rem 0.75rem' }}>
+                      {r.isla
+                        ? <span style={{ background: 'var(--amarillo)', color: 'var(--negro)', padding: '0.15rem 0.45rem', fontSize: '0.62rem', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>{r.isla}</span>
+                        : <span style={{ color: 'var(--gris-l)' }}>—</span>}
+                    </td>
+
+                    {/* Email */}
+                    <td style={{ padding: '0.65rem 0.75rem', color: 'var(--gris)', fontSize: '0.75rem', maxWidth: 190, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {r.email}
+                    </td>
+
+                    {/* Teléfono */}
+                    <td style={{ padding: '0.65rem 0.75rem', color: 'var(--gris)', fontSize: '0.75rem', whiteSpace: 'nowrap' }}>
+                      {r.telefono ?? '—'}
+                    </td>
+
+                    {/* Bloques — solo hora */}
+                    <td style={{ padding: '0.65rem 0.75rem' }}>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.2rem' }}>
                         {(r.bloques ?? []).map(b => (
-                          <span key={b} style={{ fontSize: '0.55rem', letterSpacing: '0.08em', background: 'var(--amarillo)', color: 'var(--negro)', padding: '0.1rem 0.4rem', whiteSpace: 'nowrap', fontFamily: 'DM Sans, sans-serif' }}>
-                            {b.split('·')[0].trim()}
+                          <span key={b} style={{ fontSize: '0.58rem', background: 'var(--amarillo)', color: 'var(--negro)', padding: '0.1rem 0.35rem', whiteSpace: 'nowrap' }}>
+                            {b.split('·')[0].trim().split('–')[0].trim()}
                           </span>
                         ))}
                       </div>
                     </td>
-                    {/* Toggle WA confirmado */}
-                    <td style={{ padding: '0.75rem 1rem' }}>
-                      <button
-                        onClick={() => toggleWA(r.id, r.wa_confirmado)}
-                        disabled={updating === r.id}
-                        title={r.wa_confirmado ? 'Quitar de lista WA' : 'Marcar como añadido a lista WA'}
-                        style={{
-                          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                          width: 28, height: 28,
-                          background: r.wa_confirmado ? '#25D366' : 'var(--crema2)',
-                          color: r.wa_confirmado ? '#fff' : 'var(--gris-l)',
-                          border: `1px solid ${r.wa_confirmado ? '#25D366' : 'var(--crema3)'}`,
-                          cursor: 'pointer', opacity: updating === r.id ? 0.5 : 1,
-                        }}
-                      >
+
+                    {/* WA toggle */}
+                    <td style={{ padding: '0.65rem 0.75rem' }}>
+                      <button onClick={() => toggleWA(r.id, r.wa_confirmado)} disabled={updating === r.id}
+                        title={r.wa_confirmado ? 'Quitar de lista WA' : 'Añadir a lista WA'}
+                        style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, background: r.wa_confirmado ? '#25D366' : 'var(--crema2)', color: r.wa_confirmado ? '#fff' : 'var(--gris-l)', border: `1px solid ${r.wa_confirmado ? '#25D366' : 'var(--crema3)'}`, cursor: 'pointer', opacity: updating === r.id ? 0.5 : 1 }}>
                         {waIcono}
                       </button>
                     </td>
-                    {/* Acciones rápidas */}
-                    <td style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>
-                      <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+
+                    {/* Acciones */}
+                    <td style={{ padding: '0.65rem 0.75rem', whiteSpace: 'nowrap' }}>
+                      <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
                         {waLink && (
-                          <a
-                            href={waLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            title="Abrir chat WhatsApp"
-                            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.65rem', color: '#25D366', textDecoration: 'none', letterSpacing: '0.1em', border: '1px solid #25D366', padding: '0.25rem 0.6rem', fontFamily: 'DM Sans, sans-serif' }}
-                          >
+                          <a href={waLink} target="_blank" rel="noopener noreferrer" title="WhatsApp"
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.62rem', color: '#25D366', textDecoration: 'none', border: '1px solid #25D366', padding: '0.2rem 0.5rem' }}>
                             {waIcono} Chat
                           </a>
                         )}
-                        <a
-                          href={`mailto:${r.email}`}
-                          title="Enviar email"
-                          style={{ display: 'inline-flex', alignItems: 'center', fontSize: '0.65rem', color: 'var(--gris)', textDecoration: 'none', border: '1px solid var(--crema3)', padding: '0.25rem 0.6rem', fontFamily: 'DM Sans, sans-serif' }}
-                        >
+                        <a href={`mailto:${r.email}`} title="Email"
+                          style={{ display: 'inline-flex', alignItems: 'center', fontSize: '0.62rem', color: 'var(--gris)', textDecoration: 'none', border: '1px solid var(--crema3)', padding: '0.2rem 0.5rem' }}>
                           Email
                         </a>
-                        <button
-                          onClick={() => eliminar(r.id, r.nombre)}
-                          disabled={updating === r.id}
-                          title="Eliminar registro"
-                          style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, background: 'none', border: '1px solid #fca5a5', color: '#dc2626', cursor: 'pointer', opacity: updating === r.id ? 0.5 : 1, flexShrink: 0 }}
-                        >
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <button onClick={() => eliminar(r.id, r.nombre)} disabled={updating === r.id} title="Eliminar"
+                          style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 26, height: 26, background: 'none', border: '1px solid #fca5a5', color: '#dc2626', cursor: 'pointer', opacity: updating === r.id ? 0.5 : 1, flexShrink: 0 }}>
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
                             <path d="M10 11v6M14 11v6M9 6V4h6v2"/>
                           </svg>

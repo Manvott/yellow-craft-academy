@@ -80,7 +80,7 @@ export default function RegistrosAdmin({ registros }: Props) {
             <tbody>
               {filtered.map((r, i) => {
                 const etiqueta = [r.nombre, r.isla, r.empresa].filter(Boolean).join(' - ')
-                const waText = encodeURIComponent(`Hola ${r.nombre} (${etiqueta}), gracias por inscribirte en Yellow Craft Academy. Te confirmo tu plaza para el 15 de junio. Sala Ocean, Puerto del Carmen, Lanzarote. ¡Nos vemos allí!\n\nYa eres parte de esto. Ahora entra al canal y empieza a sentirlo.\nhttps://whatsapp.com/channel/0029Vb7xaQO3LdQZWshdfx2R`)
+                const waText = encodeURIComponent(`Hola ${r.nombre} (${etiqueta}), gracias por inscribirte en Yellow Craft Academy 😊 Te confirmo tu plaza para el 15 de junio. Sala Ocean, Puerto del Carmen, Lanzarote. ¡Nos vemos allí!\n\nYa eres parte de esto. Ahora entra al canal y empieza a sentirlo.\n\n*Canal Yellow Craft Academy* 👇\nhttps://whatsapp.com/channel/0029Vb7xaQO3LdQZWshdfx2R`)
                 const waLink = r.telefono
                   ? `https://wa.me/${r.telefono.replace(/\D/g, '')}?text=${waText}`
                   : null

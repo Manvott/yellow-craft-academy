@@ -88,6 +88,7 @@ function RegistroForm() {
   // paso: null = formulario | 'canal' = unirse al canal | 'plaza' = plaza confirmada
   const [paso, setPaso] = useState<null | 'canal' | 'plaza'>(null)
   const [haPulsadoWA, setHaPulsadoWA] = useState(false)
+  const [haConfirmadoWA, setHaConfirmadoWA] = useState(false)
   const [error, setError] = useState('')
   const [nombreInscrito, setNombreInscrito] = useState('')
   const [islaInscrito, setIslaInscrito] = useState('')
@@ -165,32 +166,63 @@ function RegistroForm() {
 
         {/* Botón confirmación */}
         <div style={{ background: 'var(--crema2)', border: '1px solid var(--crema3)', padding: '1.5rem', marginBottom: '1rem' }}>
-          <p style={{ fontSize: '0.85rem', color: 'var(--negro)', lineHeight: 1.6, marginBottom: '1rem' }}>
-            Después de pulsar <strong>Seguir</strong> en WhatsApp, confirma tu plaza aquí:
+          <p style={{ fontSize: '0.82rem', color: 'var(--negro)', lineHeight: 1.6, marginBottom: '1.1rem' }}>
+            Vuelve aquí cuando hayas pulsado <strong>Seguir</strong> en WhatsApp:
           </p>
+
+          {/* Checkbox confirmación manual */}
+          <label style={{
+            display: 'flex', alignItems: 'flex-start', gap: '0.75rem',
+            cursor: haPulsadoWA ? 'pointer' : 'not-allowed',
+            padding: '0.9rem 1rem',
+            background: 'var(--blanco)',
+            border: `1px solid ${haConfirmadoWA ? 'var(--negro)' : 'var(--crema3)'}`,
+            marginBottom: '1rem',
+            opacity: haPulsadoWA ? 1 : 0.45,
+            transition: 'border-color 0.2s, opacity 0.2s',
+          }}>
+            <input
+              type="checkbox"
+              disabled={!haPulsadoWA}
+              checked={haConfirmadoWA}
+              onChange={e => haPulsadoWA && setHaConfirmadoWA(e.target.checked)}
+              style={{ marginTop: '0.15rem', accentColor: 'var(--negro)', width: 16, height: 16, flexShrink: 0, cursor: haPulsadoWA ? 'pointer' : 'not-allowed' }}
+            />
+            <p style={{ fontSize: '0.82rem', color: 'var(--negro)', lineHeight: 1.5 }}>
+              Confirmo que he pulsado <strong>"Seguir"</strong> en el canal de WhatsApp de Yellow Craft Academy
+            </p>
+          </label>
+
+          {/* Mensaje de bloqueo */}
+          {!haPulsadoWA && (
+            <p style={{ fontSize: '0.7rem', color: '#dc2626', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <span>🔒</span> Abre primero el canal de WhatsApp pulsando el botón verde
+            </p>
+          )}
+          {haPulsadoWA && !haConfirmadoWA && (
+            <p style={{ fontSize: '0.7rem', color: 'var(--gris)', marginBottom: '0.75rem' }}>
+              Marca la casilla para confirmar que te has unido al canal
+            </p>
+          )}
+
+          {/* Botón confirmar plaza */}
           <button
-            onClick={() => haPulsadoWA && setPaso('plaza')}
-            disabled={!haPulsadoWA}
-            title={!haPulsadoWA ? 'Primero únete al canal de WhatsApp' : undefined}
+            onClick={() => haConfirmadoWA && setPaso('plaza')}
+            disabled={!haConfirmadoWA}
             style={{
-              background: haPulsadoWA ? 'var(--negro)' : 'var(--crema3)',
-              color: haPulsadoWA ? 'var(--crema)' : 'var(--gris)',
+              background: haConfirmadoWA ? 'var(--negro)' : 'var(--crema3)',
+              color: haConfirmadoWA ? 'var(--crema)' : 'var(--gris)',
               border: 'none', padding: '1rem 2rem',
               fontSize: '0.75rem', letterSpacing: '0.2em', textTransform: 'uppercase',
               fontWeight: 500,
-              cursor: haPulsadoWA ? 'pointer' : 'not-allowed',
+              cursor: haConfirmadoWA ? 'pointer' : 'not-allowed',
               fontFamily: 'DM Sans, sans-serif',
               width: '100%',
               transition: 'background 0.3s, color 0.3s',
             }}
           >
-            {haPulsadoWA ? '✓ Ya me uní al canal — Confirmar plaza' : '🔒 Únete primero al canal de WhatsApp'}
+            {haConfirmadoWA ? '✓ Confirmar mi plaza' : '🔒 Confirmar mi plaza'}
           </button>
-          {!haPulsadoWA && (
-            <p style={{ fontSize: '0.7rem', color: '#dc2626', marginTop: '0.5rem', textAlign: 'center' }}>
-              Debes pulsar el botón verde y unirte al canal antes de confirmar.
-            </p>
-          )}
         </div>
       </div>
     )

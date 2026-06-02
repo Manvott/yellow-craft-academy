@@ -10,7 +10,7 @@ const schema = z.object({
   cargo: z.string().max(100).optional().nullable(),
   perfil: z.string().max(100).optional().nullable(),
   email: z.string().email(),
-  telefono: z.string().max(30).optional().nullable(),
+  telefono: z.string().min(6, 'Teléfono requerido').max(30),
   isla: z.string().max(50).optional().nullable(),
   instagram: z.string().max(100).optional().nullable(),
   primera_vez: z.boolean(),
@@ -31,9 +31,7 @@ export async function registrarAsistente(formData: FormData) {
     perfil:        (formData.get('perfil') as string) || null,
     email:         formData.get('email') as string,
     telefono:      (() => {
-      const t = (formData.get('telefono') as string)?.trim()
-      if (!t) return null
-      // Normalizar: añadir +34 si el usuario no lo incluyó
+      const t = (formData.get('telefono') as string)?.trim() ?? ''
       if (t.startsWith('+')) return t
       return `+34${t.replace(/\s/g, '')}`
     })(),

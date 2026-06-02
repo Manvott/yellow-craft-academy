@@ -206,8 +206,9 @@ function RegistroForm() {
           <input
             name="telefono"
             type="tel"
-            placeholder="612 345 678"
+            placeholder="612 345 678 *"
             maxLength={12}
+            required
             style={{ ...S.input, border: 'none', flex: 1, outline: 'none' }}
           />
         </div>

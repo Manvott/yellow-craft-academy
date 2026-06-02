@@ -3,7 +3,6 @@ export const SECCIONES_ADMIN = [
   { key: 'fichas',      label: 'Fichas Producto',icono: '📋', soloSuperadmin: false },
   { key: 'solicitudes', label: 'Solicitudes',    icono: '📩', soloSuperadmin: false },
   { key: 'proveedores', label: 'Marcas',         icono: '🏷', soloSuperadmin: false },
-  { key: 'productos',   label: 'Productos',      icono: '📦', soloSuperadmin: false },
   { key: 'pildoras',    label: 'Pildoras',       icono: '💊', soloSuperadmin: false },
   { key: 'ajustes',     label: 'Ajustes',        icono: '⚙', soloSuperadmin: true  },
 ] as const

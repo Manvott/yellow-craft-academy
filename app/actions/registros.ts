@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import { headers } from 'next/headers'
+import { enviarConfirmacionPlaza } from '@/lib/whatsapp'
 
 const schema = z.object({
   nombre: z.string().min(2).max(150),
@@ -64,6 +65,15 @@ export async function registrarAsistente(formData: FormData) {
       ip_origen: ip,
     })
     if (error) throw error
+
+    // Enviar WhatsApp de confirmación (no bloquea el registro si falla)
+    enviarConfirmacionPlaza({
+      nombre:  result.data.nombre,
+      telefono: result.data.telefono,
+      isla:    result.data.isla,
+      empresa: result.data.empresa,
+    }).catch(e => console.error('[WA] Error en envío async:', e))
+
     return { ok: true }
   } catch {
     return { ok: false, error: 'Error al guardar. Inténtalo de nuevo.' }

@@ -80,9 +80,10 @@ export default function RegistrosAdmin({ registros }: Props) {
             <tbody>
               {filtered.map((r, i) => {
                 const etiqueta = [r.nombre, r.isla, r.empresa].filter(Boolean).join(' - ')
-                const emoji  = String.fromCodePoint(0x1F60A) // 😊
-                const flecha = String.fromCodePoint(0x1F447) // 👇
-                const waText = encodeURIComponent(`Hola ${r.nombre} (${etiqueta}), gracias por inscribirte en Yellow Craft Academy ${emoji} Te confirmo tu plaza para el 15 de junio. Sala Ocean, Puerto del Carmen, Lanzarote. ¡Nos vemos allí!\n\nYa eres parte de esto. Ahora entra al canal y empieza a sentirlo.\n\n*Canal Yellow Craft Academy* ${flecha}\nhttps://whatsapp.com/channel/0029Vb7xaQO3LdQZWshdfx2R`)
+                // U+2705 = ✅  U+1F449 = 👉  — rango básico, universal en WA
+                const check  = String.fromCodePoint(0x2705)
+                const arrow  = String.fromCodePoint(0x1F449)
+                const waText = encodeURIComponent(`Hola ${r.nombre} (${etiqueta}), gracias por inscribirte en Yellow Craft Academy ${check} Te confirmo tu plaza para el 15 de junio. Sala Ocean, Puerto del Carmen, Lanzarote. ¡Nos vemos allí!\n\nYa eres parte de esto. Ahora entra al canal y empieza a sentirlo.\n\n*Canal Yellow Craft Academy* ${arrow}\nhttps://whatsapp.com/channel/0029Vb7xaQO3LdQZWshdfx2R`)
                 const waLink = r.telefono
                   ? `https://wa.me/${r.telefono.replace(/\D/g, '')}?text=${waText}`
                   : null

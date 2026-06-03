@@ -435,8 +435,16 @@ export default function LandingClient({ locale }: Props) {
       <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.25rem 2.5rem', background: 'rgba(247,243,238,0.94)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(0,0,0,0.07)' }}>
         <Link href={`/${locale}/evento`} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
           <YCLogo size={34} />
-          <span style={{ fontSize: '0.7rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gris)' }}>Organizado por AVA</span>
         </Link>
+        <a href="https://www.instagram.com/avaseleccion?igsh=YXNmeDNsZGsyM3g1" target="_blank" rel="noopener noreferrer"
+          style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', textDecoration: 'none' }}>
+          <span style={{ fontSize: '0.7rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gris)' }}>Organizado por AVA</span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--gris)" strokeWidth="1.6">
+            <rect x="2" y="2" width="20" height="20" rx="5"/>
+            <circle cx="12" cy="12" r="4"/>
+            <circle cx="17.5" cy="6.5" r="1" fill="var(--gris)" stroke="none"/>
+          </svg>
+        </a>
         <div className="yca-nav-links" style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
           <Link href={`/${locale}`} style={{ fontSize: '0.7rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--gris)', textDecoration: 'none' }}>Catálogo</Link>
           <Link href={`/${locale}/pildoras`} style={{ fontSize: '0.7rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--gris)', textDecoration: 'none' }}>Píldoras</Link>
@@ -455,12 +463,27 @@ export default function LandingClient({ locale }: Props) {
             Yellow<br /><em style={{ fontStyle: 'italic', color: 'var(--grafito)' }}>Craft</em><br />
             Academy<span style={{ display: 'inline-block', width: '0.45em', height: '0.45em', background: 'var(--amarillo)', borderRadius: '50%', verticalAlign: 'middle', marginLeft: '0.1em', position: 'relative', top: '-0.35em' }} />
           </h1>
-          <p style={{ fontSize: '1rem', lineHeight: 1.75, color: 'var(--gris)', maxWidth: 420, marginBottom: '3rem' }}>
+          <p style={{ fontSize: '1rem', lineHeight: 1.75, color: 'var(--gris)', maxWidth: 420, marginBottom: '1.5rem' }}>
             Una jornada de formación técnica gastronómica para profesionales que quieren entender el oficio. No solo practicarlo.
           </p>
-          <div className="yca-hero-actions" style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+
+          {/* Especialidades */}
+          <div style={{ marginBottom: '1rem' }}>
+            <p style={{ fontSize: '0.65rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--negro)', fontWeight: 500, fontFamily: 'DM Sans, sans-serif', marginBottom: '0.4rem' }}>
+              Panadería · Pastelería · Heladería · Coctelería
+            </p>
+            <p style={{ fontSize: '0.82rem', color: 'var(--gris)', fontFamily: 'DM Sans, sans-serif', fontStyle: 'italic' }}>
+              De la mano de: Silma Ayres, Alexis García y Óscar Lafuente.
+            </p>
+          </div>
+
+          <div className="yca-hero-actions" style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '1.5rem', flexWrap: 'wrap' }}>
             <a href="#registro" style={{ background: 'var(--negro)', color: 'var(--crema)', padding: '0.9rem 2.2rem', fontSize: '0.75rem', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 500, textDecoration: 'none' }}>Reservar plaza</a>
-            <a href="#ponentes" style={{ fontSize: '0.78rem', color: 'var(--gris)', textDecoration: 'none', borderBottom: '1px solid var(--gris-l)', paddingBottom: 2 }}>Ver ponentes</a>
+            <a href="#ponentes" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.72rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--negro)', textDecoration: 'none', border: '1px solid var(--negro)', padding: '0.85rem 1.5rem', fontWeight: 500, fontFamily: 'DM Sans, sans-serif', transition: 'background 0.2s, color 0.2s' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'var(--negro)'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--crema)' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--negro)' }}>
+              Ver ponentes
+            </a>
           </div>
         </div>
 

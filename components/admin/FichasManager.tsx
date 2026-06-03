@@ -15,7 +15,7 @@ const emptyForm = {
   categoria: '', precio_base: '', tiene_cargo: false,
   igic_pct: '', coste_aduana: '', coste_logistica: '',
   tipo_servicio: 'ambos' as 'desayuno' | 'tardeo' | 'ambos',
-  disponible: true, publicado_catalogo: false, orden: 0,
+  disponible: true, publicado_catalogo: false, en_exposicion: false, orden: 0,
 }
 
 const emptyComb = (): Combinacion => ({ nombre: '', peso: '', unidad: 'g', orden: 0 })
@@ -41,11 +41,14 @@ export default function FichasManager({ productos, proveedores }: Props) {
   const [combinaciones, setCombinaciones] = useState<Combinacion[]>([emptyComb(), emptyComb(), emptyComb(), emptyComb(), emptyComb()])
   const [pdfFile, setPdfFile] = useState<File | null>(null)
   const [pdfActual, setPdfActual] = useState<string>('')
+  const [imgFile, setImgFile] = useState<File | null>(null)
   const [editing, setEditing] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState('')
   const [filtro, setFiltro] = useState<'todos' | 'publicados' | 'borrador'>('todos')
   const [showForm, setShowForm] = useState(false)
+  const pdfInputRef = { current: null as HTMLInputElement | null }
+  const imgInputRef = { current: null as HTMLInputElement | null }
 
   const f = (key: keyof typeof emptyForm) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setForm(prev => ({ ...prev, [key]: e.target.value }))
@@ -76,6 +79,25 @@ export default function FichasManager({ productos, proveedores }: Props) {
     setUploadProgress('')
     const supabase = createClient()
 
+    // Subir imagen si hay archivo nuevo
+    let imagenUrl = form.imagen_url
+    if (imgFile) {
+      setUploadProgress('Subiendo imagen...')
+      const ext = imgFile.name.split('.').pop()
+      const imgPath = `${Date.now()}-img-${form.nombre.replace(/\s+/g, '-').toLowerCase()}.${ext}`
+      const { data: imgData, error: imgErr } = await supabase.storage
+        .from('product-images')
+        .upload(imgPath, imgFile, { upsert: true })
+      if (imgErr) {
+        setUploadProgress(`Error al subir imagen: ${imgErr.message}`)
+        setLoading(false)
+        return
+      }
+      const { data: { publicUrl: imgPub } } = supabase.storage.from('product-images').getPublicUrl(imgData.path)
+      imagenUrl = imgPub
+      setUploadProgress('')
+    }
+
     // Subir PDF si hay uno nuevo
     let fichaUrl = pdfActual
     if (pdfFile) {
@@ -99,9 +121,10 @@ export default function FichasManager({ productos, proveedores }: Props) {
       proveedor_id: form.proveedor_id,
       nombre: form.nombre,
       descripcion: form.descripcion || null,
-      imagen_url: form.imagen_url || null,
+      imagen_url: imagenUrl || null,
       categoria: form.categoria || null,
       ficha_tecnica_url: fichaUrl || null,
+      en_exposicion: form.en_exposicion,
       precio_base: form.tiene_cargo && form.precio_base ? parseFloat(form.precio_base) : null,
       tiene_cargo: form.tiene_cargo,
       igic_pct: form.tiene_cargo && form.igic_pct ? parseFloat(form.igic_pct) : 0,
@@ -130,7 +153,7 @@ export default function FichasManager({ productos, proveedores }: Props) {
       await supabase.from('producto_combinaciones').insert(combsValidas)
     }
 
-    resetForm(); setLoading(false); router.refresh()
+    resetForm(); setImgFile(null); setLoading(false); router.refresh()
   }
 
   function resetForm() {
@@ -147,7 +170,8 @@ export default function FichasManager({ productos, proveedores }: Props) {
       igic_pct: p.igic_pct?.toString() ?? '', coste_aduana: p.coste_aduana?.toString() ?? '',
       coste_logistica: p.coste_logistica?.toString() ?? '',
       tipo_servicio: p.tipo_servicio ?? 'ambos',
-      disponible: p.disponible, publicado_catalogo: p.publicado_catalogo ?? false, orden: p.orden,
+      disponible: p.disponible, publicado_catalogo: p.publicado_catalogo ?? false,
+      en_exposicion: (p as any).en_exposicion ?? false, orden: p.orden,
     })
     const combs = (p.combinaciones ?? []).length > 0
       ? [...(p.combinaciones ?? []).map(c => ({ ...c, peso: c.peso?.toString() ?? '', orden: c.orden })),
@@ -218,10 +242,35 @@ export default function FichasManager({ productos, proveedores }: Props) {
               <textarea value={form.descripcion} onChange={f('descripcion') as any} rows={2} style={{ ...S.input, resize: 'none' }} />
             </div>
 
-            {/* Imagen */}
+            {/* Imagen — URL o archivo */}
             <div>
-              <label style={S.label}>URL imagen</label>
-              <input value={form.imagen_url} onChange={f('imagen_url')} style={S.input} placeholder="https://..." />
+              <label style={S.label}>Imagen del producto</label>
+              {form.imagen_url && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem', padding: '0.4rem 0.75rem', background: 'var(--blanco)', border: '1px solid var(--crema3)', fontSize: '0.72rem' }}>
+                  <span>🖼️</span>
+                  <a href={form.imagen_url} target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', textDecoration: 'none', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    Ver imagen actual
+                  </a>
+                  <button type="button" onClick={() => setForm(p => ({ ...p, imagen_url: '' }))} style={{ fontSize: '0.65rem', color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer' }}>Quitar</button>
+                </div>
+              )}
+              <div style={{ display: 'flex', gap: '0.4rem' }}>
+                <input value={form.imagen_url} onChange={f('imagen_url')} style={{ ...S.input, flex: 1 }} placeholder="https://... o sube un archivo →" />
+                <input
+                  type="file" accept="image/*" style={{ display: 'none' }}
+                  ref={el => { imgInputRef.current = el }}
+                  onChange={e => {
+                    const file = e.target.files?.[0]
+                    if (file) { setImgFile(file); setForm(p => ({ ...p, imagen_url: `[${file.name}]` })) }
+                  }}
+                />
+                <button type="button"
+                  onClick={() => imgInputRef.current?.click()}
+                  style={{ background: 'var(--negro)', color: 'var(--crema)', border: 'none', padding: '0 0.9rem', fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase', cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: 'DM Sans, sans-serif' }}>
+                  {imgFile ? '✓ ' + imgFile.name.substring(0, 12) + '...' : '+ Archivo'}
+                </button>
+              </div>
+              {imgFile && <p style={{ fontSize: '0.65rem', color: '#16a34a', marginTop: '0.25rem' }}>✓ {imgFile.name} — se subirá al guardar</p>}
             </div>
 
             {/* Servicio */}
@@ -250,11 +299,27 @@ export default function FichasManager({ productos, proveedores }: Props) {
                 <button type="button" onClick={() => setPdfActual('')} style={{ fontSize: '0.65rem', color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer' }}>Quitar</button>
               </div>
             )}
-            <input type="file" accept="application/pdf"
+            {/* Input oculto */}
+            <input
+              type="file" accept="application/pdf" style={{ display: 'none' }}
+              ref={el => { pdfInputRef.current = el }}
               onChange={e => setPdfFile(e.target.files?.[0] ?? null)}
-              style={{ fontSize: '0.8rem', color: 'var(--gris)', fontFamily: 'DM Sans, sans-serif' }}
             />
-            <p style={{ fontSize: '0.68rem', color: 'var(--gris)', marginTop: '0.35rem' }}>PDF, máx. 10 MB. Se almacena en Supabase Storage.</p>
+            {pdfFile ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.65rem 1rem', background: '#dcfce7', border: '1px solid #86efac', marginBottom: '0.5rem' }}>
+                <span style={{ fontSize: '1.1rem' }}>📄</span>
+                <p style={{ fontSize: '0.78rem', color: '#166534', flex: 1 }}>{pdfFile.name}</p>
+                <button type="button" onClick={() => setPdfFile(null)} style={{ fontSize: '0.65rem', color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer' }}>Quitar</button>
+              </div>
+            ) : (
+              <button type="button"
+                onClick={() => pdfInputRef.current?.click()}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem', background: 'var(--negro)', color: 'var(--crema)', border: 'none', padding: '0.7rem 1.4rem', fontSize: '0.7rem', letterSpacing: '0.18em', textTransform: 'uppercase', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                Añadir PDF
+              </button>
+            )}
+            <p style={{ fontSize: '0.65rem', color: 'var(--gris)', marginTop: '0.35rem' }}>PDF, máx. 10 MB.</p>
             {uploadProgress && <p style={{ fontSize: '0.75rem', color: '#2563eb', marginTop: '0.3rem' }}>{uploadProgress}</p>}
           </div>
 
@@ -344,6 +409,8 @@ export default function FichasManager({ productos, proveedores }: Props) {
           {/* Toggles finales */}
           <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', padding: '1rem 0 0' }}>
             <Toggle on={form.disponible} label="Disponible" onToggle={() => setForm(p => ({ ...p, disponible: !p.disponible }))} />
+            <Toggle on={form.en_exposicion} label="En exposición" color="#7C3AED"
+              onToggle={() => setForm(p => ({ ...p, en_exposicion: !p.en_exposicion }))} />
             <Toggle on={form.publicado_catalogo} label="✓ Publicar al catálogo" color="#16a34a"
               onToggle={() => setForm(p => ({ ...p, publicado_catalogo: !p.publicado_catalogo, disponible: !p.publicado_catalogo ? true : p.disponible }))} />
           </div>

@@ -24,8 +24,15 @@ export default function FileUploadField({ label, bucket, accept, icono, urlActua
     setUploading(true)
     setError('')
     const supabase = createClient()
-    const ext = f.name.split('.').pop()
-    const path = `${Date.now()}-${f.name.replace(/\s+/g, '-').toLowerCase()}`
+    const ext = f.name.split('.').pop() ?? 'bin'
+    // Sanitizar: solo letras, números y guiones — sin espacios, +, (), &, etc.
+    const baseName = f.name
+      .toLowerCase()
+      .normalize('NFD').replace(/[̀-ͯ]/g, '') // quitar acentos
+      .replace(/[^a-z0-9.]/g, '-')                      // reemplazar todo lo especial
+      .replace(/-+/g, '-')                               // colapsar guiones múltiples
+      .replace(/^-|-$/g, '')                             // quitar guiones extremos
+    const path = `${Date.now()}-${baseName}`
     const { data, error: err } = await supabase.storage.from(bucket).upload(path, f, { upsert: true })
     setUploading(false)
     if (err) { setError(err.message); return }

@@ -21,6 +21,32 @@ function buildVCard(r: RegistroAcred): string {
   ].filter(Boolean).join('\n')
 }
 
+function imprimirQR(canvas: HTMLCanvasElement | null, r: RegistroAcred) {
+  if (!canvas) return
+  const dataUrl = canvas.toDataURL('image/png')
+  const win = window.open('', '_blank', 'width=400,height=500')
+  if (!win) return
+  win.document.write(`<!DOCTYPE html><html><head>
+    <title>QR - ${r.nombre}</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background: #fff; font-family: Arial, sans-serif; padding: 16px; }
+      img { max-width: 100%; height: auto; display: block; }
+      .nombre { font-size: 16px; font-weight: bold; margin-top: 10px; text-align: center; }
+      .empresa { font-size: 12px; color: #666; margin-top: 4px; text-align: center; }
+      .isla { font-size: 11px; background: #F5C518; color: #000; padding: 2px 8px; margin-top: 6px; display: inline-block; }
+      @media print { body { padding: 0; } }
+    </style>
+  </head><body>
+    <img src="${dataUrl}" />
+    <p class="nombre">${r.nombre}</p>
+    ${r.empresa ? `<p class="empresa">${r.empresa}</p>` : ''}
+    ${r.isla ? `<span class="isla">${r.isla}</span>` : ''}
+    <script>window.onload = () => { window.print(); window.onafterprint = () => window.close(); }<\/script>
+  </body></html>`)
+  win.document.close()
+}
+
 function QRInline({ registro, size = 180 }: { registro: RegistroAcred; size?: number }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
@@ -76,7 +102,7 @@ function QRInline({ registro, size = 180 }: { registro: RegistroAcred; size?: nu
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           PNG
         </button>
-        <button onClick={() => window.print()}
+        <button onClick={() => imprimirQR(canvasRef.current, registro)}
           style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', background: 'none', color: 'var(--gris)', border: '1px solid var(--crema3)', padding: '0.3rem 0.75rem', fontSize: '0.6rem', letterSpacing: '0.15em', textTransform: 'uppercase', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
           Imprimir
@@ -198,15 +224,6 @@ export default function AcreditacionClient({ registros }: Props) {
         ))}
       </div>
 
-      {/* CSS impresión */}
-      <style>{`
-        @media print {
-          .admin-sidebar, .admin-topbar { display: none !important; }
-          .admin-main { margin: 0 !important; padding: 4mm !important; }
-          /* Solo mostrar el QR abierto */
-          body { background: white !important; }
-        }
-      `}</style>
     </div>
   )
 }

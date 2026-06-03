@@ -39,7 +39,7 @@ export default function EscandalloClient({ productos }: { productos: ProductoEsc
       .sort((a, b) => a.orden - b.orden)
       .map(c => ({ id: c.id ?? undefined, nombre: c.nombre, peso: c.peso?.toString() ?? '', unidad: c.unidad, orden: c.orden }))
     // Siempre al menos 5 filas
-    while (existentes.length < 5) existentes.push(emptyComb(existentes.length))
+    while (existentes.length < 5) existentes.push(emptyComb(existentes.length) as Comb)
     setCombs(existentes)
   }
 

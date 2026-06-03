@@ -24,36 +24,83 @@ function buildVCard(r: RegistroAcred): string {
   return lines.join('\n')
 }
 
-function QRCard({ registro }: { registro: RegistroAcred }) {
+function QRCard({ registro, size }: { registro: RegistroAcred; size: number }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [expanded, setExpanded] = useState(false)
 
   useEffect(() => {
     if (!canvasRef.current) return
     QRCode.toCanvas(canvasRef.current, buildVCard(registro), {
-      width: 200,
+      width: size,
       margin: 2,
-      color: { dark: '#0A0A08', light: '#FDFBF8' },
+      color: { dark: '#0A0A08', light: '#FFFFFF' },
     })
-  }, [registro])
+  }, [registro, size])
+
+  function descargar() {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    // Crear canvas con texto (nombre + empresa)
+    const margin = 16
+    const textHeight = registro.empresa ? 52 : 34
+    const final = document.createElement('canvas')
+    final.width = size + margin * 2
+    final.height = size + textHeight + margin * 2
+    const ctx = final.getContext('2d')!
+    ctx.fillStyle = '#FFFFFF'
+    ctx.fillRect(0, 0, final.width, final.height)
+    ctx.drawImage(canvas, margin, margin)
+
+    // Nombre
+    ctx.fillStyle = '#0A0A08'
+    ctx.font = `bold ${Math.round(size * 0.065)}px Arial`
+    ctx.textAlign = 'center'
+    ctx.fillText(registro.nombre, final.width / 2, size + margin + 22)
+
+    // Empresa
+    if (registro.empresa) {
+      ctx.fillStyle = '#8A8880'
+      ctx.font = `${Math.round(size * 0.05)}px Arial`
+      ctx.fillText(registro.empresa, final.width / 2, size + margin + 42)
+    }
+
+    // Isla
+    if (registro.isla) {
+      ctx.fillStyle = '#0A0A08'
+      ctx.font = `${Math.round(size * 0.045)}px Arial`
+      ctx.fillText(registro.isla, final.width / 2, size + margin + (registro.empresa ? 58 : 40))
+    }
+
+    final.toBlob(blob => {
+      if (!blob) return
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `QR-${registro.nombre.replace(/\s+/g, '-')}.png`
+      a.click()
+      URL.revokeObjectURL(url)
+    }, 'image/png')
+  }
 
   return (
-    <div style={{ border: '1px solid var(--crema3)', background: 'var(--blanco)', padding: '1rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', width: 220 }}>
-      <canvas ref={canvasRef} style={{ display: 'block' }} />
-      <p style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1rem', fontWeight: 400, color: 'var(--negro)', textAlign: 'center', lineHeight: 1.2 }}>
+    <div className="qr-card" style={{ border: '1px solid var(--crema3)', background: 'var(--blanco)', padding: '0.75rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
+      <canvas ref={canvasRef} style={{ display: 'block', maxWidth: '100%' }} />
+      <p style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 'clamp(0.85rem,2vw,1rem)', fontWeight: 400, color: 'var(--negro)', textAlign: 'center', lineHeight: 1.2 }}>
         {registro.nombre}
       </p>
       {registro.empresa && (
-        <p style={{ fontSize: '0.65rem', color: 'var(--gris)', textAlign: 'center', letterSpacing: '0.05em' }}>{registro.empresa}</p>
+        <p style={{ fontSize: '0.62rem', color: 'var(--gris)', textAlign: 'center' }}>{registro.empresa}</p>
       )}
       {registro.isla && (
-        <span style={{ fontSize: '0.58rem', background: 'var(--amarillo)', color: 'var(--negro)', padding: '0.1rem 0.5rem', letterSpacing: '0.1em' }}>
+        <span style={{ fontSize: '0.55rem', background: 'var(--amarillo)', color: 'var(--negro)', padding: '0.1rem 0.45rem' }}>
           {registro.isla}
         </span>
       )}
-      <p style={{ fontSize: '0.6rem', color: 'var(--gris-l)', textAlign: 'center', fontStyle: 'italic' }}>
-        Escanea → guarda contacto
-      </p>
+      <button onClick={descargar}
+        style={{ marginTop: '0.3rem', display: 'inline-flex', alignItems: 'center', gap: '0.3rem', background: 'var(--negro)', color: 'var(--crema)', border: 'none', padding: '0.35rem 0.8rem', fontSize: '0.6rem', letterSpacing: '0.15em', textTransform: 'uppercase', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', width: '100%', justifyContent: 'center' }}>
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        PNG
+      </button>
     </div>
   )
 }
@@ -64,6 +111,7 @@ export default function AcreditacionClient({ registros }: Props) {
   const [search, setSearch] = useState('')
   const [vista, setVista] = useState<'lista' | 'qr'>('lista')
   const [filtro, setFiltro] = useState<'todos' | 'asistio' | 'pendiente'>('todos')
+  const [qrSize, setQrSize] = useState(200)
 
   async function toggleAsistio(id: string, current: boolean) {
     setUpdating(id)
@@ -173,15 +221,46 @@ export default function AcreditacionClient({ registros }: Props) {
       {/* ── VISTA QR ── */}
       {vista === 'qr' && (
         <div>
-          <p style={{ fontSize: '0.72rem', color: 'var(--gris)', marginBottom: '1.5rem', lineHeight: 1.6, fontFamily: 'DM Sans, sans-serif' }}>
-            Cada QR contiene los datos del inscrito en formato vCard. Al escanearlo con el móvil, se ofrece guardar el contacto directamente.
-          </p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
-            {filtered.map(r => <QRCard key={r.id} registro={r} />)}
+          {/* Controles de tamaño */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginBottom: '1.5rem', padding: '1rem 1.25rem', background: 'var(--blanco)', border: '1px solid var(--crema3)', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, minWidth: 220 }}>
+              <span style={{ fontSize: '0.65rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gris)', whiteSpace: 'nowrap', fontFamily: 'DM Sans, sans-serif' }}>
+                Tamaño QR
+              </span>
+              <input type="range" min={100} max={400} step={10} value={qrSize}
+                onChange={e => setQrSize(Number(e.target.value))}
+                style={{ flex: 1, accentColor: 'var(--negro)' }}
+              />
+              <span style={{ fontSize: '0.75rem', color: 'var(--negro)', fontFamily: 'DM Sans, sans-serif', minWidth: 48, textAlign: 'right' }}>
+                {qrSize}px
+              </span>
+            </div>
+            <div style={{ display: 'flex', gap: '0.4rem' }}>
+              {[100,150,200,250,300,350].map(s => (
+                <button key={s} onClick={() => setQrSize(s)}
+                  style={{ padding: '0.3rem 0.6rem', fontSize: '0.62rem', border: `1px solid ${qrSize === s ? 'var(--negro)' : 'var(--crema3)'}`, background: qrSize === s ? 'var(--negro)' : 'var(--blanco)', color: qrSize === s ? 'var(--crema)' : 'var(--gris)', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                  {s}
+                </button>
+              ))}
+            </div>
+            <p style={{ fontSize: '0.65rem', color: 'var(--gris-l)', fontFamily: 'DM Sans, sans-serif', fontStyle: 'italic' }}>
+              Ajusta el tamaño según el formato de etiqueta y descarga cada QR como PNG
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fill, minmax(${qrSize + 24}px, 1fr))`, gap: '1rem' }}>
+            {filtered.map(r => <QRCard key={r.id} registro={r} size={qrSize} />)}
           </div>
           {filtered.length === 0 && (
             <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--gris-l)', fontSize: '0.82rem' }}>Sin resultados</div>
           )}
+
+          <style>{`
+            @media print {
+              .qr-card button { display: none !important; }
+              body * { font-size: 10pt; }
+            }
+          `}</style>
         </div>
       )}
     </div>

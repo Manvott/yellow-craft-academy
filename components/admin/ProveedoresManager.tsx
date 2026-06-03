@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { Proveedor } from '@/lib/types'
 import { useRouter } from 'next/navigation'
+import FileUploadField from './FileUploadField'
 
 interface Props { proveedores: Proveedor[] }
 
@@ -61,7 +62,17 @@ export default function ProveedoresManager({ proveedores }: Props) {
         <div className="grid grid-cols-2 gap-4">
           {field('Nombre *', 'nombre')}
           {field('Web', 'web_url')}
-          {field('Logo URL', 'logo_url')}
+          <div className="col-span-2">
+            <FileUploadField
+              label="Logo de la marca"
+              bucket="logos-marcas"
+              accept="image/*"
+              icono="🏷️"
+              urlActual={form.logo_url}
+              onUploaded={url => setForm(f => ({ ...f, logo_url: url }))}
+              hint="PNG, SVG, JPG. Se sube a Supabase Storage."
+            />
+          </div>
           {field('Orden', 'orden', 'number')}
           <div className="col-span-2">
             <label className="text-xs font-semibold text-gray-600 block mb-1">Descripción</label>

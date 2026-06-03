@@ -706,9 +706,14 @@ export default function LandingClient({ locale }: Props) {
           <h2 style={{ ...S.sectionTitle, fontSize: 'clamp(2.5rem,4vw,3.8rem)', marginBottom: '1rem' }}>
             Reserva tu<br /><em style={{ fontStyle: 'italic', color: 'var(--gris)' }}>plaza</em>
           </h2>
-          <p style={{ fontSize: '0.87rem', color: 'var(--gris)', lineHeight: 1.75, marginBottom: '3rem' }}>
+          <p style={{ fontSize: '0.87rem', color: 'var(--gris)', lineHeight: 1.75, marginBottom: '1.5rem' }}>
             Indica a qué bloques vas a asistir para que podamos organizarlo bien. Ven a lo que puedas — cada bloque tiene valor por sí solo.
           </p>
+          <div style={{ padding: '0.9rem 1.1rem', background: 'var(--crema3)', borderLeft: '3px solid var(--negro)', marginBottom: '2rem' }}>
+            <p style={{ fontSize: '0.78rem', color: 'var(--grafito)', lineHeight: 1.7, fontFamily: 'DM Sans, sans-serif' }}>
+              <strong style={{ color: 'var(--negro)' }}>Inscripción individual.</strong> Si van a asistir varios miembros del mismo equipo, cada persona deberá realizar su propia inscripción de forma independiente.
+            </p>
+          </div>
           <RegistroForm />
           <p style={{ marginTop: '1.5rem', fontSize: '0.65rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'var(--gris-l)', textAlign: 'center' }}>
             Acceso profesional · Confirmación por orden de registro

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
-import type { ProductoMenú } from '@/app/[locale]/admin/(panel)/menú/page'
+import type { ProductoEscandallo } from '@/app/[locale]/admin/(panel)/menu/page'
 
 const UNIDADES = ['g', 'kg', 'ml', 'l', 'cl', 'oz', 'ud', 'ración']
 
@@ -16,7 +16,7 @@ interface Comb { id?: string | null; nombre: string; peso: string; unidad: strin
 
 function emptyComb(orden = 0): Comb { return { nombre: '', peso: '', unidad: 'g', orden } }
 
-export default function MenuClient({ productos }: { productos: ProductoMenú[] }) {
+export default function MenuClient({ productos }: { productos: ProductoEscandallo[] }) {
   const router = useRouter()
   const [search, setSearch] = useState('')
   const [filtro, setFiltro] = useState<'todos' | 'con' | 'sin'>('todos')
@@ -32,7 +32,7 @@ export default function MenuClient({ productos }: { productos: ProductoMenú[] }
     return matchSearch && matchFiltro
   })
 
-  function abrirProducto(p: ProductoMenú) {
+  function abrirProducto(p: ProductoEscandallo) {
     if (activo === p.id) { setActivo(null); return }
     setActivo(p.id)
     const existentes = (p.combinaciones ?? [])

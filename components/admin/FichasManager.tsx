@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import type { ProductoFicha, Combinacion } from '@/app/[locale]/admin/(panel)/fichas/page'
 import type { Proveedor } from '@/lib/types'
 
-interface Props { productos: ProductoFicha[]; proveedores: Proveedor[] }
+interface Props { productos: ProductoFicha[]; proveedores: Proveedor[]; verCostes?: boolean }
 
 const UNIDADES = ['g', 'kg', 'ml', 'l', 'cl', 'oz', 'ud', 'ración']
 
@@ -35,7 +35,7 @@ function Toggle({ on, label, onToggle, color = 'var(--negro)' }: { on: boolean; 
   )
 }
 
-export default function FichasManager({ productos, proveedores }: Props) {
+export default function FichasManager({ productos, proveedores, verCostes = true }: Props) {
   const router = useRouter()
   const [form, setForm] = useState<typeof emptyForm>(emptyForm)
   const [combinaciones, setCombinaciones] = useState<Combinacion[]>([emptyComb(), emptyComb(), emptyComb(), emptyComb(), emptyComb()])
@@ -350,8 +350,8 @@ export default function FichasManager({ productos, proveedores }: Props) {
             ))}
           </div>
 
-          {/* ── COSTES ── */}
-          <div style={{ ...S.section }}>
+          {/* ── COSTES — solo visible si el usuario tiene permiso ── */}
+          {verCostes && <div style={{ ...S.section }}>
             <p style={{ ...S.label, marginBottom: '0.75rem', color: 'var(--negro)' }}>Costes</p>
             <div style={{ marginBottom: '0.75rem' }}>
               <Toggle on={form.tiene_cargo} label="Producto con cargo económico" onToggle={() => setForm(p => ({ ...p, tiene_cargo: !p.tiene_cargo }))} />
@@ -401,7 +401,7 @@ export default function FichasManager({ productos, proveedores }: Props) {
                 )}
               </div>
             )}
-          </div>
+          </div>}
 
           {/* Toggles finales */}
           <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', padding: '1rem 0 0' }}>
@@ -435,7 +435,7 @@ export default function FichasManager({ productos, proveedores }: Props) {
           <table style={{ width: '100%', minWidth: 800, borderCollapse: 'collapse', fontSize: '0.8rem' }}>
             <thead>
               <tr style={{ background: 'var(--crema2)', borderBottom: '1px solid var(--crema3)' }}>
-                {['Producto', 'Marca', 'Servicio', 'PDF', 'Cargo', 'Catálogo', 'Acciones'].map(h => (
+                {['Producto', 'Marca', 'Servicio', 'PDF', ...(verCostes ? ['Cargo'] : []), 'Catálogo', 'Acciones'].map(h => (
                   <th key={h} style={{ textAlign: 'left', padding: '0.65rem 0.9rem', fontSize: '0.58rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'var(--gris)', fontWeight: 500, whiteSpace: 'nowrap' }}>{h}</th>
                 ))}
               </tr>
@@ -466,11 +466,13 @@ export default function FichasManager({ productos, proveedores }: Props) {
                           style={{ fontSize: '1.2rem', textDecoration: 'none' }}>📄</a>
                       : <span style={{ color: 'var(--gris-l)', fontSize: '0.7rem' }}>—</span>}
                   </td>
-                  <td style={{ padding: '0.65rem 0.9rem', fontSize: '0.72rem', color: p.tiene_cargo ? 'var(--negro)' : 'var(--gris-l)' }}>
-                    {p.tiene_cargo && p.precio_base
-                      ? `${(p.precio_base + (p.precio_base*(p.igic_pct??0)/100) + (p.coste_aduana??0) + (p.coste_logistica??0)).toFixed(2)} €`
-                      : '—'}
-                  </td>
+                  {verCostes && (
+                    <td style={{ padding: '0.65rem 0.9rem', fontSize: '0.72rem', color: p.tiene_cargo ? 'var(--negro)' : 'var(--gris-l)' }}>
+                      {p.tiene_cargo && p.precio_base
+                        ? `${(p.precio_base + (p.precio_base*(p.igic_pct??0)/100) + (p.coste_aduana??0) + (p.coste_logistica??0)).toFixed(2)} €`
+                        : '—'}
+                    </td>
+                  )}
                   <td style={{ padding: '0.65rem 0.9rem' }}>
                     <button type="button" onClick={() => toggleCatalogo(p.id, p.publicado_catalogo ?? false)}
                       style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', padding: '0.3rem 0.7rem', border: `1px solid ${p.publicado_catalogo ? '#16a34a' : 'var(--crema3)'}`, background: p.publicado_catalogo ? '#dcfce7' : 'var(--crema)', cursor: 'pointer', fontSize: '0.65rem', color: p.publicado_catalogo ? '#16a34a' : 'var(--gris)', fontFamily: 'DM Sans, sans-serif' }}>

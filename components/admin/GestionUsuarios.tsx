@@ -9,6 +9,7 @@ interface Usuario {
   email: string
   secciones: string[]
   es_superadmin: boolean
+  ver_costes: boolean
   es_yo?: boolean
 }
 
@@ -30,7 +31,7 @@ export default function GestionUsuarios() {
     const res = await fetch('/api/admin/guardar-permisos', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_id: u.user_id, email: u.email, secciones, es_superadmin: u.es_superadmin }),
+      body: JSON.stringify({ user_id: u.user_id, email: u.email, secciones, es_superadmin: u.es_superadmin, ver_costes: u.ver_costes }),
     })
     if (res.ok) {
       setFeedback(`Permisos de ${u.email} guardados correctamente`)
@@ -97,6 +98,21 @@ export default function GestionUsuarios() {
                 )
               })}
             </div>
+          )}
+
+          {/* Permiso costes */}
+          {!sup && (
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer', padding: '0.6rem 0.75rem', border: '1px solid var(--crema3)', background: 'var(--crema)', marginBottom: '0.75rem' }}>
+              <input type="checkbox"
+                checked={u.ver_costes}
+                onChange={e => update(u.user_id, { ver_costes: e.target.checked })}
+                style={{ accentColor: 'var(--negro)', width: 14, height: 14 }}
+              />
+              <div>
+                <p style={{ fontSize: '0.78rem', color: 'var(--negro)', fontFamily: 'DM Sans, sans-serif' }}>Ver costes en Fichas de Producto</p>
+                <p style={{ fontSize: '0.65rem', color: 'var(--gris)', fontFamily: 'DM Sans, sans-serif' }}>Si está desactivado, el usuario no verá precios, IGIC ni costes logísticos</p>
+              </div>
+            </label>
           )}
 
           <button onClick={() => guardarPermisos(u)}

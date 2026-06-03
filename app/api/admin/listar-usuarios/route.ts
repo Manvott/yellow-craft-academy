@@ -33,6 +33,7 @@ export async function GET(request: NextRequest) {
       email: u.email ?? '',
       secciones: rol?.secciones ?? ['registros', 'solicitudes', 'fichas', 'pildoras'],
       es_superadmin: rol?.es_superadmin ?? false,
+      ver_costes: rol?.ver_costes ?? true,
       es_yo: u.id === session.user.id,
     }
   })

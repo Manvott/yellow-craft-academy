@@ -34,17 +34,25 @@ export interface ProductoFicha {
 export default async function FichasPage() {
   let productos: ProductoFicha[] = []
   let proveedores: Proveedor[] = []
+  let verCostes = true
 
   try {
     const supabase = await createClient()
-    const [{ data: p }, { data: prov }] = await Promise.all([
+    const { data: { session } } = await supabase.auth.getSession()
+
+    const [{ data: p }, { data: prov }, { data: rol }] = await Promise.all([
       supabase.from('productos')
         .select('*, proveedor:proveedores(nombre), combinaciones:producto_combinaciones(*)')
         .order('orden'),
       supabase.from('proveedores').select('*').eq('activo', true).order('nombre'),
+      session ? supabase.from('admin_roles').select('ver_costes, es_superadmin').eq('user_id', session.user.id).single() : Promise.resolve({ data: null }),
     ])
     productos = (p as ProductoFicha[]) ?? []
     proveedores = (prov as Proveedor[]) ?? []
+    // Superadmin siempre ve costes; resto respeta el campo
+    if (rol && !rol.es_superadmin) {
+      verCostes = rol.ver_costes ?? true
+    }
   } catch {}
 
   return (
@@ -58,7 +66,7 @@ export default async function FichasPage() {
       <p style={{ fontSize: '0.78rem', color: 'var(--gris)', marginBottom: '2rem' }}>
         Crea fichas con escandallo y costes. Activa <strong>Publicar al catálogo</strong> para que aparezcan en el portal.
       </p>
-      <FichasManager productos={productos} proveedores={proveedores} />
+      <FichasManager productos={productos} proveedores={proveedores} verCostes={verCostes} />
     </div>
   )
 }

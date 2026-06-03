@@ -254,23 +254,20 @@ export default function FichasManager({ productos, proveedores }: Props) {
                   <button type="button" onClick={() => setForm(p => ({ ...p, imagen_url: '' }))} style={{ fontSize: '0.65rem', color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer' }}>Quitar</button>
                 </div>
               )}
-              <div style={{ display: 'flex', gap: '0.4rem' }}>
-                <input value={form.imagen_url} onChange={f('imagen_url')} style={{ ...S.input, flex: 1 }} placeholder="https://... o sube un archivo →" />
-                <input
-                  type="file" accept="image/*" style={{ display: 'none' }}
-                  ref={el => { imgInputRef.current = el }}
-                  onChange={e => {
-                    const file = e.target.files?.[0]
-                    if (file) { setImgFile(file); setForm(p => ({ ...p, imagen_url: `[${file.name}]` })) }
-                  }}
-                />
-                <button type="button"
-                  onClick={() => imgInputRef.current?.click()}
-                  style={{ background: 'var(--negro)', color: 'var(--crema)', border: 'none', padding: '0 0.9rem', fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase', cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: 'DM Sans, sans-serif' }}>
-                  {imgFile ? '✓ ' + imgFile.name.substring(0, 12) + '...' : '+ Archivo'}
-                </button>
-              </div>
-              {imgFile && <p style={{ fontSize: '0.65rem', color: '#16a34a', marginTop: '0.25rem' }}>✓ {imgFile.name} — se subirá al guardar</p>}
+              <input
+                type="file" accept="image/*" style={{ display: 'none' }}
+                ref={el => { imgInputRef.current = el }}
+                onChange={e => {
+                  const file = e.target.files?.[0]
+                  if (file) { setImgFile(file); setForm(p => ({ ...p, imagen_url: `[${file.name}]` })) }
+                }}
+              />
+              <button type="button"
+                onClick={() => imgInputRef.current?.click()}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'var(--negro)', color: 'var(--crema)', border: 'none', padding: '0.65rem 1.25rem', fontSize: '0.68rem', letterSpacing: '0.15em', textTransform: 'uppercase', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                🖼️ {imgFile ? 'Cambiar imagen' : 'Añadir imagen'}
+              </button>
+              {imgFile && <p style={{ fontSize: '0.65rem', color: '#16a34a', marginTop: '0.25rem' }}>✓ {imgFile.name}</p>}
             </div>
 
             {/* Servicio */}

@@ -53,32 +53,23 @@ export default function FileUploadField({ label, bucket, accept, icono, urlActua
         </div>
       )}
 
-      <div style={{ display: 'flex', gap: '0.4rem' }}>
-        {/* Input URL manual */}
-        <input
-          value={urlActual.startsWith('https://') ? urlActual : ''}
-          onChange={e => { onUploaded(e.target.value); setFile(null) }}
-          style={{ ...S.input, flex: 1 }}
-          placeholder="https://... o usa el botón →"
-        />
+      {/* Input file oculto */}
+      <input
+        ref={inputRef}
+        type="file"
+        accept={accept}
+        style={{ display: 'none' }}
+        onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f) }}
+      />
 
-        {/* Input file oculto */}
-        <input
-          ref={inputRef}
-          type="file"
-          accept={accept}
-          style={{ display: 'none' }}
-          onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f) }}
-        />
-
-        {/* Botón subir */}
-        <button type="button"
-          onClick={() => inputRef.current?.click()}
-          disabled={uploading}
-          style={{ background: 'var(--negro)', color: 'var(--crema)', border: 'none', padding: '0 1rem', fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase', cursor: uploading ? 'wait' : 'pointer', whiteSpace: 'nowrap', fontFamily: 'DM Sans, sans-serif', opacity: uploading ? 0.6 : 1 }}>
-          {uploading ? 'Subiendo...' : `+ ${icono}`}
-        </button>
-      </div>
+      {/* Botón subir */}
+      <button type="button"
+        onClick={() => inputRef.current?.click()}
+        disabled={uploading}
+        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'var(--negro)', color: 'var(--crema)', border: 'none', padding: '0.65rem 1.25rem', fontSize: '0.68rem', letterSpacing: '0.15em', textTransform: 'uppercase', cursor: uploading ? 'wait' : 'pointer', whiteSpace: 'nowrap', fontFamily: 'DM Sans, sans-serif', opacity: uploading ? 0.6 : 1 }}>
+        <span style={{ fontSize: '1rem' }}>{icono}</span>
+        {uploading ? 'Subiendo...' : 'Añadir'}
+      </button>
 
       {file && !uploading && !error && (
         <p style={{ fontSize: '0.65rem', color: '#16a34a', marginTop: '0.25rem' }}>✓ {file.name} subido correctamente</p>

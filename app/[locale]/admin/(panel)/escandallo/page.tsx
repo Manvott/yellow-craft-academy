@@ -27,7 +27,7 @@ export default async function EscandalloPage() {
       .from('productos')
       .select('id, nombre, descripcion, categoria, tipo_servicio, publicado_catalogo, proveedor:proveedores(nombre), combinaciones:producto_combinaciones(*)')
       .order('nombre')
-    productos = (data as ProductoEscandallo[]) ?? []
+    productos = (data as unknown as ProductoEscandallo[]) ?? []
   } catch {}
 
   return (

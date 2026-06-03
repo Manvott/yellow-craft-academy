@@ -12,7 +12,7 @@ const S = {
   label: { fontSize: '0.58rem', letterSpacing: '0.2em', textTransform: 'uppercase' as const, color: 'var(--gris)', fontFamily: 'DM Sans, sans-serif' },
 }
 
-interface Comb { id?: string; nombre: string; peso: string; unidad: string; orden: number }
+interface Comb { id?: string | null; nombre: string; peso: string; unidad: string; orden: number }
 
 function emptyComb(orden = 0): Comb { return { nombre: '', peso: '', unidad: 'g', orden } }
 

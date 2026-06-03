@@ -8,6 +8,7 @@ type InformeType =
   | 'asistencia'
   | 'por-isla'
   | 'por-perfil'
+  | 'menu'
   | 'por-bloque'
   | 'solicitudes'
   | 'productos'
@@ -215,6 +216,44 @@ export async function GET(request: NextRequest) {
     XLSX.utils.book_append_sheet(wb, ws, 'Catálogo productos')
   }
 
+  // ── MENÚ — ingredientes y escandallo ────────────────────────────────────────
+  if (tipo === 'menu') {
+    const { data: productos } = await sb
+      .from('productos')
+      .select('nombre, categoria, tipo_servicio, proveedor:proveedores(nombre), combinaciones:producto_combinaciones(*)')
+      .order('nombre')
+
+    const wb2 = wb // usa el mismo workbook
+
+    // Hoja resumen: un producto por fila con sus ingredientes
+    const resumen = (productos ?? []).map((p: any) => ({
+      'Producto': p.nombre,
+      'Marca': p.proveedor?.nombre ?? '',
+      'Categoría': p.categoria ?? '',
+      'Servicio': p.tipo_servicio ?? '',
+      'Nº ingredientes': (p.combinaciones ?? []).filter((c: any) => c.nombre).length,
+    }))
+    const wsRes = XLSX.utils.json_to_sheet(resumen)
+    wsRes['!cols'] = colWidths([28, 20, 16, 14, 14])
+    XLSX.utils.book_append_sheet(wb, wsRes, 'Resumen menú')
+
+    // Hoja detalle: una fila por ingrediente
+    const detalle: any[] = []
+    ;(productos ?? []).forEach((p: any) => {
+      const combs = (p.combinaciones ?? []).filter((c: any) => c.nombre)
+      if (combs.length === 0) {
+        detalle.push({ 'Producto': p.nombre, 'Marca': p.proveedor?.nombre ?? '', 'Ingrediente': '—', 'Cantidad': '', 'Unidad': '' })
+      } else {
+        combs.sort((a: any, b: any) => a.orden - b.orden).forEach((c: any) => {
+          detalle.push({ 'Producto': p.nombre, 'Marca': p.proveedor?.nombre ?? '', 'Ingrediente': c.nombre, 'Cantidad': c.peso ?? '', 'Unidad': c.unidad ?? '' })
+        })
+      }
+    })
+    const wsDet = XLSX.utils.json_to_sheet(detalle)
+    wsDet['!cols'] = colWidths([28, 20, 28, 12, 10])
+    XLSX.utils.book_append_sheet(wb, wsDet, 'Detalle ingredientes')
+  }
+
   // ── 8. RESUMEN EJECUTIVO ─────────────────────────────────────────────────────
   if (tipo === 'resumen') {
     const [
@@ -267,6 +306,7 @@ export async function GET(request: NextRequest) {
     'por-bloque': 'analisis-por-bloque',
     'solicitudes': 'solicitudes-producto',
     'productos': 'catalogo-productos',
+    'menu': 'menu-ingredientes',
     'resumen': 'resumen-ejecutivo',
   }
   const filename = `YCA-${nombres[tipo]}-${new Date().toISOString().split('T')[0]}.xlsx`

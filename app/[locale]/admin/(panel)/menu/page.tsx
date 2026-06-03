@@ -10,7 +10,7 @@ export interface ProductoEscandallo {
   publicado_catalogo: boolean
   proveedor?: { nombre: string }
   combinaciones?: {
-    id: string
+    id?: string
     nombre: string
     peso: number | null
     unidad: string

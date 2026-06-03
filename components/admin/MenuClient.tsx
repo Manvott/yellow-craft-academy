@@ -12,7 +12,7 @@ const S = {
   label: { fontSize: '0.58rem', letterSpacing: '0.2em', textTransform: 'uppercase' as const, color: 'var(--gris)', fontFamily: 'DM Sans, sans-serif' },
 }
 
-interface Comb { id?: string | null; nombre: string; peso: string; unidad: string; orden: number }
+interface Comb { id?: string; nombre: string; peso: string; unidad: string; orden: number }
 
 function emptyComb(orden = 0): Comb { return { nombre: '', peso: '', unidad: 'g', orden } }
 
@@ -39,7 +39,7 @@ export default function MenuClient({ productos }: { productos: ProductoEscandall
       .sort((a, b) => a.orden - b.orden)
       .map(c => ({ id: c.id ?? undefined, nombre: c.nombre, peso: c.peso?.toString() ?? '', unidad: c.unidad, orden: c.orden }))
     // Siempre al menos 5 filas
-    while (existentes.length < 5) existentes.push(emptyComb(existentes.length) as Comb)
+    while (existentes.length < 5) existentes.push({ ...emptyComb(existentes.length) })
     setCombs(existentes)
   }
 

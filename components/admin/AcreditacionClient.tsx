@@ -243,12 +243,24 @@ export default function AcreditacionClient({ registros }: Props) {
                 </button>
               ))}
             </div>
-            <p style={{ fontSize: '0.65rem', color: 'var(--gris-l)', fontFamily: 'DM Sans, sans-serif', fontStyle: 'italic' }}>
-              Ajusta el tamaño según el formato de etiqueta y descarga cada QR como PNG
+
+            {/* Botón imprimir */}
+            <button
+              onClick={() => window.print()}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'var(--negro)', color: 'var(--crema)', border: 'none', padding: '0.65rem 1.25rem', fontSize: '0.68rem', letterSpacing: '0.18em', textTransform: 'uppercase', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', whiteSpace: 'nowrap' }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                <polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
+                <rect x="6" y="14" width="12" height="8"/>
+              </svg>
+              Imprimir
+            </button>
+
+            <p style={{ fontSize: '0.62rem', color: 'var(--gris-l)', fontFamily: 'DM Sans, sans-serif', fontStyle: 'italic', width: '100%' }}>
+              Ajusta el tamaño según el formato de etiqueta · Descarga PNG individual o imprime todos directamente
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fill, minmax(${qrSize + 24}px, 1fr))`, gap: '1rem' }}>
+          <div id="qr-grid" style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fill, minmax(${qrSize + 24}px, 1fr))`, gap: '1rem' }}>
             {filtered.map(r => <QRCard key={r.id} registro={r} size={qrSize} />)}
           </div>
           {filtered.length === 0 && (
@@ -257,8 +269,48 @@ export default function AcreditacionClient({ registros }: Props) {
 
           <style>{`
             @media print {
+              /* Ocultar todo el admin excepto los QR */
+              body > * { display: none !important; }
+              #qr-print-area { display: flex !important; }
+
+              /* Sidebar, topbar, controles */
+              .admin-sidebar,
+              .admin-topbar,
+              .no-print { display: none !important; }
+
+              /* Main sin padding */
+              .admin-main { margin: 0 !important; padding: 0 !important; }
+
+              /* Grid de QR — ajustable según tamaño elegido */
+              #qr-grid {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                gap: 8mm !important;
+                padding: 8mm !important;
+              }
+
+              /* Cada tarjeta QR */
+              .qr-card {
+                border: 0.5pt solid #ccc !important;
+                padding: 4mm !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+              }
+
+              /* Ocultar botón PNG en impresión */
               .qr-card button { display: none !important; }
-              body * { font-size: 10pt; }
+
+              /* Fuente limpia */
+              .qr-card p, .qr-card span {
+                font-family: Arial, sans-serif !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+              }
+
+              @page {
+                margin: 6mm;
+                size: A4;
+              }
             }
           `}</style>
         </div>

@@ -101,7 +101,7 @@ export default function GestionUsuarios() {
           )}
 
           {/* Permiso costes */}
-          {!sup && (
+          {!u.es_superadmin && (
             <label style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer', padding: '0.6rem 0.75rem', border: '1px solid var(--crema3)', background: 'var(--crema)', marginBottom: '0.75rem' }}>
               <input type="checkbox"
                 checked={u.ver_costes}

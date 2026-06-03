@@ -259,7 +259,7 @@ export default function PillorasAdminManager({ secciones }: Props) {
                       <div className="flex gap-2">
                         <button onClick={() => {
                           setEditingPil(p.id)
-                          setPilForm({ seccion_id: p.seccion_id, titulo: p.titulo, contenido: p.contenido ?? '', imagen_url: p.imagen_url ?? '', video_url: p.video_url ?? '', orden: p.orden, activo: p.activo })
+                          setPilForm({ seccion_id: p.seccion_id, titulo: p.titulo, contenido: p.contenido ?? '', imagen_url: p.imagen_url ?? '', video_url: p.video_url ?? '', pdf_url: (p as any).pdf_url ?? '', audio_url: (p as any).audio_url ?? '', orden: p.orden, activo: p.activo })
                         }} className="text-xs text-blue-600 hover:underline">Editar</button>
                         <button onClick={() => removePil(p.id)} className="text-xs text-red-500 hover:underline">Eliminar</button>
                       </div>

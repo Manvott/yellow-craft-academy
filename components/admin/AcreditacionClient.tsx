@@ -289,12 +289,30 @@ export default function AcreditacionClient({ registros }: Props) {
                 padding: 8mm !important;
               }
 
-              /* Cada tarjeta QR */
+              /* Cada tarjeta QR ocupa su propia página */
               .qr-card {
-                border: 0.5pt solid #ccc !important;
-                padding: 4mm !important;
-                page-break-inside: avoid !important;
-                break-inside: avoid !important;
+                border: none !important;
+                padding: 8mm !important;
+                page-break-after: always !important;
+                break-after: page !important;
+                width: 100% !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
+                min-height: 90vh !important;
+                gap: 4mm !important;
+              }
+
+              .qr-card:last-child {
+                page-break-after: avoid !important;
+                break-after: avoid !important;
+              }
+
+              /* QR más grande en impresión */
+              .qr-card canvas {
+                width: auto !important;
+                height: auto !important;
               }
 
               /* Ocultar botón PNG en impresión */

@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import EscandalloClient from '@/components/admin/EscandalloClient'
+import MenuClient from '@/components/admin/MenuClient'
 
 export interface ProductoEscandallo {
   id: string
@@ -33,15 +33,15 @@ export default async function EscandalloPage() {
   return (
     <div>
       <p style={{ fontSize: '0.6rem', letterSpacing: '0.4em', textTransform: 'uppercase', color: 'var(--gris)', marginBottom: '0.4rem', fontFamily: 'DM Sans, sans-serif' }}>
-        Cálculo de costes
+        Informes · Gestión de menú
       </p>
       <h1 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '2rem', fontWeight: 300, color: 'var(--negro)', marginBottom: '0.4rem', lineHeight: 1 }}>
-        Escandallo
+        Menú
       </h1>
       <p style={{ fontSize: '0.78rem', color: 'var(--gris)', marginBottom: '2rem', fontFamily: 'DM Sans, sans-serif' }}>
         Gestiona los ingredientes y cantidades de cada producto del catálogo.
       </p>
-      <EscandalloClient productos={productos} />
+      <MenuClient productos={productos} />
     </div>
   )
 }

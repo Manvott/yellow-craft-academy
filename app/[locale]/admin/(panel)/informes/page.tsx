@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
+import Link from 'next/link'
 
-export default async function InformesPage() {
+export default async function InformesPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params
   let stats = { inscritos: 0, asistieron: 0, productos: 0, solicitudes: 0, marcas: 0 }
   try {
     const supabase = await createClient()
@@ -101,6 +103,29 @@ export default async function InformesPage() {
         ))}
       </div>
 
+      {/* ── SECCIÓN GESTIÓN — Menú ── */}
+      <div style={{ marginBottom: '2.5rem' }}>
+        <p style={{ fontSize: '0.6rem', letterSpacing: '0.35em', textTransform: 'uppercase', color: 'var(--gris)', marginBottom: '1rem', fontFamily: 'DM Sans, sans-serif' }}>
+          Gestión
+        </p>
+        <Link href={`/${locale}/admin/menu`} style={{ textDecoration: 'none' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', padding: '1.25rem 1.5rem', background: 'var(--negro)', border: '1px solid var(--negro)', cursor: 'pointer', maxWidth: 480 }}>
+            <span style={{ fontSize: '1.8rem' }}>🍽️</span>
+            <div style={{ flex: 1 }}>
+              <p style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1.2rem', fontWeight: 300, color: 'var(--crema)', lineHeight: 1.1, marginBottom: '0.3rem' }}>Menú</p>
+              <p style={{ fontSize: '0.72rem', color: 'rgba(247,243,238,0.5)', fontFamily: 'DM Sans, sans-serif', lineHeight: 1.5 }}>
+                Gestiona los ingredientes y cantidades de cada producto del catálogo.
+              </p>
+            </div>
+            <span style={{ color: 'var(--amarillo)', fontSize: '1.2rem' }}>›</span>
+          </div>
+        </Link>
+      </div>
+
+      {/* ── INFORMES EXCEL ── */}
+      <p style={{ fontSize: '0.6rem', letterSpacing: '0.35em', textTransform: 'uppercase', color: 'var(--gris)', marginBottom: '1rem', fontFamily: 'DM Sans, sans-serif' }}>
+        Exportar en Excel
+      </p>
       {/* Grid de informes */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1rem' }}>
         {informes.map(inf => (

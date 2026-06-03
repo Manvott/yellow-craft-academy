@@ -320,36 +320,6 @@ export default function FichasManager({ productos, proveedores, verCostes = true
             {uploadProgress && <p style={{ fontSize: '0.75rem', color: '#2563eb', marginTop: '0.3rem' }}>{uploadProgress}</p>}
           </div>
 
-          {/* ── ESCANDALLO ── */}
-          <div style={{ ...S.section }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-              <p style={{ ...S.label, marginBottom: 0, color: 'var(--negro)' }}>Productos a combinar / Escandallo</p>
-              <button type="button" onClick={addComb}
-                style={{ fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase', background: 'var(--negro)', color: 'var(--crema)', border: 'none', padding: '0.3rem 0.75rem', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
-                + Añadir
-              </button>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto auto', gap: '0.5rem', marginBottom: '0.4rem' }}>
-              {['Producto / Ingrediente', 'Cantidad', 'Unidad', '', ''].map((h, i) => (
-                <span key={i} style={{ fontSize: '0.58rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gris)', fontFamily: 'DM Sans, sans-serif' }}>{h}</span>
-              ))}
-            </div>
-            {combinaciones.map((c, idx) => (
-              <div key={idx} style={{ display: 'grid', gridTemplateColumns: '1fr 100px 90px 24px', gap: '0.4rem', marginBottom: '0.4rem' }}>
-                <input value={c.nombre} onChange={e => updateComb(idx, 'nombre', e.target.value)}
-                  style={{ ...S.input, padding: '0.5rem 0.75rem' }} placeholder={`Ingrediente ${idx + 1}`} />
-                <input type="number" value={c.peso} onChange={e => updateComb(idx, 'peso', e.target.value)}
-                  style={{ ...S.input, padding: '0.5rem 0.6rem' }} placeholder="0" />
-                <select value={c.unidad} onChange={e => updateComb(idx, 'unidad', e.target.value)}
-                  style={{ ...S.input, padding: '0.5rem 0.4rem', cursor: 'pointer' }}>
-                  {UNIDADES.map(u => <option key={u} value={u}>{u}</option>)}
-                </select>
-                <button type="button" onClick={() => removeComb(idx)}
-                  style={{ background: 'none', border: '1px solid #fca5a5', color: '#dc2626', cursor: 'pointer', fontSize: '0.9rem', lineHeight: 1 }}>×</button>
-              </div>
-            ))}
-          </div>
-
           {/* ── COSTES — solo visible si el usuario tiene permiso ── */}
           {verCostes && <div style={{ ...S.section }}>
             <p style={{ ...S.label, marginBottom: '0.75rem', color: 'var(--negro)' }}>Costes</p>

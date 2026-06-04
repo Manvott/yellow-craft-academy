@@ -79,41 +79,45 @@ export default function FichasManager({ productos, proveedores, verCostes = true
     setUploadProgress('')
     const supabase = createClient()
 
-    // Subir imagen si hay archivo nuevo
+    // Subir imagen via API route (evita CORS del browser)
     let imagenUrl = form.imagen_url
     if (imgFile) {
       setUploadProgress('Subiendo imagen...')
-      const ext = imgFile.name.split('.').pop()
-      const imgPath = `${Date.now()}-img-${form.nombre.replace(/\s+/g, '-').toLowerCase()}.${ext}`
-      const { data: imgData, error: imgErr } = await supabase.storage
-        .from('product-images')
-        .upload(imgPath, imgFile, { upsert: true })
-      if (imgErr) {
-        setUploadProgress(`Error al subir imagen: ${imgErr.message}`)
-        setLoading(false)
-        return
+      try {
+        const ext = imgFile.name.split('.').pop() ?? 'jpg'
+        const imgPath = `${Date.now()}-img.${ext}`
+        const fd = new FormData()
+        fd.append('file', imgFile)
+        fd.append('bucket', 'product-images')
+        fd.append('path', imgPath)
+        const res = await fetch('/api/upload', { method: 'POST', body: fd })
+        const data = await res.json()
+        if (!res.ok) { setUploadProgress(`Error: ${data.error}`); setLoading(false); return }
+        imagenUrl = data.url
+      } catch {
+        setUploadProgress('Error de red al subir imagen.'); setLoading(false); return
       }
-      const { data: { publicUrl: imgPub } } = supabase.storage.from('product-images').getPublicUrl(imgData.path)
-      imagenUrl = imgPub
       setUploadProgress('')
     }
 
-    // Subir PDF si hay uno nuevo
+    // Subir PDF via API route (evita CORS del browser)
     let fichaUrl = pdfActual
     if (pdfFile) {
       setUploadProgress('Subiendo PDF...')
-      const ext = pdfFile.name.split('.').pop()
-      const path = `${Date.now()}-${form.nombre.replace(/\s+/g, '-').toLowerCase()}.${ext}`
-      const { data: uploadData, error: uploadErr } = await supabase.storage
-        .from('fichas-tecnicas')
-        .upload(path, pdfFile, { upsert: true })
-      if (uploadErr) {
-        setUploadProgress(`Error al subir PDF: ${uploadErr.message}`)
-        setLoading(false)
-        return
+      try {
+        const ext = pdfFile.name.split('.').pop() ?? 'pdf'
+        const path = `${Date.now()}-ficha.${ext}`
+        const fd = new FormData()
+        fd.append('file', pdfFile)
+        fd.append('bucket', 'fichas-tecnicas')
+        fd.append('path', path)
+        const res = await fetch('/api/upload', { method: 'POST', body: fd })
+        const data = await res.json()
+        if (!res.ok) { setUploadProgress(`Error: ${data.error}`); setLoading(false); return }
+        fichaUrl = data.url
+      } catch {
+        setUploadProgress('Error de red al subir PDF.'); setLoading(false); return
       }
-      const { data: { publicUrl } } = supabase.storage.from('fichas-tecnicas').getPublicUrl(uploadData.path)
-      fichaUrl = publicUrl
       setUploadProgress('')
     }
 

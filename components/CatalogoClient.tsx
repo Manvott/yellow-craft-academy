@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react'
 import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 import type { Producto, Proveedor } from '@/lib/types'
+import { CATEGORIAS_PRODUCTO } from '@/lib/categorias'
 import ProductCard from './ProductCard'
 
 interface Props {
@@ -18,8 +19,14 @@ export default function CatalogoClient({ productos, proveedores }: Props) {
   const [categoriaFiltro, setCategoriaFiltro] = useState('all')
 
   const categorias = useMemo(() => {
-    const cats = new Set(productos.map(p => p.categoria).filter(Boolean))
-    return Array.from(cats) as string[]
+    // Categorías de los productos existentes + lista predefinida completa
+    const enProductos = new Set(productos.map(p => p.categoria).filter(Boolean) as string[])
+    // Mostrar primero las que tienen productos, luego el resto
+    const conProductos = CATEGORIAS_PRODUCTO.filter(c => enProductos.has(c))
+    const sinProductos = CATEGORIAS_PRODUCTO.filter(c => !enProductos.has(c))
+    // También incluir cualquier categoría custom que no esté en la lista
+    const custom = Array.from(enProductos).filter(c => !(CATEGORIAS_PRODUCTO as readonly string[]).includes(c))
+    return [...conProductos, ...custom, ...sinProductos]
   }, [productos])
 
   // Proveedores con al menos 1 producto publicado

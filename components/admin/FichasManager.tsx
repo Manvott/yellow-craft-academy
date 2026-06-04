@@ -8,52 +8,9 @@ import type { Proveedor } from '@/lib/types'
 
 interface Props { productos: ProductoFicha[]; proveedores: Proveedor[]; verCostes?: boolean }
 
-const UNIDADES = ['g', 'kg', 'ml', 'l', 'cl', 'oz', 'ud', 'ración']
+import { CATEGORIAS_PRODUCTO } from '@/lib/categorias'
 
-const CATEGORIAS_PRODUCTO = [
-  // Chocolates
-  'CHOCOLATE CON LECHE DE ORIGEN',
-  'CHOCOLATE NEGRO',
-  'CHOCOLATE NEGRO DE COBERTURA',
-  'CHOCOLATE NEGRO DE ORIGEN',
-  'COBERTURA',
-  'SURTIDO DE CHOCOLATES',
-  'DECORACIÓN DE CHOCOLATE',
-  // Pulpas y frutas
-  'PULPA DE FRUTA REFRIGERADA',
-  'PULPA DE CÍTRICO PREMIUM',
-  'FRUTA DESHIDRATADA',
-  // Pastas, cremas y rellenos
-  'PASTA PURA DE FRUTO SECO',
-  'PASTA AROMATIZANTE',
-  'CREMA UNTABLE',
-  'RELLENO PARA BOLLERÍA',
-  // Bebidas e infusiones
-  'BEBIDA / INFUSIÓN PREMIUM',
-  'INFUSIÓN',
-  // Aromas y extractos
-  'CONCENTRADO AROMÁTICO NATURAL',
-  'EXTRACTO NATURAL',
-  'AROMA NATURAL',
-  'VAINILLA',
-  // Panadería y bollería
-  'PAN ARTESANO',
-  'PAN ARTESANO INDIVIDUAL',
-  // Lácteos y grasas
-  'MANTEQUILLA',
-  // Gastronomía y cocina
-  'CALDO',
-  'SALSA',
-  'TEXTURA',
-  'POSTRE',
-  'HELADO',
-  'AMENITY',
-  // Especias y sazonadores
-  'SAZONADOR',
-  'ESPECIA',
-  // Otros
-  'OTRO',
-]
+const UNIDADES = ['g', 'kg', 'ml', 'l', 'cl', 'oz', 'ud', 'ración']
 
 const emptyForm = {
   proveedor_id: '', nombre: '', descripcion: '', imagen_url: '',

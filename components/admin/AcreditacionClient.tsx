@@ -32,9 +32,9 @@ function imprimirQR(canvas: HTMLCanvasElement | null, r: RegistroAcred) {
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background: #fff; font-family: Arial, sans-serif; padding: 16px; }
       img { max-width: 100%; height: auto; display: block; }
-      .nombre { font-size: 16px; font-weight: bold; margin-top: 10px; text-align: center; }
-      .empresa { font-size: 12px; color: #666; margin-top: 4px; text-align: center; }
-      .isla { font-size: 11px; background: #F5C518; color: #000; padding: 2px 8px; margin-top: 6px; display: inline-block; }
+      .nombre { font-size: 28px; font-weight: bold; margin-top: 14px; text-align: center; letter-spacing: -0.3px; }
+      .empresa { font-size: 20px; color: #333; margin-top: 6px; text-align: center; }
+      .isla { font-size: 16px; background: #F5C518; color: #000; padding: 4px 12px; margin-top: 8px; display: inline-block; font-weight: 600; }
       @media print { body { padding: 0; } }
     </style>
   </head><body>
@@ -47,7 +47,7 @@ function imprimirQR(canvas: HTMLCanvasElement | null, r: RegistroAcred) {
   win.document.close()
 }
 
-function QRInline({ registro, size = 180 }: { registro: RegistroAcred; size?: number }) {
+function QRInline({ registro, size = 150 }: { registro: RegistroAcred; size?: number }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
@@ -94,8 +94,9 @@ function QRInline({ registro, size = 180 }: { registro: RegistroAcred; size?: nu
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', padding: '0.75rem', background: 'var(--blanco)', border: '1px solid var(--crema3)' }}>
       <canvas ref={canvasRef} style={{ display: 'block' }} />
-      <p style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '0.9rem', fontWeight: 400, color: 'var(--negro)', textAlign: 'center', lineHeight: 1.2 }}>{registro.nombre}</p>
-      {registro.empresa && <p style={{ fontSize: '0.6rem', color: 'var(--gris)', textAlign: 'center' }}>{registro.empresa}</p>}
+      <p style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1.3rem', fontWeight: 500, color: 'var(--negro)', textAlign: 'center', lineHeight: 1.2, marginTop: '0.4rem' }}>{registro.nombre}</p>
+      {registro.empresa && <p style={{ fontSize: '0.9rem', color: 'var(--grafito)', textAlign: 'center', fontFamily: 'DM Sans, sans-serif' }}>{registro.empresa}</p>}
+      {registro.isla && <span style={{ fontSize: '0.75rem', background: 'var(--amarillo)', color: 'var(--negro)', padding: '0.15rem 0.6rem', fontWeight: 600, fontFamily: 'DM Sans, sans-serif' }}>{registro.isla}</span>}
       <div style={{ display: 'flex', gap: '0.4rem' }}>
         <button onClick={descargar}
           style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', background: 'var(--negro)', color: 'var(--crema)', border: 'none', padding: '0.3rem 0.75rem', fontSize: '0.6rem', letterSpacing: '0.15em', textTransform: 'uppercase', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>

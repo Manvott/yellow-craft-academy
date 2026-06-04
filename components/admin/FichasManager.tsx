@@ -10,6 +10,51 @@ interface Props { productos: ProductoFicha[]; proveedores: Proveedor[]; verCoste
 
 const UNIDADES = ['g', 'kg', 'ml', 'l', 'cl', 'oz', 'ud', 'ración']
 
+const CATEGORIAS_PRODUCTO = [
+  // Chocolates
+  'CHOCOLATE CON LECHE DE ORIGEN',
+  'CHOCOLATE NEGRO',
+  'CHOCOLATE NEGRO DE COBERTURA',
+  'CHOCOLATE NEGRO DE ORIGEN',
+  'COBERTURA',
+  'SURTIDO DE CHOCOLATES',
+  'DECORACIÓN DE CHOCOLATE',
+  // Pulpas y frutas
+  'PULPA DE FRUTA REFRIGERADA',
+  'PULPA DE CÍTRICO PREMIUM',
+  'FRUTA DESHIDRATADA',
+  // Pastas, cremas y rellenos
+  'PASTA PURA DE FRUTO SECO',
+  'PASTA AROMATIZANTE',
+  'CREMA UNTABLE',
+  'RELLENO PARA BOLLERÍA',
+  // Bebidas e infusiones
+  'BEBIDA / INFUSIÓN PREMIUM',
+  'INFUSIÓN',
+  // Aromas y extractos
+  'CONCENTRADO AROMÁTICO NATURAL',
+  'EXTRACTO NATURAL',
+  'AROMA NATURAL',
+  'VAINILLA',
+  // Panadería y bollería
+  'PAN ARTESANO',
+  'PAN ARTESANO INDIVIDUAL',
+  // Lácteos y grasas
+  'MANTEQUILLA',
+  // Gastronomía y cocina
+  'CALDO',
+  'SALSA',
+  'TEXTURA',
+  'POSTRE',
+  'HELADO',
+  'AMENITY',
+  // Especias y sazonadores
+  'SAZONADOR',
+  'ESPECIA',
+  // Otros
+  'OTRO',
+]
+
 const emptyForm = {
   proveedor_id: '', nombre: '', descripcion: '', imagen_url: '',
   categoria: '', precio_base: '', tiene_cargo: false,
@@ -237,7 +282,16 @@ export default function FichasManager({ productos, proveedores, verCostes = true
             </div>
             <div>
               <label style={S.label}>Categoría</label>
-              <input value={form.categoria} onChange={f('categoria')} style={S.input} placeholder="Bebida, Alimento..." />
+              <input
+                value={form.categoria}
+                onChange={f('categoria')}
+                list="categorias-list"
+                style={S.input}
+                placeholder="Selecciona o escribe una categoría..."
+              />
+              <datalist id="categorias-list">
+                {CATEGORIAS_PRODUCTO.map(c => <option key={c} value={c} />)}
+              </datalist>
             </div>
 
             {/* Descripción */}

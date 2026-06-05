@@ -54,17 +54,6 @@ export default function RegistrosAdmin({ registros }: Props) {
             {f === 'todos' ? `Todos (${registros.length})` : f === 'pendientes' ? `Pendientes WA (${registros.filter(r => !r.wa_confirmado).length})` : `En lista WA (${registros.filter(r => r.wa_confirmado).length})`}
           </button>
         ))}
-        {/* Filtros de mensaje enviado */}
-        <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.4rem' }}>
-          <button onClick={() => setFiltro('todos')}
-            style={{ padding: '0.4rem 0.8rem', fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', fontFamily: 'DM Sans, sans-serif', border: '1px solid #16a34a', cursor: 'pointer', background: '#dcfce7', color: '#16a34a' }}>
-            ✓ Msg enviado: {registros.filter(r => (r as any).wa_mensaje_enviado).length}
-          </button>
-          <button onClick={() => setFiltro('todos')}
-            style={{ padding: '0.4rem 0.8rem', fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', fontFamily: 'DM Sans, sans-serif', border: '1px solid var(--crema3)', cursor: 'pointer', background: 'var(--crema2)', color: 'var(--gris)' }}>
-            ⏳ Pendiente: {registros.filter(r => !(r as any).wa_mensaje_enviado).length}
-          </button>
-        </div>
       </div>
 
       <div style={{ background: 'var(--blanco)', border: '1px solid var(--crema3)', overflow: 'hidden' }}>
@@ -90,15 +79,6 @@ export default function RegistrosAdmin({ registros }: Props) {
             </thead>
             <tbody>
               {filtered.map((r, i) => {
-                const etiqueta = [r.nombre, r.isla, r.empresa].filter(Boolean).join(' - ')
-                // U+2705 = ✅  U+1F449 = 👉  — rango básico, universal en WA
-                const check  = String.fromCodePoint(0x2705)
-                const arrow  = String.fromCodePoint(0x1F449)
-                const waText = encodeURIComponent(`Hola ${r.nombre} (${etiqueta}), gracias por inscribirte en Yellow Craft Academy ${check} Te confirmo tu plaza para el 15 de junio. Sala Ocean, Puerto del Carmen, Lanzarote. ¡Nos vemos allí!\n\nYa eres parte de esto. Ahora entra al canal y empieza a sentirlo.\n\n*Canal Yellow Craft Academy* ${arrow}\nhttps://whatsapp.com/channel/0029Vb7xaQO3LdQZWshdfx2R`)
-                const waLink = r.telefono
-                  ? `https://wa.me/${r.telefono.replace(/\D/g, '')}?text=${waText}`
-                  : null
-
                 return (
                   <tr key={r.id} style={{ borderBottom: '1px solid var(--crema3)', background: i % 2 === 0 ? 'var(--blanco)' : 'var(--crema)' }}>
 
@@ -153,30 +133,6 @@ export default function RegistrosAdmin({ registros }: Props) {
                     {/* Acciones */}
                     <td style={{ padding: '0.65rem 0.75rem', whiteSpace: 'nowrap' }}>
                       <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-                        {waLink && (
-                          <>
-                            {/* Abrir WhatsApp — NO marca como enviado */}
-                            <a href={waLink} target="_blank" rel="noopener noreferrer" title="Abrir WhatsApp"
-                              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.62rem', color: '#25D366', textDecoration: 'none', border: '1px solid #25D366', padding: '0.2rem 0.5rem' }}>
-                              {waIcono} Chat
-                            </a>
-                            {/* Marcar como enviado — acción manual y consciente */}
-                            <button
-                              onClick={async () => {
-                                const nuevo = !(r as any).wa_mensaje_enviado
-                                setUpdating(r.id)
-                                const supabase = createClient()
-                                await supabase.from('registros').update({ wa_mensaje_enviado: nuevo }).eq('id', r.id)
-                                setUpdating(null)
-                                router.refresh()
-                              }}
-                              disabled={updating === r.id}
-                              title={(r as any).wa_mensaje_enviado ? 'Desmarcar mensaje enviado' : 'Marcar mensaje como enviado'}
-                              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.62rem', border: `1px solid ${(r as any).wa_mensaje_enviado ? '#16a34a' : 'var(--crema3)'}`, padding: '0.2rem 0.5rem', background: (r as any).wa_mensaje_enviado ? '#dcfce7' : 'var(--crema2)', color: (r as any).wa_mensaje_enviado ? '#16a34a' : 'var(--gris)', cursor: 'pointer', opacity: updating === r.id ? 0.5 : 1 }}>
-                              {(r as any).wa_mensaje_enviado ? '✓ Enviado' : '○ Enviar'}
-                            </button>
-                          </>
-                        )}
                         <a href={`mailto:${r.email}`} title="Email"
                           style={{ display: 'inline-flex', alignItems: 'center', fontSize: '0.62rem', color: 'var(--gris)', textDecoration: 'none', border: '1px solid var(--crema3)', padding: '0.2rem 0.5rem' }}>
                           Email

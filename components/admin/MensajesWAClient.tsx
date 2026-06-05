@@ -28,7 +28,7 @@ export default function MensajesWAClient({ plantillas, registros, enviados }: Pr
   const [search, setSearch] = useState('')
   const [filtro, setFiltro] = useState<'todos' | 'pendientes' | 'enviados'>('todos')
   const [updating, setUpdating] = useState<string | null>(null)
-  const [editando, setEditando] = useState(false)
+  const [editando, setEditando] = useState<string | 'nueva' | false>(false)
   const [formTitulo, setFormTitulo] = useState('')
   const [formContenido, setFormContenido] = useState('')
   const [saving, setSaving] = useState(false)
@@ -68,12 +68,22 @@ export default function MensajesWAClient({ plantillas, registros, enviados }: Pr
     if (!formTitulo || !formContenido) return
     setSaving(true)
     const supabase = createClient()
-    await supabase.from('mensajes_wa_plantillas').insert({ titulo: formTitulo, contenido: formContenido, orden: plantillas.length + 1 })
+    if (editando === 'nueva') {
+      await supabase.from('mensajes_wa_plantillas').insert({ titulo: formTitulo, contenido: formContenido, orden: plantillas.length + 1 })
+    } else if (editando) {
+      await supabase.from('mensajes_wa_plantillas').update({ titulo: formTitulo, contenido: formContenido }).eq('id', editando)
+    }
     setSaving(false)
     setEditando(false)
     setFormTitulo('')
     setFormContenido('')
     router.refresh()
+  }
+
+  function startEditar(p: Plantilla) {
+    setEditando(p.id)
+    setFormTitulo(p.titulo)
+    setFormContenido(p.contenido)
   }
 
   const pct = registros.length ? Math.round((totalEnviados / registros.length) * 100) : 0
@@ -85,23 +95,32 @@ export default function MensajesWAClient({ plantillas, registros, enviados }: Pr
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
           <p style={{ fontSize: '0.6rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--gris)', fontFamily: 'DM Sans, sans-serif' }}>Mensajes</p>
-          <button onClick={() => setEditando(!editando)} style={{ fontSize: '0.62rem', letterSpacing: '0.1em', textTransform: 'uppercase', background: 'none', border: '1px solid var(--crema3)', padding: '0.25rem 0.6rem', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', color: 'var(--gris)' }}>
+          <button onClick={() => { setEditando('nueva'); setFormTitulo(''); setFormContenido('') }} style={{ fontSize: '0.62rem', letterSpacing: '0.1em', textTransform: 'uppercase', background: 'none', border: '1px solid var(--crema3)', padding: '0.25rem 0.6rem', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', color: 'var(--gris)' }}>
             {editando ? '✕' : '+ Nuevo'}
           </button>
         </div>
 
         {editando && (
           <div style={{ background: 'var(--blanco)', border: '2px solid var(--negro)', padding: '1rem', marginBottom: '0.75rem' }}>
+            <p style={{ fontSize: '0.65rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gris)', marginBottom: '0.75rem', fontFamily: 'DM Sans, sans-serif' }}>
+              {editando === 'nueva' ? 'Nuevo mensaje' : 'Editar mensaje'}
+            </p>
             <input value={formTitulo} onChange={e => setFormTitulo(e.target.value)} placeholder="Título *"
               style={{ width: '100%', background: 'var(--crema)', border: '1px solid var(--crema3)', padding: '0.6rem 0.75rem', fontSize: '0.78rem', outline: 'none', marginBottom: '0.5rem', fontFamily: 'DM Sans, sans-serif' }} />
             <textarea rows={5} value={formContenido} onChange={e => setFormContenido(e.target.value)}
               placeholder="Contenido... Variables: {nombre} {etiqueta} {isla} {empresa}"
               style={{ width: '100%', background: 'var(--crema)', border: '1px solid var(--crema3)', padding: '0.6rem 0.75rem', fontSize: '0.75rem', outline: 'none', resize: 'vertical', fontFamily: 'DM Sans, sans-serif', marginBottom: '0.5rem' }} />
             <p style={{ fontSize: '0.6rem', color: 'var(--gris-l)', marginBottom: '0.5rem' }}>Variables: {'{nombre}'} {'{etiqueta}'} {'{isla}'} {'{empresa}'}</p>
-            <button onClick={guardar} disabled={saving || !formTitulo || !formContenido}
-              style={{ background: 'var(--negro)', color: 'var(--crema)', border: 'none', padding: '0.5rem 1rem', fontSize: '0.68rem', letterSpacing: '0.15em', textTransform: 'uppercase', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', width: '100%', opacity: saving ? 0.5 : 1 }}>
-              {saving ? 'Guardando...' : 'Guardar'}
-            </button>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <button onClick={guardar} disabled={saving || !formTitulo || !formContenido}
+                style={{ flex: 1, background: 'var(--negro)', color: 'var(--crema)', border: 'none', padding: '0.5rem 1rem', fontSize: '0.68rem', letterSpacing: '0.15em', textTransform: 'uppercase', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', opacity: saving ? 0.5 : 1 }}>
+                {saving ? 'Guardando...' : editando === 'nueva' ? 'Crear' : 'Guardar cambios'}
+              </button>
+              <button onClick={() => { setEditando(false); setFormTitulo(''); setFormContenido('') }}
+                style={{ background: 'none', border: '1px solid var(--crema3)', padding: '0.5rem 0.75rem', fontSize: '0.68rem', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', color: 'var(--gris)' }}>
+                ✕
+              </button>
+            </div>
           </div>
         )}
 
@@ -110,15 +129,23 @@ export default function MensajesWAClient({ plantillas, registros, enviados }: Pr
             const n = registros.filter(r => enviadosSet.has(`${p.id}:${r.id}`)).length
             const sel = activa?.id === p.id
             return (
-              <button key={p.id} onClick={() => setActiva(p)} style={{ textAlign: 'left', padding: '0.85rem 1rem', border: `2px solid ${sel ? 'var(--negro)' : 'var(--crema3)'}`, background: sel ? 'var(--negro)' : 'var(--blanco)', cursor: 'pointer' }}>
-                <p style={{ fontWeight: 500, fontSize: '0.82rem', color: sel ? 'var(--crema)' : 'var(--negro)', marginBottom: '0.3rem', fontFamily: 'DM Sans, sans-serif' }}>{p.titulo}</p>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <div style={{ flex: 1, height: 4, background: sel ? 'rgba(247,243,238,0.15)' : 'var(--crema2)', borderRadius: 2 }}>
-                    <div style={{ height: '100%', width: `${registros.length ? (n / registros.length) * 100 : 0}%`, background: '#25D366', borderRadius: 2 }} />
+              <div key={p.id} style={{ border: `2px solid ${sel ? 'var(--negro)' : 'var(--crema3)'}`, background: sel ? 'var(--negro)' : 'var(--blanco)' }}>
+                <button onClick={() => setActiva(p)} style={{ textAlign: 'left', padding: '0.85rem 1rem 0.5rem', width: '100%', background: 'none', border: 'none', cursor: 'pointer' }}>
+                  <p style={{ fontWeight: 500, fontSize: '0.82rem', color: sel ? 'var(--crema)' : 'var(--negro)', marginBottom: '0.3rem', fontFamily: 'DM Sans, sans-serif' }}>{p.titulo}</p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <div style={{ flex: 1, height: 4, background: sel ? 'rgba(247,243,238,0.15)' : 'var(--crema2)', borderRadius: 2 }}>
+                      <div style={{ height: '100%', width: `${registros.length ? (n / registros.length) * 100 : 0}%`, background: '#25D366', borderRadius: 2 }} />
+                    </div>
+                    <span style={{ fontSize: '0.62rem', color: sel ? 'rgba(247,243,238,0.5)' : 'var(--gris)', whiteSpace: 'nowrap', fontFamily: 'DM Sans, sans-serif' }}>{n}/{registros.length}</span>
                   </div>
-                  <span style={{ fontSize: '0.62rem', color: sel ? 'rgba(247,243,238,0.5)' : 'var(--gris)', whiteSpace: 'nowrap', fontFamily: 'DM Sans, sans-serif' }}>{n}/{registros.length}</span>
+                </button>
+                <div style={{ padding: '0 1rem 0.65rem', display: 'flex', justifyContent: 'flex-end' }}>
+                  <button onClick={() => startEditar(p)}
+                    style={{ fontSize: '0.58rem', letterSpacing: '0.15em', textTransform: 'uppercase', background: 'none', border: `1px solid ${sel ? 'rgba(247,243,238,0.2)' : 'var(--crema3)'}`, padding: '0.2rem 0.6rem', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', color: sel ? 'rgba(247,243,238,0.5)' : 'var(--gris)' }}>
+                    Editar
+                  </button>
                 </div>
-              </button>
+              </div>
             )
           })}
         </div>

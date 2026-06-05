@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import type { Plantilla, RegistroWA, Enviado } from '@/lib/tipos-mensajes-wa'
@@ -32,6 +32,23 @@ export default function MensajesWAClient({ plantillas, registros, enviados }: Pr
   const [formTitulo, setFormTitulo] = useState('')
   const [formContenido, setFormContenido] = useState('')
   const [saving, setSaving] = useState(false)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  const EMOJIS = [
+    '😊','✅','👉','🎉','📅','📍','⏰','🌊','🙌','👇',
+    '🍽️','🥐','🍫','🍰','🍦','🥂','☕','🌿','⭐','🔥',
+    '💪','📲','📩','💬','✨','🎯','👋','🤝','💡','📋',
+  ]
+
+  function insertEmoji(emoji: string) {
+    const el = textareaRef.current
+    if (!el) { setFormContenido(prev => prev + emoji); return }
+    const start = el.selectionStart
+    const end = el.selectionEnd
+    const newVal = formContenido.slice(0, start) + emoji + formContenido.slice(end)
+    setFormContenido(newVal)
+    setTimeout(() => { el.selectionStart = el.selectionEnd = start + emoji.length; el.focus() }, 0)
+  }
 
   const enviadosSet = new Set(enviados.map(e => `${e.plantilla_id}:${e.registro_id}`))
 
@@ -107,9 +124,29 @@ export default function MensajesWAClient({ plantillas, registros, enviados }: Pr
             </p>
             <input value={formTitulo} onChange={e => setFormTitulo(e.target.value)} placeholder="Título *"
               style={{ width: '100%', background: 'var(--crema)', border: '1px solid var(--crema3)', padding: '0.6rem 0.75rem', fontSize: '0.78rem', outline: 'none', marginBottom: '0.5rem', fontFamily: 'DM Sans, sans-serif' }} />
-            <textarea rows={5} value={formContenido} onChange={e => setFormContenido(e.target.value)}
+            <textarea
+              ref={textareaRef}
+              rows={10}
+              value={formContenido}
+              onChange={e => setFormContenido(e.target.value)}
               placeholder="Contenido... Variables: {nombre} {etiqueta} {isla} {empresa}"
-              style={{ width: '100%', background: 'var(--crema)', border: '1px solid var(--crema3)', padding: '0.6rem 0.75rem', fontSize: '0.75rem', outline: 'none', resize: 'vertical', fontFamily: 'DM Sans, sans-serif', marginBottom: '0.5rem' }} />
+              style={{ width: '100%', background: 'var(--crema)', border: '1px solid var(--crema3)', padding: '0.75rem', fontSize: '0.82rem', outline: 'none', resize: 'vertical', fontFamily: 'DM Sans, sans-serif', marginBottom: '0.5rem', lineHeight: 1.6, minHeight: 180 }}
+            />
+            {/* Selector de emojis */}
+            <div style={{ marginBottom: '0.5rem' }}>
+              <p style={{ fontSize: '0.58rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gris)', marginBottom: '0.4rem', fontFamily: 'DM Sans, sans-serif' }}>Emojis</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem', padding: '0.5rem', background: 'var(--crema2)', border: '1px solid var(--crema3)' }}>
+                {EMOJIS.map(e => (
+                  <button key={e} type="button" onClick={() => insertEmoji(e)}
+                    style={{ fontSize: '1.1rem', background: 'none', border: 'none', cursor: 'pointer', padding: '0.2rem', lineHeight: 1, borderRadius: 4, transition: 'background 0.15s' }}
+                    onMouseEnter={ev => (ev.currentTarget.style.background = 'var(--crema3)')}
+                    onMouseLeave={ev => (ev.currentTarget.style.background = 'none')}
+                    title={e}>
+                    {e}
+                  </button>
+                ))}
+              </div>
+            </div>
             <p style={{ fontSize: '0.6rem', color: 'var(--gris-l)', marginBottom: '0.5rem' }}>Variables: {'{nombre}'} {'{etiqueta}'} {'{isla}'} {'{empresa}'}</p>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               <button onClick={guardar} disabled={saving || !formTitulo || !formContenido}

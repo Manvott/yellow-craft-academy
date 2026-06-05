@@ -52,7 +52,7 @@ export default function MensajesWAClient({ plantillas, registros, enviados }: Pr
       (r.empresa ?? '').toLowerCase().includes(search.toLowerCase())
     const enviado = yaEnviado(r.id)
     const matchFiltro = filtroEnvio === 'todos' ? true : filtroEnvio === 'enviados' ? enviado : !enviado
-    return matchSearch && matchFiltro && !!r.telefono
+    return matchSearch && matchFiltro
   })
 
   async function toggleEnviado(registroId: string) {
@@ -188,7 +188,7 @@ export default function MensajesWAClient({ plantillas, registros, enviados }: Pr
               />
               {(['todos', 'pendientes', 'enviados'] as const).map(f => (
                 <button key={f} onClick={() => setFiltroEnvio(f)} style={S.btn(filtroEnvio === f)}>
-                  {f === 'todos' ? `Todos (${registros.filter(r => r.telefono).length})` : f === 'pendientes' ? `Pendientes (${registros.filter(r => r.telefono && !yaEnviado(r.id)).length})` : `Enviados (${totalEnviados})`}
+                  {f === 'todos' ? `Todos (${registros.length})` : f === 'pendientes' ? `Pendientes (${registros.filter(r => !yaEnviado(r.id)).length})` : `Enviados (${totalEnviados})`}
                 </button>
               ))}
             </div>
@@ -221,10 +221,14 @@ export default function MensajesWAClient({ plantillas, registros, enviados }: Pr
                     </div>
 
                     {/* Abrir WhatsApp */}
-                    <a href={waLink} target="_blank" rel="noopener noreferrer"
-                      style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.62rem', color: '#25D366', textDecoration: 'none', border: '1px solid #25D366', padding: '0.25rem 0.6rem', whiteSpace: 'nowrap' }}>
-                      {WA_SVG} Chat
-                    </a>
+                    {waLink ? (
+                      <a href={waLink} target="_blank" rel="noopener noreferrer"
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.62rem', color: '#25D366', textDecoration: 'none', border: '1px solid #25D366', padding: '0.25rem 0.6rem', whiteSpace: 'nowrap' }}>
+                        {WA_SVG} Chat
+                      </a>
+                    ) : (
+                      <span style={{ fontSize: '0.6rem', color: 'var(--gris-l)', padding: '0.25rem 0.6rem', border: '1px solid var(--crema3)', whiteSpace: 'nowrap' }}>Sin tel.</span>
+                    )}
 
                     {/* Marcar enviado — acción manual */}
                     <button onClick={() => toggleEnviado(r.id)} disabled={updating === r.id}

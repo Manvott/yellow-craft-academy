@@ -47,13 +47,24 @@ export default function RegistrosAdmin({ registros }: Props) {
   return (
     <div>
       {/* Filtros */}
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem' }}>
+      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
         {(['todos', 'pendientes', 'confirmados'] as const).map(f => (
           <button key={f} onClick={() => setFiltro(f)}
             style={{ padding: '0.4rem 1rem', fontSize: '0.7rem', letterSpacing: '0.15em', textTransform: 'uppercase', fontFamily: 'DM Sans, sans-serif', border: '1px solid var(--crema3)', cursor: 'pointer', background: filtro === f ? 'var(--negro)' : 'var(--blanco)', color: filtro === f ? 'var(--crema)' : 'var(--gris)' }}>
             {f === 'todos' ? `Todos (${registros.length})` : f === 'pendientes' ? `Pendientes WA (${registros.filter(r => !r.wa_confirmado).length})` : `En lista WA (${registros.filter(r => r.wa_confirmado).length})`}
           </button>
         ))}
+        {/* Filtros de mensaje enviado */}
+        <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.4rem' }}>
+          <button onClick={() => setFiltro('todos')}
+            style={{ padding: '0.4rem 0.8rem', fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', fontFamily: 'DM Sans, sans-serif', border: '1px solid #16a34a', cursor: 'pointer', background: '#dcfce7', color: '#16a34a' }}>
+            ✓ Msg enviado: {registros.filter(r => (r as any).wa_mensaje_enviado).length}
+          </button>
+          <button onClick={() => setFiltro('todos')}
+            style={{ padding: '0.4rem 0.8rem', fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', fontFamily: 'DM Sans, sans-serif', border: '1px solid var(--crema3)', cursor: 'pointer', background: 'var(--crema2)', color: 'var(--gris)' }}>
+            ⏳ Pendiente: {registros.filter(r => !(r as any).wa_mensaje_enviado).length}
+          </button>
+        </div>
       </div>
 
       <div style={{ background: 'var(--blanco)', border: '1px solid var(--crema3)', overflow: 'hidden' }}>
@@ -143,9 +154,16 @@ export default function RegistrosAdmin({ registros }: Props) {
                     <td style={{ padding: '0.65rem 0.75rem', whiteSpace: 'nowrap' }}>
                       <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
                         {waLink && (
-                          <a href={waLink} target="_blank" rel="noopener noreferrer" title="WhatsApp"
-                            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.62rem', color: '#25D366', textDecoration: 'none', border: '1px solid #25D366', padding: '0.2rem 0.5rem' }}>
-                            {waIcono} Chat
+                          <a href={waLink} target="_blank" rel="noopener noreferrer" title="Enviar WhatsApp"
+                            onClick={async () => {
+                              if (!r.wa_mensaje_enviado) {
+                                const supabase = (await import('@/lib/supabase/client')).createClient()
+                                await supabase.from('registros').update({ wa_mensaje_enviado: true }).eq('id', r.id)
+                                router.refresh()
+                              }
+                            }}
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.62rem', textDecoration: 'none', border: `1px solid ${r.wa_mensaje_enviado ? '#16a34a' : '#25D366'}`, padding: '0.2rem 0.5rem', background: r.wa_mensaje_enviado ? '#dcfce7' : 'transparent', color: r.wa_mensaje_enviado ? '#16a34a' : '#25D366' }}>
+                            {waIcono} {r.wa_mensaje_enviado ? 'Enviado ✓' : 'Chat'}
                           </a>
                         )}
                         <a href={`mailto:${r.email}`} title="Email"

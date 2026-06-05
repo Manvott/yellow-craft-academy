@@ -16,6 +16,7 @@ export interface Registro {
   bloques: string[] | null
   acepta_whatsapp: boolean
   wa_confirmado: boolean
+  wa_mensaje_enviado: boolean
   asistio: boolean
   created_at: string
 }

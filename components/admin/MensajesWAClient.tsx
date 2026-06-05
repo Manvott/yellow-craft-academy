@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
-import type { Plantilla, RegistroWA, Enviado } from '@/app/[locale]/admin/(panel)/mensajes-wa/page'
+import type { Plantilla, RegistroWA, Enviado } from '@/lib/tipos-mensajes-wa'
 
 interface Props {
   plantillas: Plantilla[]

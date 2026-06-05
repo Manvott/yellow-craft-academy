@@ -6,9 +6,7 @@ import { useRouter } from 'next/navigation'
 import type { ProductoFicha, Combinacion } from '@/app/[locale]/admin/(panel)/fichas/page'
 import type { Proveedor } from '@/lib/types'
 
-interface Props { productos: ProductoFicha[]; proveedores: Proveedor[]; verCostes?: boolean }
-
-import { CATEGORIAS_PRODUCTO } from '@/lib/categorias'
+interface Props { productos: ProductoFicha[]; proveedores: Proveedor[]; verCostes?: boolean; categorias?: string[] }
 
 const UNIDADES = ['g', 'kg', 'ml', 'l', 'cl', 'oz', 'ud', 'ración']
 
@@ -37,7 +35,7 @@ function Toggle({ on, label, onToggle, color = 'var(--negro)' }: { on: boolean; 
   )
 }
 
-export default function FichasManager({ productos, proveedores, verCostes = true }: Props) {
+export default function FichasManager({ productos, proveedores, verCostes = true, categorias = [] }: Props) {
   const router = useRouter()
   const [form, setForm] = useState<typeof emptyForm>(emptyForm)
   const [combinaciones, setCombinaciones] = useState<Combinacion[]>([emptyComb(), emptyComb(), emptyComb(), emptyComb(), emptyComb()])
@@ -247,7 +245,7 @@ export default function FichasManager({ productos, proveedores, verCostes = true
                 placeholder="Selecciona o escribe una categoría..."
               />
               <datalist id="categorias-list">
-                {CATEGORIAS_PRODUCTO.map(c => <option key={c} value={c} />)}
+                {categorias.map(c => <option key={c} value={c} />)}
               </datalist>
             </div>
 

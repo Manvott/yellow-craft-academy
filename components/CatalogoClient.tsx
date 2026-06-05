@@ -10,24 +10,24 @@ import ProductCard from './ProductCard'
 interface Props {
   productos: Producto[]
   proveedores: Proveedor[]
+  categoriasDB?: string[]
 }
 
-export default function CatalogoClient({ productos, proveedores }: Props) {
+export default function CatalogoClient({ productos, proveedores, categoriasDB = [] }: Props) {
   const t = useTranslations('home')
   const [search, setSearch] = useState('')
   const [proveedorFiltro, setProveedorFiltro] = useState('all')
   const [categoriaFiltro, setCategoriaFiltro] = useState('all')
 
   const categorias = useMemo(() => {
-    // Categorías de los productos existentes + lista predefinida completa
+    const lista = categoriasDB.length ? categoriasDB : [...CATEGORIAS_PRODUCTO]
     const enProductos = new Set(productos.map(p => p.categoria).filter(Boolean) as string[])
-    // Mostrar primero las que tienen productos, luego el resto
-    const conProductos = CATEGORIAS_PRODUCTO.filter(c => enProductos.has(c))
-    const sinProductos = CATEGORIAS_PRODUCTO.filter(c => !enProductos.has(c))
-    // También incluir cualquier categoría custom que no esté en la lista
-    const custom = Array.from(enProductos).filter(c => !(CATEGORIAS_PRODUCTO as readonly string[]).includes(c))
-    return [...conProductos, ...custom, ...sinProductos]
-  }, [productos])
+    // Primero las que tienen productos, luego el resto
+    const con = lista.filter(c => enProductos.has(c))
+    const sin = lista.filter(c => !enProductos.has(c))
+    const custom = Array.from(enProductos).filter(c => !lista.includes(c))
+    return [...con, ...custom, ...sin]
+  }, [productos, categoriasDB])
 
   // Proveedores con al menos 1 producto publicado
   const proveedoresConProductos = useMemo(() => {

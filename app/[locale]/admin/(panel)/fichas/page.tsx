@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import type { Proveedor } from '@/lib/types'
 import FichasManager from '@/components/admin/FichasManager'
+import { CATEGORIAS_PRODUCTO } from '@/lib/categorias'
 
 export interface Combinacion {
   id?: string
@@ -35,18 +36,21 @@ export default async function FichasPage() {
   let productos: ProductoFicha[] = []
   let proveedores: Proveedor[] = []
   let verCostes = true
+  let categoriasDB: string[] = []
 
   try {
     const supabase = await createClient()
     const { data: { session } } = await supabase.auth.getSession()
 
-    const [{ data: p }, { data: prov }, { data: rol }] = await Promise.all([
+    const [{ data: p }, { data: prov }, { data: rol }, { data: cats }] = await Promise.all([
       supabase.from('productos')
         .select('*, proveedor:proveedores(nombre), combinaciones:producto_combinaciones(*)')
         .order('orden'),
       supabase.from('proveedores').select('*').eq('activo', true).order('nombre'),
       session ? supabase.from('admin_roles').select('ver_costes, es_superadmin').eq('user_id', session.user.id).single() : Promise.resolve({ data: null }),
+      supabase.from('categorias').select('nombre').eq('activa', true).order('orden'),
     ])
+    categoriasDB = (cats ?? []).map((c: any) => c.nombre)
     productos = (p as ProductoFicha[]) ?? []
     proveedores = (prov as Proveedor[]) ?? []
     // Superadmin siempre ve costes; resto respeta el campo
@@ -66,7 +70,7 @@ export default async function FichasPage() {
       <p style={{ fontSize: '0.78rem', color: 'var(--gris)', marginBottom: '2rem' }}>
         Crea fichas con escandallo y costes. Activa <strong>Publicar al catálogo</strong> para que aparezcan en el portal.
       </p>
-      <FichasManager productos={productos} proveedores={proveedores} verCostes={verCostes} />
+      <FichasManager productos={productos} proveedores={proveedores} verCostes={verCostes} categorias={categoriasDB.length ? categoriasDB : [...CATEGORIAS_PRODUCTO]} />
     </div>
   )
 }

@@ -9,15 +9,18 @@ export default async function HomePage() {
 
   let proveedores: Proveedor[] = []
   let productos: Producto[] = []
+  let categoriasDB: string[] = []
 
   try {
     const supabase = await createClient()
-    const [{ data: p }, { data: pr }] = await Promise.all([
+    const [{ data: p }, { data: pr }, { data: cats }] = await Promise.all([
       supabase.from('proveedores').select('*').eq('activo', true).order('orden'),
       supabase.from('productos').select('*, proveedor:proveedores(*)').eq('disponible', true).order('orden'),
+      supabase.from('categorias').select('nombre').eq('activa', true).order('orden'),
     ])
     proveedores = (p as Proveedor[]) ?? []
     productos = (pr as Producto[]) ?? []
+    categoriasDB = (cats ?? []).map((c: any) => c.nombre)
   } catch {}
 
   return (
@@ -48,7 +51,7 @@ export default async function HomePage() {
       {/* Catálogo */}
       <main style={{ flex: 1, background: 'var(--crema)', padding: '5rem 2.5rem' }}>
         <div style={{ maxWidth: 1300, margin: '0 auto' }}>
-          <CatalogoClient productos={productos} proveedores={proveedores} />
+          <CatalogoClient productos={productos} proveedores={proveedores} categoriasDB={categoriasDB} />
         </div>
       </main>
 

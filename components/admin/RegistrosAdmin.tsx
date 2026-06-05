@@ -57,22 +57,21 @@ export default function RegistrosAdmin({ registros }: Props) {
       </div>
 
       <div style={{ background: 'var(--blanco)', border: '1px solid var(--crema3)', overflow: 'hidden' }}>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', minWidth: 900, borderCollapse: 'collapse', fontSize: '0.8rem' }}>
+        <div>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', tableLayout: 'fixed' }}>
+            <colgroup>
+              <col style={{ width: '28%' }} />
+              <col style={{ width: '12%' }} />
+              <col style={{ width: '22%' }} />
+              <col style={{ width: '24%' }} />
+              <col style={{ width: '7%' }} />
+              <col style={{ width: '7%' }} />
+            </colgroup>
             <thead>
               <tr style={{ background: 'var(--crema2)', borderBottom: '1px solid var(--crema3)' }}>
-                {[
-                  { label: 'Fecha',     w: 70  },
-                  { label: 'Nombre / Empresa', w: 180 },
-                  { label: 'Isla',      w: 110 },
-                  { label: 'Email',     w: 190 },
-                  { label: 'Teléfono', w: 130 },
-                  { label: 'Bloques',  w: 160 },
-                  { label: 'WA',       w: 44  },
-                  { label: 'Acciones', w: 130 },
-                ].map(h => (
-                  <th key={h.label} style={{ textAlign: 'left', padding: '0.6rem 0.75rem', fontSize: '0.58rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'var(--gris)', fontWeight: 500, whiteSpace: 'nowrap', width: h.w, minWidth: h.w }}>
-                    {h.label}
+                {['Nombre / Empresa', 'Isla', 'Contacto', 'Bloques', 'WA', ''].map(h => (
+                  <th key={h} style={{ textAlign: 'left', padding: '0.6rem 0.75rem', fontSize: '0.58rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'var(--gris)', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden' }}>
+                    {h}
                   </th>
                 ))}
               </tr>
@@ -82,39 +81,35 @@ export default function RegistrosAdmin({ registros }: Props) {
                 return (
                   <tr key={r.id} style={{ borderBottom: '1px solid var(--crema3)', background: i % 2 === 0 ? 'var(--blanco)' : 'var(--crema)' }}>
 
-                    {/* Fecha */}
-                    <td style={{ padding: '0.65rem 0.75rem', color: 'var(--gris-l)', whiteSpace: 'nowrap', fontSize: '0.72rem' }}>
-                      {new Date(r.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })}
-                    </td>
-
-                    {/* Nombre + empresa apilados */}
-                    <td style={{ padding: '0.65rem 0.75rem' }}>
-                      <p style={{ fontWeight: 500, color: 'var(--negro)', whiteSpace: 'nowrap', marginBottom: '0.1rem' }}>{r.nombre}</p>
-                      {r.empresa && <p style={{ fontSize: '0.7rem', color: 'var(--gris)', whiteSpace: 'nowrap' }}>{r.empresa}</p>}
+                    {/* Nombre + empresa + fecha */}
+                    <td style={{ padding: '0.6rem 0.75rem', overflow: 'hidden' }}>
+                      <p style={{ fontWeight: 500, color: 'var(--negro)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: '0.1rem' }}>{r.nombre}</p>
+                      <p style={{ fontSize: '0.68rem', color: 'var(--gris)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {r.empresa ?? <span style={{ color: 'var(--gris-l)', fontStyle: 'italic' }}>Sin empresa</span>}
+                        <span style={{ color: 'var(--gris-l)', marginLeft: '0.4rem' }}>
+                          · {new Date(r.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })}
+                        </span>
+                      </p>
                     </td>
 
                     {/* Isla */}
-                    <td style={{ padding: '0.65rem 0.75rem' }}>
+                    <td style={{ padding: '0.6rem 0.75rem' }}>
                       {r.isla
-                        ? <span style={{ background: 'var(--amarillo)', color: 'var(--negro)', padding: '0.15rem 0.45rem', fontSize: '0.62rem', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>{r.isla}</span>
+                        ? <span style={{ background: 'var(--amarillo)', color: 'var(--negro)', padding: '0.15rem 0.4rem', fontSize: '0.6rem', whiteSpace: 'nowrap', display: 'inline-block', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.isla}</span>
                         : <span style={{ color: 'var(--gris-l)' }}>—</span>}
                     </td>
 
-                    {/* Email */}
-                    <td style={{ padding: '0.65rem 0.75rem', color: 'var(--gris)', fontSize: '0.75rem', maxWidth: 190, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {r.email}
-                    </td>
-
-                    {/* Teléfono */}
-                    <td style={{ padding: '0.65rem 0.75rem', color: 'var(--gris)', fontSize: '0.75rem', whiteSpace: 'nowrap' }}>
-                      {r.telefono ?? '—'}
+                    {/* Email + teléfono apilados */}
+                    <td style={{ padding: '0.6rem 0.75rem', overflow: 'hidden' }}>
+                      <p style={{ fontSize: '0.72rem', color: 'var(--gris)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: '0.1rem' }}>{r.email}</p>
+                      <p style={{ fontSize: '0.7rem', color: 'var(--gris-l)', whiteSpace: 'nowrap' }}>{r.telefono ?? '—'}</p>
                     </td>
 
                     {/* Bloques — solo hora */}
-                    <td style={{ padding: '0.65rem 0.75rem' }}>
+                    <td style={{ padding: '0.6rem 0.75rem' }}>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.2rem' }}>
                         {(r.bloques ?? []).map(b => (
-                          <span key={b} style={{ fontSize: '0.58rem', background: 'var(--amarillo)', color: 'var(--negro)', padding: '0.1rem 0.35rem', whiteSpace: 'nowrap' }}>
+                          <span key={b} style={{ fontSize: '0.55rem', background: 'var(--amarillo)', color: 'var(--negro)', padding: '0.1rem 0.3rem', whiteSpace: 'nowrap' }}>
                             {b.split('·')[0].trim().split('–')[0].trim()}
                           </span>
                         ))}
@@ -122,7 +117,7 @@ export default function RegistrosAdmin({ registros }: Props) {
                     </td>
 
                     {/* WA toggle */}
-                    <td style={{ padding: '0.65rem 0.75rem' }}>
+                    <td style={{ padding: '0.6rem 0.75rem', textAlign: 'center' }}>
                       <button onClick={() => toggleWA(r.id, r.wa_confirmado)} disabled={updating === r.id}
                         title={r.wa_confirmado ? 'Quitar de lista WA' : 'Añadir a lista WA'}
                         style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, background: r.wa_confirmado ? '#25D366' : 'var(--crema2)', color: r.wa_confirmado ? '#fff' : 'var(--gris-l)', border: `1px solid ${r.wa_confirmado ? '#25D366' : 'var(--crema3)'}`, cursor: 'pointer', opacity: updating === r.id ? 0.5 : 1 }}>

@@ -175,7 +175,7 @@ export default function RegistrosAdmin({ registros }: Props) {
                               style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.62rem', border: `1px solid ${(r as any).wa_mensaje_enviado ? '#16a34a' : 'var(--crema3)'}`, padding: '0.2rem 0.5rem', background: (r as any).wa_mensaje_enviado ? '#dcfce7' : 'var(--crema2)', color: (r as any).wa_mensaje_enviado ? '#16a34a' : 'var(--gris)', cursor: 'pointer', opacity: updating === r.id ? 0.5 : 1 }}>
                               {(r as any).wa_mensaje_enviado ? '✓ Enviado' : '○ Enviar'}
                             </button>
-                          </>)
+                          </>
                         )}
                         <a href={`mailto:${r.email}`} title="Email"
                           style={{ display: 'inline-flex', alignItems: 'center', fontSize: '0.62rem', color: 'var(--gris)', textDecoration: 'none', border: '1px solid var(--crema3)', padding: '0.2rem 0.5rem' }}>

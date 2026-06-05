@@ -154,17 +154,28 @@ export default function RegistrosAdmin({ registros }: Props) {
                     <td style={{ padding: '0.65rem 0.75rem', whiteSpace: 'nowrap' }}>
                       <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
                         {waLink && (
-                          <a href={waLink} target="_blank" rel="noopener noreferrer" title="Enviar WhatsApp"
-                            onClick={async () => {
-                              if (!r.wa_mensaje_enviado) {
-                                const supabase = (await import('@/lib/supabase/client')).createClient()
-                                await supabase.from('registros').update({ wa_mensaje_enviado: true }).eq('id', r.id)
+                          <>
+                            {/* Abrir WhatsApp — NO marca como enviado */}
+                            <a href={waLink} target="_blank" rel="noopener noreferrer" title="Abrir WhatsApp"
+                              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.62rem', color: '#25D366', textDecoration: 'none', border: '1px solid #25D366', padding: '0.2rem 0.5rem' }}>
+                              {waIcono} Chat
+                            </a>
+                            {/* Marcar como enviado — acción manual y consciente */}
+                            <button
+                              onClick={async () => {
+                                const nuevo = !(r as any).wa_mensaje_enviado
+                                setUpdating(r.id)
+                                const supabase = createClient()
+                                await supabase.from('registros').update({ wa_mensaje_enviado: nuevo }).eq('id', r.id)
+                                setUpdating(null)
                                 router.refresh()
-                              }
-                            }}
-                            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.62rem', textDecoration: 'none', border: `1px solid ${r.wa_mensaje_enviado ? '#16a34a' : '#25D366'}`, padding: '0.2rem 0.5rem', background: r.wa_mensaje_enviado ? '#dcfce7' : 'transparent', color: r.wa_mensaje_enviado ? '#16a34a' : '#25D366' }}>
-                            {waIcono} {r.wa_mensaje_enviado ? 'Enviado ✓' : 'Chat'}
-                          </a>
+                              }}
+                              disabled={updating === r.id}
+                              title={(r as any).wa_mensaje_enviado ? 'Desmarcar mensaje enviado' : 'Marcar mensaje como enviado'}
+                              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.62rem', border: `1px solid ${(r as any).wa_mensaje_enviado ? '#16a34a' : 'var(--crema3)'}`, padding: '0.2rem 0.5rem', background: (r as any).wa_mensaje_enviado ? '#dcfce7' : 'var(--crema2)', color: (r as any).wa_mensaje_enviado ? '#16a34a' : 'var(--gris)', cursor: 'pointer', opacity: updating === r.id ? 0.5 : 1 }}>
+                              {(r as any).wa_mensaje_enviado ? '✓ Enviado' : '○ Enviar'}
+                            </button>
+                          </>)
                         )}
                         <a href={`mailto:${r.email}`} title="Email"
                           style={{ display: 'inline-flex', alignItems: 'center', fontSize: '0.62rem', color: 'var(--gris)', textDecoration: 'none', border: '1px solid var(--crema3)', padding: '0.2rem 0.5rem' }}>

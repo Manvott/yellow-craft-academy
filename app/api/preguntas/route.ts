@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
   }
   const result = schema.safeParse(body)
   if (!result.success) {
-    const msg = result.error.errors[0]?.message ?? 'Datos inválidos'
+    const msg = result.error.issues[0]?.message ?? 'Datos inválidos'
     return NextResponse.json({ error: msg }, { status: 422 })
   }
   const supabase = await createClient()

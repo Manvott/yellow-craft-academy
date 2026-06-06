@@ -735,6 +735,9 @@ export default function LandingClient({ locale }: Props) {
         </div>
       </div>
 
+      {/* PREGUNTAS A LOS PONENTES */}
+      <PreguntasSection />
+
       {/* FILOSOFIA */}
       <div style={{ background: 'var(--negro)', padding: '7rem 4rem' }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
@@ -838,9 +841,6 @@ export default function LandingClient({ locale }: Props) {
           </p>
         </div>
       </div>
-
-      {/* PREGUNTAS A LOS PONENTES */}
-      <PreguntasSection />
 
       {/* FOOTER */}
       <footer style={{ background: 'var(--negro)', padding: '4rem 4rem 3rem' }}>

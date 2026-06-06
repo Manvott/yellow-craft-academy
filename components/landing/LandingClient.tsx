@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState, useTransition } from 'react'
+import React, { useRef, useState, useTransition } from 'react'
 import Link from 'next/link'
 import { registrarAsistente } from '@/app/actions/registros'
 
@@ -427,6 +427,124 @@ function RegistroForm() {
   )
 }
 
+const PONENTES_LISTA = [
+  'Silma Ayres — SOSA Ingredients (10:00 – 12:00h)',
+  'Alexis García — 100×100 Alexis (14:00 – 16:00h)',
+  'Óscar Lafuente — Ron Arehucas (16:30 – 17:30h)',
+]
+
+function PreguntasSection() {
+  const [form, setForm] = React.useState({ nombre: '', empresa: '', ponente: '', pregunta: '' })
+  const [loading, setLoading] = React.useState(false)
+  const [success, setSuccess] = React.useState(false)
+  const [error, setError] = React.useState('')
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!form.nombre && !form.empresa) { setError('Debes indicar tu nombre o empresa.'); return }
+    if (!form.ponente) { setError('Selecciona el ponente.'); return }
+    if (!form.pregunta.trim()) { setError('Escribe tu pregunta.'); return }
+    setLoading(true); setError('')
+    try {
+      const res = await fetch('/api/preguntas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      })
+      if (!res.ok) { const d = await res.json(); throw new Error(d.error) }
+      setSuccess(true)
+    } catch (e: any) {
+      setError(e.message ?? 'Error al enviar. Inténtalo de nuevo.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const inp: React.CSSProperties = {
+    width: '100%', background: 'var(--blanco)', border: '1px solid var(--crema3)',
+    color: 'var(--grafito)', padding: '0.95rem 1.2rem',
+    fontFamily: 'DM Sans, sans-serif', fontSize: '0.85rem', fontWeight: 300, outline: 'none',
+  }
+
+  return (
+    <div style={{ background: 'var(--crema)', padding: '8rem 4rem', borderTop: '1px solid var(--crema3)' }} id="preguntas">
+      <div style={{ maxWidth: 580, margin: '0 auto' }}>
+        <p style={{ fontSize: '0.62rem', letterSpacing: '0.4em', textTransform: 'uppercase', color: 'var(--gris)', marginBottom: '1rem', fontFamily: 'DM Sans, sans-serif' }}>
+          Interacción · Ponentes
+        </p>
+        <h2 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 'clamp(2.5rem,4vw,3.5rem)', fontWeight: 300, color: 'var(--negro)', lineHeight: 1.05, marginBottom: '1rem' }}>
+          Pregunta a los<br /><em style={{ fontStyle: 'italic', color: 'var(--gris)' }}>ponentes</em>
+        </h2>
+        <p style={{ fontSize: '0.87rem', color: 'var(--gris)', lineHeight: 1.75, marginBottom: '2.5rem' }}>
+          ¿Tienes alguna duda o quieres profundizar en algún tema? Envía tu pregunta antes del evento.
+        </p>
+
+        {success ? (
+          <div style={{ padding: '2rem', background: 'var(--blanco)', border: '1px solid var(--crema3)', textAlign: 'center' }}>
+            <div style={{ width: 48, height: 48, background: 'var(--amarillo)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem', fontSize: '1.3rem' }}>✓</div>
+            <p style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1.5rem', fontWeight: 300, color: 'var(--negro)', marginBottom: '0.5rem' }}>Pregunta enviada</p>
+            <p style={{ fontSize: '0.82rem', color: 'var(--gris)' }}>Gracias. Intentaremos responderla durante el evento.</p>
+            <button onClick={() => { setSuccess(false); setForm({ nombre: '', empresa: '', ponente: '', pregunta: '' }) }}
+              style={{ marginTop: '1.25rem', background: 'var(--negro)', color: 'var(--crema)', border: 'none', padding: '0.75rem 1.75rem', fontSize: '0.72rem', letterSpacing: '0.2em', textTransform: 'uppercase', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+              Enviar otra pregunta
+            </button>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            {/* Nombre o empresa — al menos uno obligatorio */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+              <div>
+                <label style={{ fontSize: '0.6rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--gris)', display: 'block', marginBottom: '0.35rem', fontFamily: 'DM Sans, sans-serif' }}>
+                  Nombre <span style={{ color: 'var(--gris-l)' }}>(o empresa)</span>
+                </label>
+                <input value={form.nombre} onChange={e => setForm(f => ({ ...f, nombre: e.target.value }))} style={inp} placeholder="Tu nombre" />
+              </div>
+              <div>
+                <label style={{ fontSize: '0.6rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--gris)', display: 'block', marginBottom: '0.35rem', fontFamily: 'DM Sans, sans-serif' }}>
+                  Empresa <span style={{ color: 'var(--gris-l)' }}>(o nombre)</span>
+                </label>
+                <input value={form.empresa} onChange={e => setForm(f => ({ ...f, empresa: e.target.value }))} style={inp} placeholder="Tu empresa" />
+              </div>
+            </div>
+            <p style={{ fontSize: '0.68rem', color: 'var(--gris-l)', fontStyle: 'italic', marginTop: '-0.25rem' }}>
+              * Al menos uno de los dos es obligatorio.
+            </p>
+
+            {/* Ponente */}
+            <div>
+              <label style={{ fontSize: '0.6rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--gris)', display: 'block', marginBottom: '0.35rem', fontFamily: 'DM Sans, sans-serif' }}>
+                Dirigida a *
+              </label>
+              <select value={form.ponente} onChange={e => setForm(f => ({ ...f, ponente: e.target.value }))}
+                style={{ ...inp, cursor: 'pointer', color: form.ponente ? 'var(--grafito)' : 'var(--gris-l)' }}>
+                <option value="">Selecciona el ponente...</option>
+                {PONENTES_LISTA.map(p => <option key={p} value={p}>{p}</option>)}
+              </select>
+            </div>
+
+            {/* Pregunta */}
+            <div>
+              <label style={{ fontSize: '0.6rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--gris)', display: 'block', marginBottom: '0.35rem', fontFamily: 'DM Sans, sans-serif' }}>
+                Tu pregunta *
+              </label>
+              <textarea rows={4} value={form.pregunta} onChange={e => setForm(f => ({ ...f, pregunta: e.target.value }))}
+                placeholder="Escribe aquí tu pregunta..."
+                style={{ ...inp, resize: 'vertical', minHeight: 100 }} />
+            </div>
+
+            {error && <p style={{ fontSize: '0.8rem', color: '#c0392b', padding: '0.65rem 1rem', background: '#fef2f2', border: '1px solid #fca5a5' }}>{error}</p>}
+
+            <button type="submit" disabled={loading}
+              style={{ background: 'var(--negro)', color: 'var(--crema)', border: 'none', padding: '1rem', fontSize: '0.75rem', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 500, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.6 : 1, fontFamily: 'DM Sans, sans-serif' }}>
+              {loading ? 'Enviando...' : 'Enviar pregunta'}
+            </button>
+          </form>
+        )}
+      </div>
+    </div>
+  )
+}
+
 export default function LandingClient({ locale }: Props) {
   return (
     <div style={{ background: 'var(--crema)', color: 'var(--grafito)', fontFamily: 'DM Sans, sans-serif', fontWeight: 300, overflowX: 'hidden' }}>
@@ -720,6 +838,9 @@ export default function LandingClient({ locale }: Props) {
           </p>
         </div>
       </div>
+
+      {/* PREGUNTAS A LOS PONENTES */}
+      <PreguntasSection />
 
       {/* FOOTER */}
       <footer style={{ background: 'var(--negro)', padding: '4rem 4rem 3rem' }}>

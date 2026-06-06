@@ -5,6 +5,7 @@ export const SECCIONES_ADMIN = [
   { key: 'fichas',      label: 'Fichas Producto',icono: '📋', soloSuperadmin: false },
   { key: 'menu',        label: 'Menú',           icono: '🍽', soloSuperadmin: false },
   { key: 'solicitudes', label: 'Solicitudes',    icono: '📩', soloSuperadmin: false },
+  { key: 'preguntas',   label: 'Preguntas',      icono: '❓', soloSuperadmin: false },
   { key: 'proveedores', label: 'Marcas',         icono: '🏷', soloSuperadmin: false },
   { key: 'categorias',  label: 'Categorías',    icono: '🏷', soloSuperadmin: false },
   { key: 'pildoras',    label: 'Pildoras',       icono: '💊', soloSuperadmin: false },

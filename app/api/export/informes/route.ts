@@ -206,7 +206,7 @@ export async function GET(request: NextRequest) {
       'Categoría': r.categoria ?? '', 'Descripción': r.descripcion ?? '',
       'Tipo servicio': r.tipo_servicio ?? '', 'Con cargo': r.tiene_cargo ? 'Sí' : 'No',
       'Precio base (€)': r.precio_base ?? '', 'IGIC %': r.igic_pct ?? 0,
-      'Coste aduana (€)': r.coste_aduana ?? 0, 'Coste logística (€)': r.coste_logistica ?? 0,
+      'Aduana (%)': r.coste_aduana ?? 0, 'Aduana (€)': r.precio_base ? ((r.precio_base * (r.coste_aduana ?? 0)) / 100).toFixed(2) : 0,
       'En exposición': r.en_exposicion ? 'Sí' : 'No',
       'Publicado catálogo': r.publicado_catalogo ? 'Sí' : 'No',
       'Ficha técnica': r.ficha_tecnica_url ?? '',

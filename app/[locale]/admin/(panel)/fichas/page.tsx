@@ -23,7 +23,6 @@ export interface ProductoFicha {
   tiene_cargo: boolean
   igic_pct: number | null
   coste_aduana: number | null
-  coste_logistica: number | null
   tipo_servicio: 'desayuno' | 'tardeo' | 'ambos'
   disponible: boolean
   publicado_catalogo: boolean

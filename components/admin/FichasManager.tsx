@@ -13,7 +13,7 @@ const UNIDADES = ['g', 'kg', 'ml', 'l', 'cl', 'oz', 'ud', 'ración']
 const emptyForm = {
   proveedor_id: '', nombre: '', descripcion: '', imagen_url: '',
   categoria: '', precio_base: '', tiene_cargo: false,
-  igic_pct: '', coste_aduana: '', coste_logistica: '',
+  igic_pct: '', coste_aduana: '0',
   tipo_servicio: 'ambos' as 'desayuno' | 'tardeo' | 'ambos',
   disponible: true, publicado_catalogo: false, en_exposicion: false, orden: 0,
 }
@@ -69,9 +69,9 @@ export default function FichasManager({ productos, proveedores, verCostes = true
   // Calcular coste total
   const precioBase   = parseFloat(form.precio_base) || 0
   const igic         = precioBase * ((parseFloat(form.igic_pct) || 0) / 100)
-  const aduana       = parseFloat(form.coste_aduana) || 0
-  const logistica    = parseFloat(form.coste_logistica) || 0
-  const costeTotal   = precioBase + igic + aduana + logistica
+  const aduanaPct    = parseFloat(form.coste_aduana) || 0
+  const aduana       = precioBase * (aduanaPct / 100)
+  const costeTotal   = precioBase + igic + aduana
 
   async function save() {
     if (!form.nombre || !form.proveedor_id) return
@@ -132,8 +132,7 @@ export default function FichasManager({ productos, proveedores, verCostes = true
       precio_base: form.tiene_cargo && form.precio_base ? parseFloat(form.precio_base) : null,
       tiene_cargo: form.tiene_cargo,
       igic_pct: form.tiene_cargo && form.igic_pct ? parseFloat(form.igic_pct) : 0,
-      coste_aduana: form.tiene_cargo && form.coste_aduana ? parseFloat(form.coste_aduana) : 0,
-      coste_logistica: form.tiene_cargo && form.coste_logistica ? parseFloat(form.coste_logistica) : 0,
+      coste_aduana: form.tiene_cargo ? parseFloat(form.coste_aduana) || 0 : 0,
       tipo_servicio: form.tipo_servicio,
       disponible: form.disponible,
       publicado_catalogo: form.publicado_catalogo,
@@ -171,8 +170,7 @@ export default function FichasManager({ productos, proveedores, verCostes = true
       proveedor_id: p.proveedor_id, nombre: p.nombre, descripcion: p.descripcion ?? '',
       imagen_url: p.imagen_url ?? '', categoria: p.categoria ?? '',
       precio_base: p.precio_base?.toString() ?? '', tiene_cargo: p.tiene_cargo ?? false,
-      igic_pct: p.igic_pct?.toString() ?? '', coste_aduana: p.coste_aduana?.toString() ?? '',
-      coste_logistica: p.coste_logistica?.toString() ?? '',
+      igic_pct: p.igic_pct?.toString() ?? '', coste_aduana: p.coste_aduana?.toString() ?? '0',
       tipo_servicio: p.tipo_servicio ?? 'ambos',
       disponible: p.disponible, publicado_catalogo: p.publicado_catalogo ?? false,
       en_exposicion: (p as any).en_exposicion ?? false, orden: p.orden,
@@ -341,7 +339,7 @@ export default function FichasManager({ productos, proveedores, verCostes = true
             </div>
 
             {form.tiene_cargo && (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '0.75rem', marginTop: '0.75rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem', marginTop: '0.75rem' }}>
                 <div>
                   <label style={S.label}>Precio base (€)</label>
                   <input type="number" value={form.precio_base} onChange={f('precio_base')} style={S.input} placeholder="0.00" step="0.01" />
@@ -357,22 +355,22 @@ export default function FichasManager({ productos, proveedores, verCostes = true
                   </select>
                 </div>
                 <div>
-                  <label style={S.label}>Coste aduana (€)</label>
-                  <input type="number" value={form.coste_aduana} onChange={f('coste_aduana')} style={S.input} placeholder="0.00" step="0.01" />
-                </div>
-                <div>
-                  <label style={S.label}>Coste logística (€)</label>
-                  <input type="number" value={form.coste_logistica} onChange={f('coste_logistica')} style={S.input} placeholder="0.00" step="0.01" />
+                  <label style={S.label}>Aduana (%)</label>
+                  <select value={form.coste_aduana} onChange={f('coste_aduana')} style={{ ...S.input, cursor: 'pointer' }}>
+                    <option value="0">Exento (0%)</option>
+                    <option value="5">5%</option>
+                    <option value="10">10%</option>
+                    <option value="15">15%</option>
+                  </select>
                 </div>
 
                 {/* Resumen coste */}
                 {precioBase > 0 && (
-                  <div style={{ gridColumn: '1/-1', background: 'var(--amarillo)', padding: '0.75rem 1rem', display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: '0.5rem' }}>
+                  <div style={{ gridColumn: '1/-1', background: 'var(--amarillo)', padding: '0.75rem 1rem', display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '0.5rem' }}>
                     {[
                       ['Base', `${precioBase.toFixed(2)} €`],
                       ['IGIC', `${igic.toFixed(2)} €`],
-                      ['Aduana', `${aduana.toFixed(2)} €`],
-                      ['Logística', `${logistica.toFixed(2)} €`],
+                      [`Aduana ${aduanaPct > 0 ? `(${aduanaPct}%)` : ''}`, `${aduana.toFixed(2)} €`],
                       ['TOTAL', `${costeTotal.toFixed(2)} €`],
                     ].map(([label, val]) => (
                       <div key={label} style={{ textAlign: 'center' }}>
@@ -452,7 +450,7 @@ export default function FichasManager({ productos, proveedores, verCostes = true
                   {verCostes && (
                     <td style={{ padding: '0.65rem 0.9rem', fontSize: '0.72rem', color: p.tiene_cargo ? 'var(--negro)' : 'var(--gris-l)' }}>
                       {p.tiene_cargo && p.precio_base
-                        ? `${(p.precio_base + (p.precio_base*(p.igic_pct??0)/100) + (p.coste_aduana??0) + (p.coste_logistica??0)).toFixed(2)} €`
+                        ? `${(p.precio_base + (p.precio_base*(p.igic_pct??0)/100) + (p.precio_base*(p.coste_aduana??0)/100)).toFixed(2)} €`
                         : '—'}
                     </td>
                   )}

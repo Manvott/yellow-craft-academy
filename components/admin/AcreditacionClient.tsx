@@ -141,17 +141,29 @@ async function imprimirTodasPegatinas(registros: RegistroAcred[]) {
     <title>Pegatinas YCA 2026 — ${registros.length} asistentes</title>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { background: #eee; padding: 20px; font-family: sans-serif; }
-      h1 { font-size: 14px; color: #555; margin-bottom: 16px; letter-spacing: 0.2em; text-transform: uppercase; }
-      .grid { display: flex; flex-wrap: wrap; gap: 8px; }
-      .pegatina { background: white; box-shadow: 0 1px 4px rgba(0,0,0,0.15); }
-      img { display: block; width: 264px; height: 94px; }
+      body { background: #ddd; padding: 24px; font-family: sans-serif; }
+      h1 { font-size: 12px; color: #666; margin-bottom: 20px; letter-spacing: 0.2em; text-transform: uppercase; }
+      .grid { display: flex; flex-wrap: wrap; gap: 16px; }
+      .pegatina {
+        border: 1.5px solid #bbb;
+        border-radius: 4px;
+        padding: 6px;
+        background: #f5f5f5;
+        display: inline-flex;
+      }
+      .pegatina img { display: block; width: 264px; height: 94px; border-radius: 2px; }
       @media print {
-        body { background: white; padding: 0; }
+        body { background: white; padding: 0.5cm; }
         h1 { display: none; }
-        .grid { gap: 4px; }
-        .pegatina { box-shadow: none; page-break-inside: avoid; }
-        img { width: 7cm; height: 2.5cm; }
+        .grid { gap: 6px; }
+        .pegatina {
+          border: 1px solid #ccc;
+          padding: 4px;
+          background: #f9f9f9;
+          page-break-inside: avoid;
+          border-radius: 2px;
+        }
+        .pegatina img { width: 7cm; height: 2.5cm; }
         @page { margin: 0.5cm; }
       }
     </style>

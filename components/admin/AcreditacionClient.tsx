@@ -131,11 +131,14 @@ async function imprimirTodasPegatinas(registros: RegistroAcred[]) {
   const canvases = await Promise.all(registros.map(r => buildPegatinaCanvas(r)))
   const dataUrls = canvases.map(c => c.toDataURL('image/png'))
 
-  const items = registros.map((r, i) => `
-    <div class="pegatina">
-      <img src="${dataUrls[i]}" />
-    </div>
-  `).join('')
+  // Construir filas de tabla con 2 columnas
+  const rows: string[] = []
+  for (let i = 0; i < registros.length; i += 2) {
+    const td1 = `<td><img src="${dataUrls[i]}" /></td>`
+    const td2 = i + 1 < registros.length ? `<td><img src="${dataUrls[i + 1]}" /></td>` : '<td></td>'
+    rows.push(`<tr>${td1}${td2}</tr>`)
+  }
+  const tabla = `<table>${rows.join('')}</table>`
 
   win.document.write(`<!DOCTYPE html><html><head>
     <title>Pegatinas YCA 2026 — ${registros.length} asistentes</title>
@@ -143,33 +146,30 @@ async function imprimirTodasPegatinas(registros: RegistroAcred[]) {
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body { background: #ddd; padding: 24px; font-family: sans-serif; }
       h1 { font-size: 12px; color: #666; margin-bottom: 20px; letter-spacing: 0.2em; text-transform: uppercase; }
-      .grid { display: flex; flex-wrap: wrap; gap: 16px; }
-      .pegatina {
-        border: 1.5px solid #bbb;
-        border-radius: 4px;
+      table { border-collapse: collapse; }
+      td {
+        border: 1.5px solid #aaa;
         padding: 6px;
         background: #f5f5f5;
-        display: inline-flex;
       }
-      .pegatina img { display: block; width: 264px; height: 94px; border-radius: 2px; }
+      td img { display: block; width: 264px; height: 94px; }
       @media print {
-        body { background: white; padding: 0.5cm; }
+        body { background: white; padding: 0.4cm; }
         h1 { display: none; }
-        .grid { gap: 6px; }
-        .pegatina {
-          border: 1px solid #ccc;
+        table { border-collapse: collapse; }
+        td {
+          border: 1px solid #bbb;
           padding: 4px;
-          background: #f9f9f9;
+          background: #f8f8f8;
           page-break-inside: avoid;
-          border-radius: 2px;
         }
-        .pegatina img { width: 7cm; height: 2.5cm; }
-        @page { margin: 0.5cm; }
+        td img { width: 7cm; height: 2.5cm; }
+        @page { margin: 0.4cm; }
       }
     </style>
   </head><body>
     <h1>Yellow Craft Academy 2026 &mdash; ${registros.length} pegatinas</h1>
-    <div class="grid">${items}</div>
+    ${tabla}
     <script>window.onload = () => { window.print(); window.onafterprint = () => window.close(); }<\/script>
   </body></html>`)
   win.document.close()

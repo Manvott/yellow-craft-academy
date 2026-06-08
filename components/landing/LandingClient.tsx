@@ -627,7 +627,7 @@ export default function LandingClient({ locale }: Props) {
               ['Fecha', '15 de junio de 2026'],
               ['Lugar', 'Av. de las Playas · Puerto del Carmen · Lanzarote'],
               ['Horario', '9:30h – 21:00h'],
-              ['Acceso', 'Gratuito · Plaza reservada'],
+              ['Acceso', 'Acceso profesional · Aforo cerrado'],
             ].map(([label, val]) => (
               <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '0.8rem 0', borderTop: '1px solid rgba(247,243,238,0.07)', gap: '1rem' }}>
                 <span style={{ fontSize: '0.6rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(247,243,238,0.3)', whiteSpace: 'nowrap' }}>{label}</span>

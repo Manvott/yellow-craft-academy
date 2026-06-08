@@ -3,7 +3,7 @@ import LandingClient from '@/components/landing/LandingClient'
 
 export const metadata = {
   title: 'Yellow Craft Academy · AVA · 15 de junio · Lanzarote',
-  description: 'Una jornada de formación técnica gastronómica para profesionales HORECA. Lanzarote, 15 de junio 2026. Entrada gratuita, plazas limitadas.',
+  description: 'Una jornada de formación técnica gastronómica para profesionales HORECA. Lanzarote, 15 de junio 2026. Acceso profesional · Aforo cerrado.',
 }
 
 export default async function EventoPage() {

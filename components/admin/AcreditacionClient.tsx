@@ -107,11 +107,9 @@ async function imprimirPegatina(r: RegistroAcred) {
       body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #f0f0f0; }
       .wrap { background: white; padding: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.15); }
       img { display: block; width: 264px; height: 94px; }
-      .label { font-family: sans-serif; font-size: 10px; color: #888; text-align: center; margin-top: 6px; letter-spacing: 0.1em; }
       @media print {
         body { background: white; }
         .wrap { padding: 0; box-shadow: none; }
-        .label { display: none; }
         @page { size: 7cm 2.5cm; margin: 0; }
         img { width: 7cm; height: 2.5cm; }
       }
@@ -119,7 +117,6 @@ async function imprimirPegatina(r: RegistroAcred) {
   </head><body>
     <div class="wrap">
       <img src="${dataUrl}" />
-      <p class="label">7 x 2,5 cm &mdash; ${r.nombre}</p>
     </div>
     <script>window.onload = () => { window.print(); window.onafterprint = () => window.close(); }<\/script>
   </body></html>`)

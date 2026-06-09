@@ -117,8 +117,8 @@ export default function RegistrosAdmin({ registros }: Props) {
               <col style={{ width: '12%' }} />
               <col style={{ width: '22%' }} />
               <col style={{ width: '24%' }} />
-              <col style={{ width: '7%' }} />
-              <col style={{ width: '7%' }} />
+              <col style={{ width: '5%' }} />
+              <col style={{ width: '10%' }} />
             </colgroup>
             <thead>
               <tr style={{ background: 'var(--crema2)', borderBottom: '1px solid var(--crema3)' }}>
@@ -238,12 +238,13 @@ export default function RegistrosAdmin({ registros }: Props) {
                           style={{ display: 'inline-flex', alignItems: 'center', fontSize: '0.62rem', color: 'var(--gris)', textDecoration: 'none', border: '1px solid var(--crema3)', padding: '0.2rem 0.5rem' }}>
                           Email
                         </a>
-                        <button onClick={() => eliminar(r.id, r.nombre)} disabled={updating === r.id} title="Eliminar"
-                          style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 26, height: 26, background: 'none', border: '1px solid #fca5a5', color: '#dc2626', cursor: 'pointer', opacity: updating === r.id ? 0.5 : 1, flexShrink: 0 }}>
-                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <button onClick={() => eliminar(r.id, r.nombre)} disabled={updating === r.id}
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', background: 'none', border: '1px solid #fca5a5', color: '#dc2626', cursor: 'pointer', padding: '0.2rem 0.5rem', fontSize: '0.62rem', fontFamily: 'DM Sans, sans-serif', opacity: updating === r.id ? 0.5 : 1, whiteSpace: 'nowrap' }}>
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
                             <path d="M10 11v6M14 11v6M9 6V4h6v2"/>
                           </svg>
+                          Eliminar
                         </button>
                       </div>
                     </td>

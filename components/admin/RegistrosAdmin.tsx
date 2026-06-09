@@ -15,14 +15,30 @@ export default function RegistrosAdmin({ registros }: Props) {
   const [updating,  setUpdating]  = useState<string | null>(null)
   const [filtro,    setFiltro]    = useState<'todos' | 'pendientes' | 'confirmados'>('todos')
   const [search,    setSearch]    = useState('')
-  const [editando,  setEditando]  = useState<string | null>(null)
-  const [editNombre, setEditNombre] = useState('')
+  const [editando,    setEditando]   = useState<string | null>(null)
+  const [editNombre,  setEditNombre]  = useState('')
   const [editEmpresa, setEditEmpresa] = useState('')
+  const [editBloques, setEditBloques] = useState<string[]>([])
+
+  const BLOQUES_OPCIONES = [
+    { value: '10:00 – 12:00h · Silma Ayres · SOSA',           label: '10:00' },
+    { value: '12:00 – 13:30h · Brunch con producto',           label: '12:00' },
+    { value: '14:00 – 16:00h · Alexis García · 100×100',      label: '14:00' },
+    { value: '16:30 – 17:30h · Óscar Lafuente · Ron Arehucas', label: '16:30' },
+    { value: '18:00 – 21:00h · Tardeo · cóctel · atardecer',  label: '18:00' },
+  ]
 
   function startEdit(r: Registro) {
     setEditando(r.id)
     setEditNombre(r.nombre)
     setEditEmpresa(r.empresa ?? '')
+    setEditBloques(r.bloques ?? [])
+  }
+
+  function toggleBloque(val: string) {
+    setEditBloques(prev =>
+      prev.includes(val) ? prev.filter(b => b !== val) : [...prev, val]
+    )
   }
 
   async function guardarEdit(id: string) {
@@ -32,6 +48,7 @@ export default function RegistrosAdmin({ registros }: Props) {
     await supabase.from('registros').update({
       nombre:  editNombre.trim(),
       empresa: editEmpresa.trim() || null,
+      bloques: editBloques,
     }).eq('id', id)
     setUpdating(null)
     setEditando(null)
@@ -135,7 +152,22 @@ export default function RegistrosAdmin({ registros }: Props) {
                             placeholder="Empresa (opcional)"
                             style={{ background: 'var(--crema)', border: '1px solid var(--crema3)', color: 'var(--gris)', padding: '0.3rem 0.5rem', fontSize: '0.72rem', fontFamily: 'DM Sans, sans-serif', outline: 'none', width: '100%' }}
                           />
-                          <div style={{ display: 'flex', gap: '0.3rem' }}>
+                          {/* Tramos */}
+                          <div style={{ marginTop: '0.4rem' }}>
+                            <p style={{ fontSize: '0.55rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gris)', marginBottom: '0.3rem', fontFamily: 'DM Sans, sans-serif' }}>Tramos</p>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem' }}>
+                              {BLOQUES_OPCIONES.map(b => {
+                                const activo = editBloques.includes(b.value)
+                                return (
+                                  <button key={b.value} type="button" onClick={() => toggleBloque(b.value)}
+                                    style={{ padding: '0.2rem 0.5rem', fontSize: '0.6rem', fontFamily: 'DM Sans, sans-serif', border: 'none', cursor: 'pointer', background: activo ? 'var(--amarillo)' : 'var(--crema2)', color: 'var(--negro)', fontWeight: activo ? 600 : 400 }}>
+                                    {b.label}
+                                  </button>
+                                )
+                              })}
+                            </div>
+                          </div>
+                          <div style={{ display: 'flex', gap: '0.3rem', marginTop: '0.5rem' }}>
                             <button onClick={() => guardarEdit(r.id)} disabled={updating === r.id || !editNombre.trim()}
                               style={{ background: 'var(--negro)', color: 'var(--crema)', border: 'none', padding: '0.25rem 0.65rem', fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', opacity: updating === r.id ? 0.5 : 1 }}>
                               Guardar

@@ -12,8 +12,31 @@ interface Props { registros: Registro[] }
 
 export default function RegistrosAdmin({ registros }: Props) {
   const router = useRouter()
-  const [updating, setUpdating] = useState<string | null>(null)
-  const [filtro, setFiltro] = useState<'todos' | 'pendientes' | 'confirmados'>('todos')
+  const [updating,  setUpdating]  = useState<string | null>(null)
+  const [filtro,    setFiltro]    = useState<'todos' | 'pendientes' | 'confirmados'>('todos')
+  const [search,    setSearch]    = useState('')
+  const [editando,  setEditando]  = useState<string | null>(null)
+  const [editNombre, setEditNombre] = useState('')
+  const [editEmpresa, setEditEmpresa] = useState('')
+
+  function startEdit(r: Registro) {
+    setEditando(r.id)
+    setEditNombre(r.nombre)
+    setEditEmpresa(r.empresa ?? '')
+  }
+
+  async function guardarEdit(id: string) {
+    if (!editNombre.trim()) return
+    setUpdating(id)
+    const supabase = createClient()
+    await supabase.from('registros').update({
+      nombre:  editNombre.trim(),
+      empresa: editEmpresa.trim() || null,
+    }).eq('id', id)
+    setUpdating(null)
+    setEditando(null)
+    router.refresh()
+  }
 
   async function toggleWA(id: string, current: boolean) {
     setUpdating(id)
@@ -33,9 +56,12 @@ export default function RegistrosAdmin({ registros }: Props) {
   }
 
   const filtered = registros.filter(r => {
-    if (filtro === 'pendientes') return !r.wa_confirmado
-    if (filtro === 'confirmados') return r.wa_confirmado
-    return true
+    const q = search.toLowerCase()
+    const matchSearch = !q ||
+      r.nombre.toLowerCase().includes(q) ||
+      (r.empresa ?? '').toLowerCase().includes(q)
+    const matchFiltro = filtro === 'pendientes' ? !r.wa_confirmado : filtro === 'confirmados' ? r.wa_confirmado : true
+    return matchSearch && matchFiltro
   })
 
   const waIcono = (
@@ -46,6 +72,16 @@ export default function RegistrosAdmin({ registros }: Props) {
 
   return (
     <div>
+      {/* Buscador */}
+      <div style={{ marginBottom: '0.75rem' }}>
+        <input
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="Buscar por nombre o empresa..."
+          style={{ width: '100%', maxWidth: 420, background: 'var(--blanco)', border: '1px solid var(--crema3)', color: 'var(--grafito)', padding: '0.65rem 1rem', fontFamily: 'DM Sans, sans-serif', fontSize: '0.82rem', outline: 'none' }}
+        />
+      </div>
+
       {/* Filtros */}
       <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
         {(['todos', 'pendientes', 'confirmados'] as const).map(f => (
@@ -83,13 +119,44 @@ export default function RegistrosAdmin({ registros }: Props) {
 
                     {/* Nombre + empresa + fecha */}
                     <td style={{ padding: '0.6rem 0.75rem', overflow: 'hidden' }}>
-                      <p style={{ fontWeight: 500, color: 'var(--negro)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: '0.1rem' }}>{r.nombre}</p>
-                      <p style={{ fontSize: '0.68rem', color: 'var(--gris)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {r.empresa ?? <span style={{ color: 'var(--gris-l)', fontStyle: 'italic' }}>Sin empresa</span>}
-                        <span style={{ color: 'var(--gris-l)', marginLeft: '0.4rem' }}>
-                          · {new Date(r.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })}
-                        </span>
-                      </p>
+                      {editando === r.id ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+                          <input
+                            value={editNombre}
+                            onChange={e => setEditNombre(e.target.value)}
+                            onKeyDown={e => { if (e.key === 'Enter') guardarEdit(r.id); if (e.key === 'Escape') setEditando(null) }}
+                            autoFocus
+                            style={{ background: 'var(--crema)', border: '1px solid var(--negro)', color: 'var(--negro)', padding: '0.3rem 0.5rem', fontSize: '0.8rem', fontFamily: 'DM Sans, sans-serif', outline: 'none', width: '100%' }}
+                          />
+                          <input
+                            value={editEmpresa}
+                            onChange={e => setEditEmpresa(e.target.value)}
+                            onKeyDown={e => { if (e.key === 'Enter') guardarEdit(r.id); if (e.key === 'Escape') setEditando(null) }}
+                            placeholder="Empresa (opcional)"
+                            style={{ background: 'var(--crema)', border: '1px solid var(--crema3)', color: 'var(--gris)', padding: '0.3rem 0.5rem', fontSize: '0.72rem', fontFamily: 'DM Sans, sans-serif', outline: 'none', width: '100%' }}
+                          />
+                          <div style={{ display: 'flex', gap: '0.3rem' }}>
+                            <button onClick={() => guardarEdit(r.id)} disabled={updating === r.id || !editNombre.trim()}
+                              style={{ background: 'var(--negro)', color: 'var(--crema)', border: 'none', padding: '0.25rem 0.65rem', fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', opacity: updating === r.id ? 0.5 : 1 }}>
+                              Guardar
+                            </button>
+                            <button onClick={() => setEditando(null)}
+                              style={{ background: 'none', border: '1px solid var(--crema3)', padding: '0.25rem 0.5rem', fontSize: '0.6rem', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', color: 'var(--gris)' }}>
+                              Cancelar
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <p style={{ fontWeight: 500, color: 'var(--negro)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: '0.1rem' }}>{r.nombre}</p>
+                          <p style={{ fontSize: '0.68rem', color: 'var(--gris)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {r.empresa ?? <span style={{ color: 'var(--gris-l)', fontStyle: 'italic' }}>Sin empresa</span>}
+                            <span style={{ color: 'var(--gris-l)', marginLeft: '0.4rem' }}>
+                              · {new Date(r.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })}
+                            </span>
+                          </p>
+                        </>
+                      )}
                     </td>
 
                     {/* Isla */}
@@ -128,6 +195,13 @@ export default function RegistrosAdmin({ registros }: Props) {
                     {/* Acciones */}
                     <td style={{ padding: '0.65rem 0.75rem', whiteSpace: 'nowrap' }}>
                       <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                        <button onClick={() => editando === r.id ? setEditando(null) : startEdit(r)} title="Editar nombre y empresa"
+                          style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 26, height: 26, background: editando === r.id ? 'var(--negro)' : 'none', border: `1px solid ${editando === r.id ? 'var(--negro)' : 'var(--crema3)'}`, color: editando === r.id ? 'var(--crema)' : 'var(--gris)', cursor: 'pointer', flexShrink: 0 }}>
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                          </svg>
+                        </button>
                         <a href={`mailto:${r.email}`} title="Email"
                           style={{ display: 'inline-flex', alignItems: 'center', fontSize: '0.62rem', color: 'var(--gris)', textDecoration: 'none', border: '1px solid var(--crema3)', padding: '0.2rem 0.5rem' }}>
                           Email

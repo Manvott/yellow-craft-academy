@@ -16,12 +16,21 @@ interface Comb { id?: string; nombre: string; peso: string; unidad: string; orde
 
 function emptyComb(orden = 0): Comb { return { nombre: '', peso: '', unidad: 'g', orden } }
 
+const SERVICIOS = [
+  { key: 'brunch', label: 'Brunch', color: '#d97706', bg: '#fef3c7', border: '#fcd34d' },
+  { key: 'tardeo', label: 'Tardeo', color: '#7c3aed', bg: '#ede9fe', border: '#c4b5fd' },
+] as const
+
+type Servicio = typeof SERVICIOS[number]['key']
+
 export default function MenuClient({ productos }: { productos: ProductoEscandallo[] }) {
   const router = useRouter()
   const [search, setSearch] = useState('')
+  const [seccion, setSeccion] = useState<'todos' | Servicio>('todos')
   const [filtro, setFiltro] = useState<'todos' | 'con' | 'sin'>('todos')
   const [activo, setActivo] = useState<string | null>(null)
   const [combs, setCombs] = useState<Comb[]>([])
+  const [editServicio, setEditServicio] = useState<string>('')
   const [saving, setSaving] = useState(false)
 
   const filtered = productos.filter(p => {
@@ -29,16 +38,17 @@ export default function MenuClient({ productos }: { productos: ProductoEscandall
       (p as any).proveedor?.nombre?.toLowerCase().includes(search.toLowerCase())
     const tieneCombs = (p.combinaciones?.filter(c => c.nombre).length ?? 0) > 0
     const matchFiltro = filtro === 'todos' ? true : filtro === 'con' ? tieneCombs : !tieneCombs
-    return matchSearch && matchFiltro
+    const matchSeccion = seccion === 'todos' ? true : p.tipo_servicio === seccion
+    return matchSearch && matchFiltro && matchSeccion
   })
 
   function abrirProducto(p: ProductoEscandallo) {
     if (activo === p.id) { setActivo(null); return }
     setActivo(p.id)
+    setEditServicio(p.tipo_servicio ?? '')
     const existentes = (p.combinaciones ?? [])
       .sort((a, b) => a.orden - b.orden)
       .map(c => ({ id: c.id ?? undefined, nombre: c.nombre, peso: c.peso?.toString() ?? '', unidad: c.unidad, orden: c.orden }))
-    // Siempre al menos 5 filas
     while (existentes.length < 5) existentes.push({ id: undefined, ...emptyComb(existentes.length) })
     setCombs(existentes)
   }
@@ -58,6 +68,9 @@ export default function MenuClient({ productos }: { productos: ProductoEscandall
     if (!activo) return
     setSaving(true)
     const supabase = createClient()
+
+    // Actualizar tipo_servicio del producto
+    await supabase.from('productos').update({ tipo_servicio: editServicio || null }).eq('id', activo)
 
     // Borrar todas las combinaciones existentes del producto
     await supabase.from('producto_combinaciones').delete().eq('producto_id', activo)
@@ -83,9 +96,31 @@ export default function MenuClient({ productos }: { productos: ProductoEscandall
   }
 
   const conMenú = productos.filter(p => (p.combinaciones?.filter(c => c.nombre).length ?? 0) > 0).length
+  const porServicio = (s: Servicio) => productos.filter(p => p.tipo_servicio === s).length
 
   return (
     <div>
+      {/* Tabs de sección — Brunch / Tardeo */}
+      <div style={{ display: 'flex', gap: '0', marginBottom: '1.5rem', borderBottom: '2px solid var(--crema3)' }}>
+        {([
+          { key: 'todos', label: `Todos (${productos.length})`, color: 'var(--negro)', bg: 'var(--negro)' },
+          { key: 'brunch', label: `Brunch (${porServicio('brunch')})`, color: '#d97706', bg: '#d97706' },
+          { key: 'tardeo', label: `Tardeo (${porServicio('tardeo')})`, color: '#7c3aed', bg: '#7c3aed' },
+        ] as const).map(({ key, label, bg }) => (
+          <button key={key} onClick={() => setSeccion(key)}
+            style={{
+              padding: '0.65rem 1.4rem', fontSize: '0.68rem', letterSpacing: '0.12em', textTransform: 'uppercase',
+              fontFamily: 'DM Sans, sans-serif', border: 'none', cursor: 'pointer',
+              background: seccion === key ? bg : 'transparent',
+              color: seccion === key ? '#fff' : 'var(--gris)',
+              borderBottom: seccion === key ? `2px solid ${bg}` : '2px solid transparent',
+              marginBottom: '-2px', transition: 'all 0.15s',
+            }}>
+            {label}
+          </button>
+        ))}
+      </div>
+
       {/* Stats */}
       <div style={{ display: 'flex', gap: '2rem', marginBottom: '1.5rem' }}>
         <span style={{ fontSize: '0.8rem', fontFamily: 'DM Sans, sans-serif' }}>
@@ -102,7 +137,7 @@ export default function MenuClient({ productos }: { productos: ProductoEscandall
         </span>
       </div>
 
-      {/* Filtros */}
+      {/* Filtros secundarios */}
       <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
         <input value={search} onChange={e => setSearch(e.target.value)}
           placeholder="Buscar producto o marca..."
@@ -141,13 +176,19 @@ export default function MenuClient({ productos }: { productos: ProductoEscandall
                   <p style={{ fontWeight: 500, fontSize: '0.85rem', color: isActivo ? 'var(--crema)' : 'var(--negro)', marginBottom: '0.1rem' }}>
                     {p.nombre}
                   </p>
-                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
                     <span style={{ fontSize: '0.65rem', color: isActivo ? 'rgba(247,243,238,0.5)' : 'var(--gris)' }}>
                       {(p as any).proveedor?.nombre ?? '—'}
                     </span>
                     {p.categoria && (
                       <span style={{ fontSize: '0.58rem', color: isActivo ? 'rgba(247,243,238,0.4)' : 'var(--gris-l)' }}>· {p.categoria}</span>
                     )}
+                    {p.tipo_servicio && (() => {
+                      const s = SERVICIOS.find(x => x.key === p.tipo_servicio)
+                      return s ? (
+                        <span style={{ fontSize: '0.5rem', letterSpacing: '0.1em', textTransform: 'uppercase', background: isActivo ? 'rgba(255,255,255,0.15)' : s.bg, color: isActivo ? '#fff' : s.color, padding: '0.1rem 0.35rem', border: `1px solid ${isActivo ? 'rgba(255,255,255,0.2)' : s.border}`, fontFamily: 'DM Sans, sans-serif', fontWeight: 600 }}>{s.label}</span>
+                      ) : null
+                    })()}
                   </div>
                 </div>
 
@@ -172,6 +213,21 @@ export default function MenuClient({ productos }: { productos: ProductoEscandall
                   <p style={{ ...S.label, marginBottom: '0.75rem', color: 'var(--negro)' }}>
                     Ingredientes / Productos a combinar — {p.nombre}
                   </p>
+
+                  {/* Selector de servicio */}
+                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '1rem' }}>
+                    <span style={{ ...S.label, flexShrink: 0 }}>Servicio</span>
+                    {([{ key: '', label: 'Sin asignar' }, ...SERVICIOS] as const).map(s => {
+                      const srv = SERVICIOS.find(x => x.key === s.key)
+                      const active = editServicio === s.key
+                      return (
+                        <button key={s.key} type="button" onClick={() => setEditServicio(s.key)}
+                          style={{ padding: '0.3rem 0.8rem', fontSize: '0.62rem', letterSpacing: '0.1em', textTransform: 'uppercase', fontFamily: 'DM Sans, sans-serif', cursor: 'pointer', border: `1px solid ${active ? (srv?.border ?? 'var(--negro)') : 'var(--crema3)'}`, background: active ? (srv?.bg ?? 'var(--negro)') : 'var(--blanco)', color: active ? (srv?.color ?? 'var(--crema)') : 'var(--gris)', fontWeight: active ? 600 : 400 }}>
+                          {s.label}
+                        </button>
+                      )
+                    })}
+                  </div>
 
                   {/* Cabeceras */}
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: '0.4rem', marginBottom: '0.35rem' }}>

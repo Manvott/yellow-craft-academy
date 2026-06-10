@@ -93,6 +93,12 @@ export default function MensajesWAClient({ plantillas, registros, enviados }: Pr
     setTimeout(() => { el.selectionStart = el.selectionEnd = start + emoji.length; el.focus() }, 0)
   }
 
+  const TARDEO_VALUE = '18:00 – 21:00h · Tardeo · cóctel · atardecer'
+  const esSoloTardeo = (r: RegistroWA) => {
+    const b = r.bloques ?? []
+    return b.length === 1 && b[0] === TARDEO_VALUE
+  }
+
   const enviadosSet = new Set(enviados.map(e => `${e.plantilla_id}:${e.registro_id}`))
 
   const yaEnviado = useCallback((registroId: string) => {
@@ -280,7 +286,12 @@ export default function MensajesWAClient({ plantillas, registros, enviados }: Pr
                 return (
                   <div key={r.id} style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', gap: '0.75rem', alignItems: 'center', padding: '0.65rem 1rem', borderBottom: '1px solid var(--crema3)', background: enviado ? '#f0fdf4' : i % 2 === 0 ? 'var(--blanco)' : 'var(--crema)' }}>
                     <div>
-                      <p style={{ fontWeight: 500, fontSize: '0.82rem', color: 'var(--negro)', marginBottom: '0.1rem' }}>{r.nombre}</p>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.1rem' }}>
+                        <p style={{ fontWeight: 500, fontSize: '0.82rem', color: 'var(--negro)', margin: 0 }}>{r.nombre}</p>
+                        {esSoloTardeo(r) && (
+                          <span style={{ fontSize: '0.5rem', letterSpacing: '0.1em', textTransform: 'uppercase', background: '#fef3c7', color: '#b45309', padding: '0.1rem 0.35rem', flexShrink: 0, fontFamily: 'DM Sans, sans-serif', fontWeight: 600, border: '1px solid #fcd34d' }}>Tardeo</span>
+                        )}
+                      </div>
                       <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                         {r.empresa && <span style={{ fontSize: '0.68rem', color: 'var(--gris)' }}>{r.empresa}</span>}
                         {r.isla && <span style={{ fontSize: '0.58rem', background: 'var(--amarillo)', color: 'var(--negro)', padding: '0.05rem 0.35rem' }}>{r.isla}</span>}

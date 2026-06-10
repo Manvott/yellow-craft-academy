@@ -197,11 +197,17 @@ function QRInline({ registro, size = 150 }: { registro: RegistroAcred; size?: nu
   )
 }
 
+const TARDEO_VALUE = '18:00 – 21:00h · Tardeo · cóctel · atardecer'
+const esSoloTardeo = (r: RegistroAcred) => {
+  const b = r.bloques ?? []
+  return b.length === 1 && b[0] === TARDEO_VALUE
+}
+
 export default function AcreditacionClient({ registros }: Props) {
   const router   = useRouter()
   const [updating, setUpdating]   = useState<string | null>(null)
   const [search,   setSearch]     = useState('')
-  const [filtro,   setFiltro]     = useState<'todos' | 'asistio' | 'pendiente'>('todos')
+  const [filtro,   setFiltro]     = useState<'todos' | 'asistio' | 'pendiente' | 'solo-tardeo'>('todos')
   const [qrAbierto, setQrAbierto] = useState<string | null>(null)
   const [printingAll, setPrintingAll] = useState(false)
 
@@ -213,10 +219,16 @@ export default function AcreditacionClient({ registros }: Props) {
     router.refresh()
   }
 
+  const soloTardeoCount = registros.filter(esSoloTardeo).length
+
   const filtered = registros.filter(r => {
     const matchSearch  = r.nombre.toLowerCase().includes(search.toLowerCase()) ||
       (r.empresa ?? '').toLowerCase().includes(search.toLowerCase())
-    const matchFiltro  = filtro === 'todos' ? true : filtro === 'asistio' ? r.asistio : !r.asistio
+    const matchFiltro  =
+      filtro === 'asistio'     ? r.asistio :
+      filtro === 'pendiente'   ? !r.asistio :
+      filtro === 'solo-tardeo' ? esSoloTardeo(r) :
+      true
     return matchSearch && matchFiltro
   })
 
@@ -234,10 +246,15 @@ export default function AcreditacionClient({ registros }: Props) {
           placeholder="Buscar por nombre o empresa..."
           style={{ flex: '1 1 200px', background: 'var(--blanco)', border: '1px solid var(--crema3)', color: 'var(--grafito)', padding: '0.65rem 1rem', fontFamily: 'DM Sans, sans-serif', fontSize: '0.82rem', outline: 'none' }}
         />
-        {(['todos', 'asistio', 'pendiente'] as const).map(key => (
+        {([
+          { key: 'todos',       label: `Todos (${registros.length})` },
+          { key: 'solo-tardeo', label: `Solo tardeo (${soloTardeoCount})` },
+          { key: 'asistio',     label: `Asistió (${registros.filter(r => r.asistio).length})` },
+          { key: 'pendiente',   label: `Pendiente (${registros.filter(r => !r.asistio).length})` },
+        ] as const).map(({ key, label }) => (
           <button key={key} onClick={() => setFiltro(key)}
-            style={{ padding: '0.45rem 0.9rem', fontSize: '0.68rem', letterSpacing: '0.1em', textTransform: 'uppercase', border: '1px solid var(--crema3)', cursor: 'pointer', background: filtro === key ? 'var(--negro)' : 'var(--blanco)', color: filtro === key ? 'var(--crema)' : 'var(--gris)', fontFamily: 'DM Sans, sans-serif' }}>
-            {key === 'todos' ? `Todos (${registros.length})` : key === 'asistio' ? `Asistió (${registros.filter(r => r.asistio).length})` : `Pendiente (${registros.filter(r => !r.asistio).length})`}
+            style={{ padding: '0.45rem 0.9rem', fontSize: '0.68rem', letterSpacing: '0.1em', textTransform: 'uppercase', border: `1px solid ${key === 'solo-tardeo' ? '#d97706' : 'var(--crema3)'}`, cursor: 'pointer', background: filtro === key ? (key === 'solo-tardeo' ? '#d97706' : 'var(--negro)') : 'var(--blanco)', color: filtro === key ? '#fff' : (key === 'solo-tardeo' ? '#d97706' : 'var(--gris)'), fontFamily: 'DM Sans, sans-serif' }}>
+            {label}
           </button>
         ))}
         {/* Imprimir todas */}
@@ -273,7 +290,12 @@ export default function AcreditacionClient({ registros }: Props) {
 
               {/* Info */}
               <div>
-                <p style={{ fontWeight: 500, color: 'var(--negro)', fontSize: '0.85rem', marginBottom: '0.1rem' }}>{r.nombre}</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.1rem' }}>
+                  <p style={{ fontWeight: 500, color: 'var(--negro)', fontSize: '0.85rem', margin: 0 }}>{r.nombre}</p>
+                  {esSoloTardeo(r) && (
+                    <span style={{ fontSize: '0.5rem', letterSpacing: '0.1em', textTransform: 'uppercase', background: '#fef3c7', color: '#b45309', padding: '0.1rem 0.35rem', flexShrink: 0, fontFamily: 'DM Sans, sans-serif', fontWeight: 600, border: '1px solid #fcd34d' }}>Tardeo</span>
+                  )}
+                </div>
                 <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
                   {r.empresa && <span style={{ fontSize: '0.7rem', color: 'var(--gris)' }}>{r.empresa}</span>}
                   {r.isla && <span style={{ fontSize: '0.58rem', background: 'var(--amarillo)', color: 'var(--negro)', padding: '0.05rem 0.35rem' }}>{r.isla}</span>}

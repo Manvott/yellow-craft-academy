@@ -13,6 +13,7 @@ export interface RegistroWA {
   isla: string | null
   telefono: string | null
   email: string
+  bloques: string[] | null
 }
 
 export interface Enviado {

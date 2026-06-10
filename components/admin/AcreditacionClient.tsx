@@ -64,24 +64,16 @@ async function buildPegatinaCanvas(r: RegistroAcred): Promise<HTMLCanvasElement>
       const textX = divX + PAD * 1.5
       const maxW  = W - textX - PAD
 
-      // Etiqueta evento (amarillo)
-      ctx.fillStyle = '#D4A800'
-      ctx.font = `600 ${8 * SCALE}px sans-serif`
-      ctx.textAlign = 'left'
-      ctx.fillText('YELLOW CRAFT ACADEMY · 15 JUN 2026', textX, PAD * 3.5, maxW)
-
       // Nombre dividido: primera palabra = nombre, resto = apellidos
       const partes = r.nombre.trim().split(/\s+/)
       const primerNombre = partes[0]
       const apellidos    = partes.slice(1).join(' ')
 
-      const labelY    = PAD * 3.5
-      const nombreY   = labelY + 13 * SCALE
-      const apellidoY = nombreY + 16 * SCALE
-      const islaY     = apellidoY + 12 * SCALE
+      const nombreY   = H / 2 - 8 * SCALE
+      const apellidoY = nombreY + 18 * SCALE
 
       ctx.fillStyle = '#1A1A1A'
-      ctx.font      = `bold ${16 * SCALE}px Georgia, serif`
+      ctx.font      = `bold ${18 * SCALE}px Georgia, serif`
       ctx.fillText(primerNombre, textX, nombreY, maxW)
 
       if (apellidos) {
@@ -89,19 +81,6 @@ async function buildPegatinaCanvas(r: RegistroAcred): Promise<HTMLCanvasElement>
         ctx.font      = `${13 * SCALE}px Georgia, serif`
         ctx.fillText(apellidos, textX, apellidoY, maxW)
       }
-
-      // Isla
-      if (r.isla) {
-        ctx.fillStyle = '#555555'
-        ctx.font      = `${8 * SCALE}px sans-serif`
-        ctx.fillText(r.isla.toUpperCase(), textX, islaY, maxW)
-      }
-
-      // Código
-      const code = `#YCA-2026-${String(r.id).slice(-4).toUpperCase()}`
-      ctx.fillStyle = '#BBBBBB'
-      ctx.font      = `${6 * SCALE}px monospace`
-      ctx.fillText(code, textX, H - PAD * 2, maxW)
 
       resolve(canvas)
     }

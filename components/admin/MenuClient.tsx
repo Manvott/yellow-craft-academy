@@ -28,10 +28,13 @@ export default function MenuClient({ productos }: { productos: ProductoEscandall
   const [search, setSearch] = useState('')
   const [seccion, setSeccion] = useState<'todos' | Servicio>('todos')
   const [filtro, setFiltro] = useState<'todos' | 'con' | 'sin'>('todos')
+  const [categoria, setCategoria] = useState<string>('todas')
   const [activo, setActivo] = useState<string | null>(null)
   const [combs, setCombs] = useState<Comb[]>([])
   const [editServicio, setEditServicio] = useState<string>('')
   const [saving, setSaving] = useState(false)
+
+  const categorias = ['todas', ...Array.from(new Set(productos.map(p => p.categoria).filter(Boolean) as string[])).sort()]
 
   const filtered = productos.filter(p => {
     const matchSearch = p.nombre.toLowerCase().includes(search.toLowerCase()) ||
@@ -39,7 +42,8 @@ export default function MenuClient({ productos }: { productos: ProductoEscandall
     const tieneCombs = (p.combinaciones?.filter(c => c.nombre).length ?? 0) > 0
     const matchFiltro = filtro === 'todos' ? true : filtro === 'con' ? tieneCombs : !tieneCombs
     const matchSeccion = seccion === 'todos' ? true : p.tipo_servicio === seccion
-    return matchSearch && matchFiltro && matchSeccion
+    const matchCategoria = categoria === 'todas' ? true : p.categoria === categoria
+    return matchSearch && matchFiltro && matchSeccion && matchCategoria
   })
 
   function abrirProducto(p: ProductoEscandallo) {
@@ -138,11 +142,17 @@ export default function MenuClient({ productos }: { productos: ProductoEscandall
       </div>
 
       {/* Filtros secundarios */}
-      <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
         <input value={search} onChange={e => setSearch(e.target.value)}
           placeholder="Buscar producto o marca..."
           style={{ flex: '1 1 200px', ...S.input }}
         />
+        <select value={categoria} onChange={e => setCategoria(e.target.value)}
+          style={{ ...S.input, cursor: 'pointer', minWidth: 160 }}>
+          {categorias.map(c => (
+            <option key={c} value={c}>{c === 'todas' ? 'Todas las categorías' : c}</option>
+          ))}
+        </select>
         {([['todos','Todos'], ['con','Con menú'], ['sin','Sin menú']] as const).map(([key, label]) => (
           <button key={key} onClick={() => setFiltro(key)}
             style={{ padding: '0.45rem 0.9rem', fontSize: '0.68rem', letterSpacing: '0.1em', textTransform: 'uppercase', border: '1px solid var(--crema3)', cursor: 'pointer', background: filtro === key ? 'var(--negro)' : 'var(--blanco)', color: filtro === key ? 'var(--crema)' : 'var(--gris)', fontFamily: 'DM Sans, sans-serif' }}>

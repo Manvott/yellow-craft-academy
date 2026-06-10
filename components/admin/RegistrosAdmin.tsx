@@ -144,16 +144,16 @@ export default function RegistrosAdmin({ registros }: Props) {
             Añadir asistente manualmente · <span style={{ color: '#7c3aed', fontWeight: 600 }}>origen: admin</span>
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.75rem' }}>
-            {[
-              { label: 'Nombre *', key: 'nombre', placeholder: 'Nombre completo' },
-              { label: 'Email *',  key: 'email',  placeholder: 'email@dominio.com' },
-              { label: 'Empresa',  key: 'empresa', placeholder: 'Nombre empresa (opcional)' },
-              { label: 'Teléfono', key: 'telefono', placeholder: '+34 600 000 000' },
-            ].map(({ label, key, placeholder }) => (
+            {([
+              { label: 'Nombre *', key: 'nombre' as const, placeholder: 'Nombre completo' },
+              { label: 'Email *',  key: 'email'  as const, placeholder: 'email@dominio.com' },
+              { label: 'Empresa',  key: 'empresa' as const, placeholder: 'Nombre empresa (opcional)' },
+              { label: 'Teléfono', key: 'telefono' as const, placeholder: '+34 600 000 000' },
+            ] as const).map(({ label, key, placeholder }) => (
               <div key={key}>
                 <label style={{ display: 'block', fontSize: '0.58rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gris)', marginBottom: '0.25rem', fontFamily: 'DM Sans, sans-serif' }}>{label}</label>
                 <input
-                  value={(nuevo as Record<string, string>)[key]}
+                  value={nuevo[key]}
                   onChange={e => setNuevo(prev => ({ ...prev, [key]: e.target.value }))}
                   placeholder={placeholder}
                   style={{ width: '100%', background: 'var(--crema)', border: '1px solid var(--crema3)', color: 'var(--negro)', padding: '0.5rem 0.75rem', fontSize: '0.82rem', fontFamily: 'DM Sans, sans-serif', outline: 'none', boxSizing: 'border-box' }}

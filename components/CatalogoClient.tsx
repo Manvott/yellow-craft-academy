@@ -29,11 +29,13 @@ export default function CatalogoClient({ productos, proveedores, categoriasDB = 
     return [...con, ...custom, ...sin]
   }, [productos, categoriasDB])
 
-  // Proveedores con al menos 1 producto publicado
-  const proveedoresConProductos = useMemo(() => {
-    const ids = new Set(productos.map(p => p.proveedor_id))
-    return proveedores.filter(p => ids.has(p.id))
-  }, [productos, proveedores])
+  // Proveedores agrupados por sección
+  const porSeccion = useMemo(() => {
+    const seleccion    = proveedores.filter(p => !p.seccion || p.seccion === 'seleccion')
+    const rincon       = proveedores.filter(p => p.seccion === 'rincon_soberano')
+    const colaboradores = proveedores.filter(p => p.seccion === 'colaboradores')
+    return { seleccion, rincon, colaboradores }
+  }, [proveedores])
 
   const filtered = useMemo(() => {
     return productos.filter(p => {
@@ -67,43 +69,36 @@ export default function CatalogoClient({ productos, proveedores, categoriasDB = 
         <p style={{ fontSize: '0.62rem', letterSpacing: '0.4em', textTransform: 'uppercase', color: 'var(--gris)', marginBottom: '0.5rem', fontFamily: 'DM Sans, sans-serif' }}>
           {proveedores.length} marcas · {productos.length} productos
         </p>
-        <h2 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 'clamp(2rem,3vw,2.8rem)', fontWeight: 300, color: 'var(--negro)', lineHeight: 1.05 }}>
-          Descubre la<br /><em style={{ fontStyle: 'italic', color: 'var(--gris)' }}>selección de AVA</em>
-        </h2>
       </div>
 
-      {/* ── LOGOS DE MARCAS ── */}
-      {proveedores.length > 0 && (
-        <div style={{ marginBottom: '3rem' }}>
-          <p style={{ fontSize: '0.6rem', letterSpacing: '0.35em', textTransform: 'uppercase', color: 'var(--gris)', marginBottom: '1.25rem', fontFamily: 'DM Sans, sans-serif' }}>
-            Marcas participantes — pulsa para ver sus productos
-          </p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
-            {/* Botón "Todas" */}
-            <button
-              onClick={() => setProveedorFiltro('all')}
-              style={{
-                padding: '0.5rem 1.25rem',
-                border: `1px solid ${proveedorFiltro === 'all' ? 'var(--negro)' : 'var(--crema3)'}`,
-                background: proveedorFiltro === 'all' ? 'var(--negro)' : 'var(--blanco)',
-                color: proveedorFiltro === 'all' ? 'var(--crema)' : 'var(--gris)',
-                cursor: 'pointer', fontSize: '0.68rem', letterSpacing: '0.15em',
-                textTransform: 'uppercase', fontFamily: 'DM Sans, sans-serif',
-                transition: 'all 0.2s',
-              }}
-            >
-              Todas
-            </button>
+      {/* ── BLOQUES DE MARCAS POR SECCIÓN ── */}
+      {[
+        { lista: porSeccion.seleccion,    titulo: 'Descubre la', italica: 'selección de AVA',    subtitulo: 'Marcas participantes — pulsa para ver sus productos' },
+        { lista: porSeccion.rincon,       titulo: 'Descubre el', italica: 'rincón soberano de AVA', subtitulo: 'Marcas del rincón soberano — pulsa para ver sus productos' },
+        { lista: porSeccion.colaboradores, titulo: null,          italica: 'Colaboradores',        subtitulo: 'Empresas colaboradoras del evento' },
+      ].map(({ lista, titulo, italica, subtitulo }) => lista.length === 0 ? null : (
+        <div key={italica} style={{ marginBottom: '3.5rem' }}>
+          {/* Encabezado de sección */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <h2 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 'clamp(1.6rem,2.5vw,2.4rem)', fontWeight: 300, color: 'var(--negro)', lineHeight: 1.05 }}>
+              {titulo && <>{titulo}<br /></>}
+              <em style={{ fontStyle: 'italic', color: 'var(--gris)' }}>{italica}</em>
+            </h2>
+            <p style={{ fontSize: '0.6rem', letterSpacing: '0.35em', textTransform: 'uppercase', color: 'var(--gris)', marginTop: '0.5rem', fontFamily: 'DM Sans, sans-serif' }}>
+              {subtitulo}
+            </p>
+          </div>
 
-            {/* Card por marca */}
-            {proveedores.map(prov => {
+          {/* Grid de logos */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
+            {lista.map(prov => {
               const activo = proveedorFiltro === prov.id
               const nProductos = productos.filter(p => p.proveedor_id === prov.id).length
               return (
                 <button
                   key={prov.id}
                   onClick={() => selectMarca(prov.id)}
-                  title={`${prov.nombre} — ${nProductos} producto${nProductos !== 1 ? 's' : ''}`}
+                  title={`${prov.nombre}${nProductos > 0 ? ` — ${nProductos} producto${nProductos !== 1 ? 's' : ''}` : ''}`}
                   style={{
                     display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem',
                     padding: '0.75rem 1rem',
@@ -113,43 +108,22 @@ export default function CatalogoClient({ productos, proveedores, categoriasDB = 
                     minWidth: 90,
                   }}
                 >
-                  {/* Logo o inicial */}
-                  <div style={{ width: 56, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                  <div style={{ width: 56, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {prov.logo_url ? (
-                      <img
-                        src={prov.logo_url}
-                        alt={prov.nombre}
-                        style={{
-                          maxWidth: '100%', maxHeight: '100%',
-                          objectFit: 'contain',
-                          filter: activo ? 'brightness(0) invert(1)' : 'none',
-                          transition: 'filter 0.2s',
-                        }}
+                      <img src={prov.logo_url} alt={prov.nombre}
+                        style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', filter: activo ? 'brightness(0) invert(1)' : 'none', transition: 'filter 0.2s' }}
                       />
                     ) : (
-                      <span style={{
-                        fontFamily: 'Cormorant Garamond, serif', fontSize: '1.4rem', fontWeight: 300,
-                        color: activo ? 'var(--crema)' : 'var(--negro)',
-                        letterSpacing: '-0.02em',
-                      }}>
+                      <span style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1.4rem', fontWeight: 300, color: activo ? 'var(--crema)' : 'var(--negro)', letterSpacing: '-0.02em' }}>
                         {prov.nombre.substring(0, 2).toUpperCase()}
                       </span>
                     )}
                   </div>
-                  {/* Nombre */}
-                  <span style={{
-                    fontSize: '0.58rem', letterSpacing: '0.12em', textTransform: 'uppercase',
-                    color: activo ? 'var(--crema)' : 'var(--gris)', fontFamily: 'DM Sans, sans-serif',
-                    whiteSpace: 'nowrap', maxWidth: 80, overflow: 'hidden', textOverflow: 'ellipsis',
-                  }}>
+                  <span style={{ fontSize: '0.58rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: activo ? 'var(--crema)' : 'var(--gris)', fontFamily: 'DM Sans, sans-serif', whiteSpace: 'nowrap', maxWidth: 80, overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {prov.nombre}
                   </span>
-                  {/* Contador productos */}
                   {nProductos > 0 && (
-                    <span style={{
-                      fontSize: '0.55rem', background: activo ? 'var(--amarillo)' : 'var(--crema2)',
-                      color: 'var(--negro)', padding: '0.05rem 0.4rem', fontFamily: 'DM Sans, sans-serif',
-                    }}>
+                    <span style={{ fontSize: '0.55rem', background: activo ? 'var(--amarillo)' : 'var(--crema2)', color: 'var(--negro)', padding: '0.05rem 0.4rem', fontFamily: 'DM Sans, sans-serif' }}>
                       {nProductos}
                     </span>
                   )}
@@ -157,26 +131,26 @@ export default function CatalogoClient({ productos, proveedores, categoriasDB = 
               )
             })}
           </div>
+        </div>
+      ))}
 
-          {/* Nombre de marca activa */}
-          {proveedorFiltro !== 'all' && (
-            <div style={{ marginTop: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <p style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1.5rem', fontWeight: 300, color: 'var(--negro)' }}>
-                {proveedores.find(p => p.id === proveedorFiltro)?.nombre}
-              </p>
-              {proveedores.find(p => p.id === proveedorFiltro)?.web_url && (
-                <a href={proveedores.find(p => p.id === proveedorFiltro)!.web_url!}
-                  target="_blank" rel="noopener noreferrer"
-                  style={{ fontSize: '0.65rem', color: 'var(--gris)', textDecoration: 'none', letterSpacing: '0.15em', textTransform: 'uppercase', borderBottom: '1px solid var(--crema3)', paddingBottom: 1 }}>
-                  Ver web →
-                </a>
-              )}
-              <button onClick={() => setProveedorFiltro('all')}
-                style={{ fontSize: '0.62rem', color: 'var(--gris)', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '0.1em', textTransform: 'uppercase', fontFamily: 'DM Sans, sans-serif' }}>
-                × Todas las marcas
-              </button>
-            </div>
+      {/* Nombre de marca activa */}
+      {proveedorFiltro !== 'all' && (
+        <div style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <p style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1.5rem', fontWeight: 300, color: 'var(--negro)' }}>
+            {proveedores.find(p => p.id === proveedorFiltro)?.nombre}
+          </p>
+          {proveedores.find(p => p.id === proveedorFiltro)?.web_url && (
+            <a href={proveedores.find(p => p.id === proveedorFiltro)!.web_url!}
+              target="_blank" rel="noopener noreferrer"
+              style={{ fontSize: '0.65rem', color: 'var(--gris)', textDecoration: 'none', letterSpacing: '0.15em', textTransform: 'uppercase', borderBottom: '1px solid var(--crema3)', paddingBottom: 1 }}>
+              Ver web →
+            </a>
           )}
+          <button onClick={() => setProveedorFiltro('all')}
+            style={{ fontSize: '0.62rem', color: 'var(--gris)', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '0.1em', textTransform: 'uppercase', fontFamily: 'DM Sans, sans-serif' }}>
+            × Todas las marcas
+          </button>
         </div>
       )}
 

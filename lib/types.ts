@@ -6,6 +6,7 @@ export interface Proveedor {
   web_url: string | null
   orden: number
   activo: boolean
+  seccion: 'seleccion' | 'rincon_soberano' | 'colaboradores' | null
   created_at: string
 }
 

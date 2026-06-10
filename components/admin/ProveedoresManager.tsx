@@ -8,7 +8,7 @@ import FileUploadField from './FileUploadField'
 
 interface Props { proveedores: Proveedor[] }
 
-const empty = { nombre: '', descripcion: '', logo_url: '', web_url: '', orden: 0, activo: true }
+const empty = { nombre: '', descripcion: '', logo_url: '', web_url: '', orden: 0, activo: true, seccion: 'seleccion' as string }
 
 export default function ProveedoresManager({ proveedores }: Props) {
   const router = useRouter()
@@ -39,7 +39,7 @@ export default function ProveedoresManager({ proveedores }: Props) {
 
   function startEdit(p: Proveedor) {
     setEditing(p.id)
-    setForm({ nombre: p.nombre, descripcion: p.descripcion ?? '', logo_url: p.logo_url ?? '', web_url: p.web_url ?? '', orden: p.orden, activo: p.activo })
+    setForm({ nombre: p.nombre, descripcion: p.descripcion ?? '', logo_url: p.logo_url ?? '', web_url: p.web_url ?? '', orden: p.orden, activo: p.activo, seccion: p.seccion ?? 'seleccion' })
   }
 
   const field = (label: string, key: keyof typeof empty, type = 'text') => (
@@ -74,6 +74,18 @@ export default function ProveedoresManager({ proveedores }: Props) {
             />
           </div>
           {field('Orden', 'orden', 'number')}
+          <div>
+            <label className="text-xs font-semibold text-gray-600 block mb-1">Sección en la landing</label>
+            <select
+              value={form.seccion}
+              onChange={e => setForm(f => ({ ...f, seccion: e.target.value }))}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            >
+              <option value="seleccion">Descubre la selección de AVA</option>
+              <option value="rincon_soberano">Rincón Soberano de AVA</option>
+              <option value="colaboradores">Colaboradores</option>
+            </select>
+          </div>
           <div className="col-span-2">
             <label className="text-xs font-semibold text-gray-600 block mb-1">Descripción</label>
             <textarea
@@ -103,7 +115,7 @@ export default function ProveedoresManager({ proveedores }: Props) {
         <table className="w-full text-sm">
           <thead className="bg-gray-50 border-b border-gray-100">
             <tr>
-              {['Nombre', 'Web', 'Orden', 'Activo', ''].map(h => (
+              {['Nombre', 'Sección', 'Web', 'Orden', 'Activo', ''].map(h => (
                 <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">{h}</th>
               ))}
             </tr>
@@ -112,6 +124,9 @@ export default function ProveedoresManager({ proveedores }: Props) {
             {proveedores.map(p => (
               <tr key={p.id} className="hover:bg-gray-50">
                 <td className="px-4 py-3 font-medium text-gray-900">{p.nombre}</td>
+                <td className="px-4 py-3 text-gray-500 text-xs">
+                  {p.seccion === 'rincon_soberano' ? 'Rincón Soberano' : p.seccion === 'colaboradores' ? 'Colaboradores' : 'Selección AVA'}
+                </td>
                 <td className="px-4 py-3 text-gray-500">{p.web_url ?? '—'}</td>
                 <td className="px-4 py-3 text-gray-500">{p.orden}</td>
                 <td className="px-4 py-3">

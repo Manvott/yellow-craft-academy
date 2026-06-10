@@ -35,6 +35,7 @@ export async function GET(request: NextRequest) {
     'Acepta canal WhatsApp': r.acepta_whatsapp ? 'Sí' : 'No',
     'Añadido a lista WA': r.wa_confirmado ? 'Sí' : 'No',
     'Bloques seleccionados': (r.bloques ?? []).join(' | '),
+    'Origen inscripción': r.origen === 'admin' ? 'Panel admin' : 'Landing web',
   }))
 
   const wb = XLSX.utils.book_new()

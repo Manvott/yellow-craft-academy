@@ -339,7 +339,7 @@ export default function FichasManager({ productos, proveedores, verCostes = true
             </div>
 
             {form.tiene_cargo && (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem', marginTop: '0.75rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem', marginTop: '0.75rem' }}>
                 <div>
                   <label style={S.label}>Precio base (€)</label>
                   <input type="number" value={form.precio_base} onChange={f('precio_base')} style={S.input} placeholder="0.00" step="0.01" />
@@ -366,7 +366,7 @@ export default function FichasManager({ productos, proveedores, verCostes = true
 
                 {/* Resumen coste */}
                 {precioBase > 0 && (
-                  <div style={{ gridColumn: '1/-1', background: 'var(--amarillo)', padding: '0.75rem 1rem', display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '0.5rem' }}>
+                  <div style={{ gridColumn: '1/-1', background: 'var(--amarillo)', padding: '0.75rem 1rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '0.5rem' }}>
                     {[
                       ['Base', `${precioBase.toFixed(2)} €`],
                       ['IGIC', `${igic.toFixed(2)} €`],

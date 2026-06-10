@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import type { Plantilla, RegistroWA, Enviado } from '@/lib/tipos-mensajes-wa'
@@ -59,6 +59,7 @@ const waPath = 'M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.1
 
 export default function MensajesWAClient({ plantillas, registros, enviados }: Props) {
   const router = useRouter()
+  const [isMobile, setIsMobile] = useState(false)
   const [activa, setActiva] = useState<Plantilla | null>(plantillas[0] ?? null)
   const [search, setSearch] = useState('')
   const [filtro, setFiltro] = useState<'todos' | 'pendientes' | 'enviados'>('todos')
@@ -68,6 +69,13 @@ export default function MensajesWAClient({ plantillas, registros, enviados }: Pr
   const [formContenido, setFormContenido] = useState('')
   const [saving, setSaving] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  useEffect(() => {
+    function checkMobile() { setIsMobile(window.innerWidth < 768) }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   const EMOJIS = [
     '😊','✅','👉','🎉','📅','📍','⏰','🌊','🙌','👇',
@@ -141,7 +149,7 @@ export default function MensajesWAClient({ plantillas, registros, enviados }: Pr
   const pct = registros.length ? Math.round((totalEnviados / registros.length) * 100) : 0
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '1.5rem', alignItems: 'start' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '280px 1fr', gap: '1.5rem', alignItems: 'start' }}>
 
       {/* PLANTILLAS */}
       <div>

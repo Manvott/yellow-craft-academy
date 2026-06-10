@@ -142,7 +142,7 @@ export default function RegistrosAdmin({ registros }: Props) {
           <p style={{ fontSize: '0.58rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--gris)', marginBottom: '1rem', fontFamily: 'DM Sans, sans-serif' }}>
             Añadir asistente manualmente · <span style={{ color: '#7c3aed', fontWeight: 600 }}>origen: admin</span>
           </p>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.75rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.75rem', marginBottom: '0.75rem' }}>
             {([
               { label: 'Nombre *', key: 'nombre' as const, placeholder: 'Nombre completo' },
               { label: 'Email *',  key: 'email'  as const, placeholder: 'email@dominio.com' },
@@ -211,7 +211,7 @@ export default function RegistrosAdmin({ registros }: Props) {
       </div>
 
       <div style={{ background: 'var(--blanco)', border: '1px solid var(--crema3)', overflow: 'hidden' }}>
-        <div>
+        <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', tableLayout: 'fixed' }}>
             <colgroup>
               <col style={{ width: '28%' }} />

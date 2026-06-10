@@ -111,7 +111,7 @@ export default function AdminShell({ navItems, userEmail, esSuperadmin, children
       </div>
 
       {/* Main content */}
-      <main className="admin-main" style={{ flex: 1, padding: '2.5rem', overflow: 'auto', marginLeft: 220, minWidth: 0 }}>
+      <main className="admin-main" style={{ flex: 1, padding: '2.5rem', overflow: 'auto', marginLeft: 220, minWidth: 0, maxWidth: '100%' }}>
         {children}
       </main>
 

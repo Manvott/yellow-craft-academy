@@ -174,7 +174,7 @@ export default function MenuClient({ productos }: { productos: ProductoEscandall
                   </p>
 
                   {/* Cabeceras */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 90px 80px 28px', gap: '0.4rem', marginBottom: '0.35rem' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: '0.4rem', marginBottom: '0.35rem' }}>
                     {['Ingrediente / Producto', 'Cantidad', 'Unidad', ''].map((h, i) => (
                       <span key={i} style={{ ...S.label }}>{h}</span>
                     ))}
@@ -182,7 +182,7 @@ export default function MenuClient({ productos }: { productos: ProductoEscandall
 
                   {/* Filas */}
                   {combs.map((c, idx) => (
-                    <div key={idx} style={{ display: 'grid', gridTemplateColumns: '1fr 90px 80px 28px', gap: '0.4rem', marginBottom: '0.35rem' }}>
+                    <div key={idx} style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: '0.4rem', marginBottom: '0.35rem' }}>
                       <input value={c.nombre} onChange={e => updateComb(idx, 'nombre', e.target.value)}
                         style={S.input} placeholder={`Ingrediente ${idx + 1}`} />
                       <input type="number" value={c.peso} onChange={e => updateComb(idx, 'peso', e.target.value)}

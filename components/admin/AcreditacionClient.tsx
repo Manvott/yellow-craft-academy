@@ -257,7 +257,7 @@ export default function AcreditacionClient({ registros }: Props) {
           <div key={r.id}>
             {/* Fila */}
             <div style={{
-              display: 'grid', gridTemplateColumns: '36px 1fr auto auto',
+              display: 'grid', gridTemplateColumns: '28px 1fr auto',
               gap: '0.75rem', alignItems: 'center',
               padding: '0.75rem 1rem',
               borderBottom: qrAbierto === r.id ? '1px solid var(--amarillo)' : '1px solid var(--crema3)',
@@ -281,17 +281,16 @@ export default function AcreditacionClient({ registros }: Props) {
                 </div>
               </div>
 
-              {/* Bloques */}
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.2rem', maxWidth: 180 }}>
-                {(r.bloques ?? []).map(b => (
-                  <span key={b} style={{ fontSize: '0.52rem', background: 'var(--crema2)', color: 'var(--gris)', padding: '0.1rem 0.3rem', border: '1px solid var(--crema3)', whiteSpace: 'nowrap' }}>
-                    {b.split('·')[0].trim().split('–')[0].trim()}
-                  </span>
-                ))}
-              </div>
-
-              {/* Botones QR + Pegatina */}
-              <div style={{ display: 'flex', gap: '0.4rem' }}>
+              {/* Bloques + Botones QR + Pegatina */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', alignItems: 'center' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.2rem' }}>
+                  {(r.bloques ?? []).map(b => (
+                    <span key={b} style={{ fontSize: '0.52rem', background: 'var(--crema2)', color: 'var(--gris)', padding: '0.1rem 0.3rem', border: '1px solid var(--crema3)', whiteSpace: 'nowrap' }}>
+                      {b.split('·')[0].trim().split('–')[0].trim()}
+                    </span>
+                  ))}
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
                 <button
                   onClick={() => setQrAbierto(qrAbierto === r.id ? null : r.id)}
                   title="Ver QR para escanear"
@@ -328,6 +327,7 @@ export default function AcreditacionClient({ registros }: Props) {
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
                   Pegatina
                 </button>
+                </div>
               </div>
             </div>
 

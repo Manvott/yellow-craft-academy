@@ -246,10 +246,16 @@ export default function MenuClient({ productos }: { productos: ProductoEscandall
                     ))}
                   </div>
 
+                  {/* Datalist con todos los productos */}
+                  <datalist id="productos-lista">
+                    {productos.map(prod => <option key={prod.id} value={prod.nombre} />)}
+                  </datalist>
+
                   {/* Filas */}
                   {combs.map((c, idx) => (
                     <div key={idx} style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: '0.4rem', marginBottom: '0.35rem' }}>
                       <input value={c.nombre} onChange={e => updateComb(idx, 'nombre', e.target.value)}
+                        list="productos-lista"
                         style={S.input} placeholder={`Ingrediente ${idx + 1}`} />
                       <input type="number" value={c.peso} onChange={e => updateComb(idx, 'peso', e.target.value)}
                         style={{ ...S.input, textAlign: 'right' }} placeholder="0" />

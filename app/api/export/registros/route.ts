@@ -58,6 +58,9 @@ export async function GET(request: NextRequest) {
     headers: {
       'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       'Content-Disposition': `attachment; filename="yca-asistentes-${new Date().toISOString().split('T')[0]}.xlsx"`,
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
     },
   })
 }

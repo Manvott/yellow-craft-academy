@@ -16,7 +16,7 @@ const emptyNuevo = { nombre: '', empresa: '', email: '', telefono: '', isla: '',
 export default function RegistrosAdmin({ registros }: Props) {
   const router = useRouter()
   const [updating,    setUpdating]  = useState<string | null>(null)
-  const [filtro,      setFiltro]    = useState<'todos' | 'pendientes' | 'confirmados'>('todos')
+  const [filtro,      setFiltro]    = useState<'todos' | 'pendientes' | 'confirmados' | 'solo-tardeo'>('todos')
   const [search,      setSearch]    = useState('')
   const [showNuevo,   setShowNuevo] = useState(false)
   const [nuevo,       setNuevo]     = useState(emptyNuevo)
@@ -110,12 +110,24 @@ export default function RegistrosAdmin({ registros }: Props) {
     router.refresh()
   }
 
+  const TARDEO_VALUE = '18:00 – 21:00h · Tardeo · cóctel · atardecer'
+  const esSoloTardeo = (r: Registro) => {
+    const b = r.bloques ?? []
+    return b.length === 1 && b[0] === TARDEO_VALUE
+  }
+
+  const soloTardeoCount = registros.filter(esSoloTardeo).length
+
   const filtered = registros.filter(r => {
     const q = search.toLowerCase()
     const matchSearch = !q ||
       r.nombre.toLowerCase().includes(q) ||
       (r.empresa ?? '').toLowerCase().includes(q)
-    const matchFiltro = filtro === 'pendientes' ? !r.wa_confirmado : filtro === 'confirmados' ? r.wa_confirmado : true
+    const matchFiltro =
+      filtro === 'pendientes'   ? !r.wa_confirmado :
+      filtro === 'confirmados'  ? r.wa_confirmado :
+      filtro === 'solo-tardeo'  ? esSoloTardeo(r) :
+      true
     return matchSearch && matchFiltro
   })
 
@@ -202,10 +214,15 @@ export default function RegistrosAdmin({ registros }: Props) {
 
       {/* Filtros */}
       <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
-        {(['todos', 'pendientes', 'confirmados'] as const).map(f => (
-          <button key={f} onClick={() => setFiltro(f)}
-            style={{ padding: '0.4rem 1rem', fontSize: '0.7rem', letterSpacing: '0.15em', textTransform: 'uppercase', fontFamily: 'DM Sans, sans-serif', border: '1px solid var(--crema3)', cursor: 'pointer', background: filtro === f ? 'var(--negro)' : 'var(--blanco)', color: filtro === f ? 'var(--crema)' : 'var(--gris)' }}>
-            {f === 'todos' ? `Todos (${registros.length})` : f === 'pendientes' ? `Pendientes WA (${registros.filter(r => !r.wa_confirmado).length})` : `En lista WA (${registros.filter(r => r.wa_confirmado).length})`}
+        {([
+          { key: 'todos',       label: `Todos (${registros.length})` },
+          { key: 'solo-tardeo', label: `Solo tardeo (${soloTardeoCount})` },
+          { key: 'pendientes',  label: `Pendientes WA (${registros.filter(r => !r.wa_confirmado).length})` },
+          { key: 'confirmados', label: `En lista WA (${registros.filter(r => r.wa_confirmado).length})` },
+        ] as const).map(({ key, label }) => (
+          <button key={key} onClick={() => setFiltro(key)}
+            style={{ padding: '0.4rem 1rem', fontSize: '0.7rem', letterSpacing: '0.15em', textTransform: 'uppercase', fontFamily: 'DM Sans, sans-serif', border: `1px solid ${key === 'solo-tardeo' ? '#d97706' : 'var(--crema3)'}`, cursor: 'pointer', background: filtro === key ? (key === 'solo-tardeo' ? '#d97706' : 'var(--negro)') : 'var(--blanco)', color: filtro === key ? (key === 'solo-tardeo' ? '#fff' : 'var(--crema)') : (key === 'solo-tardeo' ? '#d97706' : 'var(--gris)') }}>
+            {label}
           </button>
         ))}
       </div>
@@ -283,6 +300,9 @@ export default function RegistrosAdmin({ registros }: Props) {
                         <>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.1rem' }}>
                             <p style={{ fontWeight: 500, color: 'var(--negro)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', margin: 0, flex: 1 }}>{r.nombre}</p>
+                            {esSoloTardeo(r) && (
+                              <span style={{ fontSize: '0.5rem', letterSpacing: '0.1em', textTransform: 'uppercase', background: '#fef3c7', color: '#b45309', padding: '0.1rem 0.35rem', flexShrink: 0, fontFamily: 'DM Sans, sans-serif', fontWeight: 600, border: '1px solid #fcd34d' }}>Tardeo</span>
+                            )}
                             {r.origen === 'admin' && (
                               <span style={{ fontSize: '0.5rem', letterSpacing: '0.12em', textTransform: 'uppercase', background: '#ede9fe', color: '#7c3aed', padding: '0.1rem 0.35rem', flexShrink: 0, fontFamily: 'DM Sans, sans-serif', fontWeight: 600 }}>Admin</span>
                             )}

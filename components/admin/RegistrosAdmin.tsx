@@ -3,10 +3,9 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
-import type { Registro } from '@/app/[locale]/admin/(panel)/registros/page'
+import type { Registro as RegistroBase } from '@/app/[locale]/admin/(panel)/registros/page'
 
-// añadir isla al tipo local si no viene del page
-
+type Registro = RegistroBase & { origen?: string | null }
 
 interface Props { registros: Registro[] }
 

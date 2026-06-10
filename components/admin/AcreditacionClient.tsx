@@ -70,17 +70,31 @@ async function buildPegatinaCanvas(r: RegistroAcred): Promise<HTMLCanvasElement>
       ctx.textAlign = 'left'
       ctx.fillText('YELLOW CRAFT ACADEMY · 15 JUN 2026', textX, PAD * 3.5, maxW)
 
-      // Nombre (adaptado si es largo)
-      const nombreFontSize = r.nombre.length > 22 ? 14 * SCALE : 18 * SCALE
+      // Nombre dividido: primera palabra = nombre, resto = apellidos
+      const partes = r.nombre.trim().split(/\s+/)
+      const primerNombre = partes[0]
+      const apellidos    = partes.slice(1).join(' ')
+
+      const labelY    = PAD * 3.5
+      const nombreY   = labelY + 13 * SCALE
+      const apellidoY = nombreY + 16 * SCALE
+      const islaY     = apellidoY + 12 * SCALE
+
       ctx.fillStyle = '#1A1A1A'
-      ctx.font      = `bold ${nombreFontSize}px Georgia, serif`
-      ctx.fillText(r.nombre, textX, PAD * 3.5 + 14 * SCALE + 6 * SCALE, maxW)
+      ctx.font      = `bold ${16 * SCALE}px Georgia, serif`
+      ctx.fillText(primerNombre, textX, nombreY, maxW)
+
+      if (apellidos) {
+        ctx.fillStyle = '#1A1A1A'
+        ctx.font      = `${13 * SCALE}px Georgia, serif`
+        ctx.fillText(apellidos, textX, apellidoY, maxW)
+      }
 
       // Isla
       if (r.isla) {
         ctx.fillStyle = '#555555'
         ctx.font      = `${8 * SCALE}px sans-serif`
-        ctx.fillText(r.isla.toUpperCase(), textX, PAD * 3.5 + 14 * SCALE + 6 * SCALE + nombreFontSize * 0.7 + 6 * SCALE, maxW)
+        ctx.fillText(r.isla.toUpperCase(), textX, islaY, maxW)
       }
 
       // Código
@@ -148,7 +162,7 @@ async function imprimirTodasPegatinas(registros: RegistroAcred[]) {
       h1 { font-size: 12px; color: #666; margin-bottom: 20px; letter-spacing: 0.2em; text-transform: uppercase; }
       table { border-collapse: collapse; }
       td {
-        border: 1.5px solid #aaa;
+        border: 1px solid #E0E0E0;
         padding: 6px;
         background: #f5f5f5;
       }
@@ -158,7 +172,7 @@ async function imprimirTodasPegatinas(registros: RegistroAcred[]) {
         h1 { display: none; }
         table { border-collapse: collapse; }
         td {
-          border: 0.5pt solid #000;
+          border: 1px solid #E0E0E0;
           padding: 4px;
           background: white;
           page-break-inside: avoid;

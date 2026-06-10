@@ -62,7 +62,7 @@ export default function MensajesWAClient({ plantillas, registros, enviados }: Pr
   const [isMobile, setIsMobile] = useState(false)
   const [activa, setActiva] = useState<Plantilla | null>(plantillas[0] ?? null)
   const [search, setSearch] = useState('')
-  const [filtro, setFiltro] = useState<'todos' | 'pendientes' | 'enviados'>('todos')
+  const [filtro, setFiltro] = useState<'todos' | 'pendientes' | 'enviados' | 'solo-tardeo'>('todos')
   const [updating, setUpdating] = useState<string | null>(null)
   const [editando, setEditando] = useState<string | 'nueva' | false>(false)
   const [formTitulo, setFormTitulo] = useState('')
@@ -107,12 +107,15 @@ export default function MensajesWAClient({ plantillas, registros, enviados }: Pr
 
   const totalEnviados = activa ? registros.filter(r => enviadosSet.has(`${activa.id}:${r.id}`)).length : 0
 
+  const soloTardeoCount = registros.filter(esSoloTardeo).length
+
   const filtrados = registros.filter(r => {
     const matchSearch = r.nombre.toLowerCase().includes(search.toLowerCase()) ||
       (r.empresa ?? '').toLowerCase().includes(search.toLowerCase())
     const enviado = yaEnviado(r.id)
-    if (filtro === 'enviados') return matchSearch && enviado
-    if (filtro === 'pendientes') return matchSearch && !enviado
+    if (filtro === 'enviados')    return matchSearch && enviado
+    if (filtro === 'pendientes')  return matchSearch && !enviado
+    if (filtro === 'solo-tardeo') return matchSearch && esSoloTardeo(r)
     return matchSearch
   })
 
@@ -270,9 +273,14 @@ export default function MensajesWAClient({ plantillas, registros, enviados }: Pr
             <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
               <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar..."
                 style={{ flex: '1 1 140px', background: 'var(--blanco)', border: '1px solid var(--crema3)', color: 'var(--grafito)', padding: '0.55rem 0.85rem', fontFamily: 'DM Sans, sans-serif', fontSize: '0.8rem', outline: 'none' }} />
-              {(['todos', 'pendientes', 'enviados'] as const).map(f => (
-                <button key={f} onClick={() => setFiltro(f)} style={{ padding: '0.45rem 0.9rem', fontSize: '0.68rem', letterSpacing: '0.1em', textTransform: 'uppercase', border: `1px solid ${filtro === f ? 'var(--negro)' : 'var(--crema3)'}`, background: filtro === f ? 'var(--negro)' : 'var(--blanco)', color: filtro === f ? 'var(--crema)' : 'var(--gris)', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
-                  {f === 'todos' ? `Todos (${registros.length})` : f === 'pendientes' ? `Pendientes (${registros.filter(r => !yaEnviado(r.id)).length})` : `Enviados (${totalEnviados})`}
+              {([
+                { key: 'todos',       label: `Todos (${registros.length})` },
+                { key: 'solo-tardeo', label: `Solo tardeo (${soloTardeoCount})` },
+                { key: 'pendientes',  label: `Pendientes (${registros.filter(r => !yaEnviado(r.id)).length})` },
+                { key: 'enviados',    label: `Enviados (${totalEnviados})` },
+              ] as const).map(({ key, label }) => (
+                <button key={key} onClick={() => setFiltro(key)} style={{ padding: '0.45rem 0.9rem', fontSize: '0.68rem', letterSpacing: '0.1em', textTransform: 'uppercase', border: `1px solid ${key === 'solo-tardeo' ? '#d97706' : filtro === key ? 'var(--negro)' : 'var(--crema3)'}`, background: filtro === key ? (key === 'solo-tardeo' ? '#d97706' : 'var(--negro)') : 'var(--blanco)', color: filtro === key ? '#fff' : (key === 'solo-tardeo' ? '#d97706' : 'var(--gris)'), cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                  {label}
                 </button>
               ))}
             </div>

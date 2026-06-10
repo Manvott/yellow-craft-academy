@@ -10,11 +10,19 @@ import type { Registro } from '@/app/[locale]/admin/(panel)/registros/page'
 
 interface Props { registros: Registro[] }
 
+const ISLAS = ['Lanzarote', 'Gran Canaria', 'Tenerife', 'Fuerteventura', 'La Palma', 'La Gomera', 'El Hierro', 'La Graciosa']
+
+const emptyNuevo = { nombre: '', empresa: '', email: '', telefono: '', isla: '', bloques: [] as string[] }
+
 export default function RegistrosAdmin({ registros }: Props) {
   const router = useRouter()
-  const [updating,  setUpdating]  = useState<string | null>(null)
-  const [filtro,    setFiltro]    = useState<'todos' | 'pendientes' | 'confirmados'>('todos')
-  const [search,    setSearch]    = useState('')
+  const [updating,    setUpdating]  = useState<string | null>(null)
+  const [filtro,      setFiltro]    = useState<'todos' | 'pendientes' | 'confirmados'>('todos')
+  const [search,      setSearch]    = useState('')
+  const [showNuevo,   setShowNuevo] = useState(false)
+  const [nuevo,       setNuevo]     = useState(emptyNuevo)
+  const [savingNuevo, setSavingNuevo] = useState(false)
+  const [errorNuevo,  setErrorNuevo]  = useState('')
   const [editando,    setEditando]   = useState<string | null>(null)
   const [editNombre,  setEditNombre]  = useState('')
   const [editEmpresa, setEditEmpresa] = useState('')
@@ -55,6 +63,37 @@ export default function RegistrosAdmin({ registros }: Props) {
     router.refresh()
   }
 
+  async function guardarNuevo() {
+    if (!nuevo.nombre.trim() || !nuevo.email.trim()) { setErrorNuevo('Nombre y email son obligatorios.'); return }
+    setSavingNuevo(true); setErrorNuevo('')
+    const supabase = createClient()
+    const { error } = await supabase.from('registros').insert({
+      nombre:   nuevo.nombre.trim(),
+      empresa:  nuevo.empresa.trim() || null,
+      email:    nuevo.email.trim(),
+      telefono: nuevo.telefono.trim() || null,
+      isla:     nuevo.isla || null,
+      bloques:  nuevo.bloques,
+      origen:   'admin',
+      primera_vez: false,
+      cliente_ava: false,
+      acepta_whatsapp: false,
+      wa_confirmado: false,
+      wa_mensaje_enviado: false,
+      asistio: false,
+    })
+    setSavingNuevo(false)
+    if (error) { setErrorNuevo(error.message); return }
+    setNuevo(emptyNuevo); setShowNuevo(false); router.refresh()
+  }
+
+  function toggleNuevoBloque(val: string) {
+    setNuevo(prev => ({
+      ...prev,
+      bloques: prev.bloques.includes(val) ? prev.bloques.filter(b => b !== val) : [...prev.bloques, val],
+    }))
+  }
+
   async function toggleWA(id: string, current: boolean) {
     setUpdating(id)
     const supabase = createClient()
@@ -89,6 +128,69 @@ export default function RegistrosAdmin({ registros }: Props) {
 
   return (
     <div>
+      {/* Header: buscador + botón nuevo */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', gap: '1rem' }}>
+        <button onClick={() => { setShowNuevo(v => !v); setErrorNuevo('') }}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: showNuevo ? 'var(--gris)' : 'var(--negro)', color: 'var(--crema)', border: 'none', padding: '0.55rem 1.1rem', fontSize: '0.68rem', letterSpacing: '0.15em', textTransform: 'uppercase', fontFamily: 'DM Sans, sans-serif', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          {showNuevo ? 'Cancelar' : 'Nuevo asistente'}
+        </button>
+      </div>
+
+      {/* Formulario creación */}
+      {showNuevo && (
+        <div style={{ background: 'var(--blanco)', border: '1px solid var(--negro)', padding: '1.5rem', marginBottom: '1.25rem' }}>
+          <p style={{ fontSize: '0.58rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--gris)', marginBottom: '1rem', fontFamily: 'DM Sans, sans-serif' }}>
+            Añadir asistente manualmente · <span style={{ color: '#7c3aed', fontWeight: 600 }}>origen: admin</span>
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.75rem' }}>
+            {[
+              { label: 'Nombre *', key: 'nombre', placeholder: 'Nombre completo' },
+              { label: 'Email *',  key: 'email',  placeholder: 'email@dominio.com' },
+              { label: 'Empresa',  key: 'empresa', placeholder: 'Nombre empresa (opcional)' },
+              { label: 'Teléfono', key: 'telefono', placeholder: '+34 600 000 000' },
+            ].map(({ label, key, placeholder }) => (
+              <div key={key}>
+                <label style={{ display: 'block', fontSize: '0.58rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gris)', marginBottom: '0.25rem', fontFamily: 'DM Sans, sans-serif' }}>{label}</label>
+                <input
+                  value={(nuevo as Record<string, string>)[key]}
+                  onChange={e => setNuevo(prev => ({ ...prev, [key]: e.target.value }))}
+                  placeholder={placeholder}
+                  style={{ width: '100%', background: 'var(--crema)', border: '1px solid var(--crema3)', color: 'var(--negro)', padding: '0.5rem 0.75rem', fontSize: '0.82rem', fontFamily: 'DM Sans, sans-serif', outline: 'none', boxSizing: 'border-box' }}
+                />
+              </div>
+            ))}
+          </div>
+          <div style={{ marginBottom: '0.75rem' }}>
+            <label style={{ display: 'block', fontSize: '0.58rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gris)', marginBottom: '0.25rem', fontFamily: 'DM Sans, sans-serif' }}>Isla</label>
+            <select value={nuevo.isla} onChange={e => setNuevo(prev => ({ ...prev, isla: e.target.value }))}
+              style={{ width: '100%', maxWidth: 280, background: 'var(--crema)', border: '1px solid var(--crema3)', color: 'var(--negro)', padding: '0.5rem 0.75rem', fontSize: '0.82rem', fontFamily: 'DM Sans, sans-serif', outline: 'none' }}>
+              <option value="">— Seleccionar isla —</option>
+              {ISLAS.map(i => <option key={i} value={i}>{i}</option>)}
+            </select>
+          </div>
+          <div style={{ marginBottom: '1rem' }}>
+            <label style={{ display: 'block', fontSize: '0.58rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gris)', marginBottom: '0.4rem', fontFamily: 'DM Sans, sans-serif' }}>Tramos</label>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+              {BLOQUES_OPCIONES.map(b => {
+                const activo = nuevo.bloques.includes(b.value)
+                return (
+                  <button key={b.value} type="button" onClick={() => toggleNuevoBloque(b.value)}
+                    style={{ padding: '0.3rem 0.75rem', fontSize: '0.68rem', fontFamily: 'DM Sans, sans-serif', border: '1px solid var(--crema3)', cursor: 'pointer', background: activo ? 'var(--amarillo)' : 'var(--crema2)', color: 'var(--negro)', fontWeight: activo ? 600 : 400 }}>
+                    {b.label}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+          {errorNuevo && <p style={{ color: '#dc2626', fontSize: '0.75rem', marginBottom: '0.75rem', fontFamily: 'DM Sans, sans-serif' }}>{errorNuevo}</p>}
+          <button onClick={guardarNuevo} disabled={savingNuevo}
+            style={{ background: 'var(--negro)', color: 'var(--crema)', border: 'none', padding: '0.65rem 1.5rem', fontSize: '0.7rem', letterSpacing: '0.15em', textTransform: 'uppercase', fontFamily: 'DM Sans, sans-serif', cursor: 'pointer', opacity: savingNuevo ? 0.5 : 1 }}>
+            {savingNuevo ? 'Guardando...' : 'Crear asistente'}
+          </button>
+        </div>
+      )}
+
       {/* Buscador */}
       <div style={{ marginBottom: '0.75rem' }}>
         <input
@@ -180,7 +282,12 @@ export default function RegistrosAdmin({ registros }: Props) {
                         </div>
                       ) : (
                         <>
-                          <p style={{ fontWeight: 500, color: 'var(--negro)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: '0.1rem' }}>{r.nombre}</p>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.1rem' }}>
+                            <p style={{ fontWeight: 500, color: 'var(--negro)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', margin: 0, flex: 1 }}>{r.nombre}</p>
+                            {r.origen === 'admin' && (
+                              <span style={{ fontSize: '0.5rem', letterSpacing: '0.12em', textTransform: 'uppercase', background: '#ede9fe', color: '#7c3aed', padding: '0.1rem 0.35rem', flexShrink: 0, fontFamily: 'DM Sans, sans-serif', fontWeight: 600 }}>Admin</span>
+                            )}
+                          </div>
                           <p style={{ fontSize: '0.68rem', color: 'var(--gris)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {r.empresa ?? <span style={{ color: 'var(--gris-l)', fontStyle: 'italic' }}>Sin empresa</span>}
                             <span style={{ color: 'var(--gris-l)', marginLeft: '0.4rem' }}>

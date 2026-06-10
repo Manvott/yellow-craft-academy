@@ -158,9 +158,9 @@ async function imprimirTodasPegatinas(registros: RegistroAcred[]) {
         h1 { display: none; }
         table { border-collapse: collapse; }
         td {
-          border: 1px solid #bbb;
+          border: 2px solid #000;
           padding: 4px;
-          background: #f8f8f8;
+          background: white;
           page-break-inside: avoid;
         }
         td img { width: 7cm; height: 2.5cm; }

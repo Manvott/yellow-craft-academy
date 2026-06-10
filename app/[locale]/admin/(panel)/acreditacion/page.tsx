@@ -21,7 +21,7 @@ export default async function AcreditacionPage() {
     const { data } = await supabase
       .from('registros')
       .select('id, nombre, empresa, telefono, email, isla, cargo, bloques, asistio, created_at')
-      .order('nombre')
+      .order('created_at', { ascending: false })
     registros = (data as RegistroAcred[]) ?? []
   } catch {}
 

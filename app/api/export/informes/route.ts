@@ -62,6 +62,7 @@ export async function GET(request: NextRequest) {
     const { data } = await sb.from('registros').select('*').order('created_at', { ascending: false })
     const rows = (data ?? []).map((r: any) => ({
       'Fecha inscripción': new Date(r.created_at).toLocaleString('es-ES'),
+      'Origen': r.origen === 'admin' ? 'Panel admin' : 'Landing web',
       'Nombre': r.nombre,
       'Empresa': r.empresa ?? '',
       'Cargo': r.cargo ?? '',
@@ -78,7 +79,7 @@ export async function GET(request: NextRequest) {
       'Asistió al evento': r.asistio ? 'Sí' : 'No',
     }))
     const ws = XLSX.utils.json_to_sheet(rows)
-    ws['!cols'] = colWidths([20, 28, 24, 18, 20, 14, 28, 16, 18, 14, 12, 60, 10, 12, 12])
+    ws['!cols'] = colWidths([20, 14, 28, 24, 18, 20, 14, 28, 16, 18, 14, 12, 60, 10, 12, 12])
     addHeaders(ws, Object.keys(rows[0] ?? {}))
     XLSX.utils.book_append_sheet(wb, ws, 'Inscritos')
   }

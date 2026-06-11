@@ -16,7 +16,9 @@ const emptyNuevo = { nombre: '', empresa: '', email: '', telefono: '', isla: '',
 export default function RegistrosAdmin({ registros }: Props) {
   const router = useRouter()
   const [updating,    setUpdating]  = useState<string | null>(null)
-  const [filtro,      setFiltro]    = useState<'todos' | 'pendientes' | 'confirmados' | 'solo-tardeo'>('todos')
+  const [filtro,      setFiltro]    = useState<'todos' | 'pendientes' | 'confirmados' | 'solo-tardeo' | 'cliente-ava'>('todos')
+  const [cruzando,    setCruzando]  = useState(false)
+  const [cruzResult,  setCruzResult] = useState<{ clientesAva: number; nuevosClientes: number; total: number } | null>(null)
   const [search,      setSearch]    = useState('')
   const [showNuevo,   setShowNuevo] = useState(false)
   const [nuevo,       setNuevo]     = useState(emptyNuevo)
@@ -110,13 +112,24 @@ export default function RegistrosAdmin({ registros }: Props) {
     router.refresh()
   }
 
+  async function cruzarClientes() {
+    setCruzando(true)
+    setCruzResult(null)
+    const res = await fetch('/api/admin/cruzar-clientes', { method: 'POST' })
+    const json = await res.json()
+    setCruzResult(json.ok ? json : null)
+    setCruzando(false)
+    if (json.ok) router.refresh()
+  }
+
   const TARDEO_VALUE = '18:00 – 21:00h · Tardeo · cóctel · atardecer'
   const esSoloTardeo = (r: Registro) => {
     const b = r.bloques ?? []
     return b.length === 1 && b[0] === TARDEO_VALUE
   }
 
-  const soloTardeoCount = registros.filter(esSoloTardeo).length
+  const soloTardeoCount  = registros.filter(esSoloTardeo).length
+  const clienteAvaCount  = registros.filter(r => r.cliente_ava).length
 
   const filtered = registros.filter(r => {
     const q = search.toLowerCase()
@@ -127,6 +140,7 @@ export default function RegistrosAdmin({ registros }: Props) {
       filtro === 'pendientes'   ? !r.wa_confirmado :
       filtro === 'confirmados'  ? r.wa_confirmado :
       filtro === 'solo-tardeo'  ? esSoloTardeo(r) :
+      filtro === 'cliente-ava'  ? r.cliente_ava :
       true
     return matchSearch && matchFiltro
   })
@@ -139,6 +153,26 @@ export default function RegistrosAdmin({ registros }: Props) {
 
   return (
     <div>
+      {/* Cruce con base de clientes AVA */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem', padding: '0.75rem 1rem', background: '#f0f9ff', border: '1px solid #bae6fd', flexWrap: 'wrap' }}>
+        <div style={{ flex: 1 }}>
+          <p style={{ fontSize: '0.68rem', fontWeight: 600, color: '#0369a1', fontFamily: 'DM Sans, sans-serif', marginBottom: '0.1rem' }}>Base de clientes AVA</p>
+          <p style={{ fontSize: '0.62rem', color: '#0284c7', fontFamily: 'DM Sans, sans-serif' }}>
+            Cruza los registros con los 1.823 clientes de Avaseleccion para identificar quién ya era cliente antes del evento.
+          </p>
+          {cruzResult && (
+            <p style={{ fontSize: '0.62rem', color: '#15803d', fontFamily: 'DM Sans, sans-serif', marginTop: '0.25rem', fontWeight: 600 }}>
+              ✓ Resultado: {cruzResult.clientesAva} ya clientes AVA · {cruzResult.nuevosClientes} nuevos contactos de {cruzResult.total} inscritos
+            </p>
+          )}
+        </div>
+        <button onClick={cruzarClientes} disabled={cruzando}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#0284c7', color: '#fff', border: 'none', padding: '0.55rem 1.1rem', fontSize: '0.68rem', letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: 'DM Sans, sans-serif', cursor: cruzando ? 'wait' : 'pointer', opacity: cruzando ? 0.6 : 1, whiteSpace: 'nowrap' }}>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          {cruzando ? 'Cruzando...' : 'Cruzar datos'}
+        </button>
+      </div>
+
       {/* Header: buscador + botón nuevo */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', gap: '1rem' }}>
         <button onClick={() => { setShowNuevo(v => !v); setErrorNuevo('') }}
@@ -215,13 +249,14 @@ export default function RegistrosAdmin({ registros }: Props) {
       {/* Filtros */}
       <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
         {([
-          { key: 'todos',       label: `Todos (${registros.length})` },
-          { key: 'solo-tardeo', label: `Solo tardeo (${soloTardeoCount})` },
-          { key: 'pendientes',  label: `Pendientes WA (${registros.filter(r => !r.wa_confirmado).length})` },
-          { key: 'confirmados', label: `En lista WA (${registros.filter(r => r.wa_confirmado).length})` },
-        ] as const).map(({ key, label }) => (
+          { key: 'todos',       label: `Todos (${registros.length})`,                                           accent: null        },
+          { key: 'cliente-ava', label: `Clientes AVA (${clienteAvaCount})`,                                     accent: '#0284c7'   },
+          { key: 'solo-tardeo', label: `Solo tardeo (${soloTardeoCount})`,                                       accent: '#d97706'   },
+          { key: 'pendientes',  label: `Pendientes WA (${registros.filter(r => !r.wa_confirmado).length})`,     accent: null        },
+          { key: 'confirmados', label: `En lista WA (${registros.filter(r => r.wa_confirmado).length})`,        accent: null        },
+        ] as const).map(({ key, label, accent }) => (
           <button key={key} onClick={() => setFiltro(key)}
-            style={{ padding: '0.4rem 1rem', fontSize: '0.7rem', letterSpacing: '0.15em', textTransform: 'uppercase', fontFamily: 'DM Sans, sans-serif', border: `1px solid ${key === 'solo-tardeo' ? '#d97706' : 'var(--crema3)'}`, cursor: 'pointer', background: filtro === key ? (key === 'solo-tardeo' ? '#d97706' : 'var(--negro)') : 'var(--blanco)', color: filtro === key ? (key === 'solo-tardeo' ? '#fff' : 'var(--crema)') : (key === 'solo-tardeo' ? '#d97706' : 'var(--gris)') }}>
+            style={{ padding: '0.4rem 1rem', fontSize: '0.7rem', letterSpacing: '0.15em', textTransform: 'uppercase', fontFamily: 'DM Sans, sans-serif', border: `1px solid ${accent ?? 'var(--crema3)'}`, cursor: 'pointer', background: filtro === key ? (accent ?? 'var(--negro)') : 'var(--blanco)', color: filtro === key ? '#fff' : (accent ?? 'var(--gris)') }}>
             {label}
           </button>
         ))}
@@ -302,6 +337,9 @@ export default function RegistrosAdmin({ registros }: Props) {
                             <p style={{ fontWeight: 500, color: 'var(--negro)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', margin: 0, flex: 1 }}>{r.nombre}</p>
                             {esSoloTardeo(r) && (
                               <span style={{ fontSize: '0.5rem', letterSpacing: '0.1em', textTransform: 'uppercase', background: '#fef3c7', color: '#b45309', padding: '0.1rem 0.35rem', flexShrink: 0, fontFamily: 'DM Sans, sans-serif', fontWeight: 600, border: '1px solid #fcd34d' }}>Tardeo</span>
+                            )}
+                            {r.cliente_ava && (
+                              <span style={{ fontSize: '0.5rem', letterSpacing: '0.1em', textTransform: 'uppercase', background: '#e0f2fe', color: '#0369a1', padding: '0.1rem 0.35rem', flexShrink: 0, fontFamily: 'DM Sans, sans-serif', fontWeight: 600, border: '1px solid #bae6fd' }}>Cliente AVA</span>
                             )}
                             {r.origen === 'admin' && (
                               <span style={{ fontSize: '0.5rem', letterSpacing: '0.12em', textTransform: 'uppercase', background: '#ede9fe', color: '#7c3aed', padding: '0.1rem 0.35rem', flexShrink: 0, fontFamily: 'DM Sans, sans-serif', fontWeight: 600 }}>Admin</span>

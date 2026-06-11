@@ -10,8 +10,8 @@ const BLOQUES = [
   { value: '10:00 – 12:00h · Silma Ayres · SOSA', hora: '10:00 – 12:00h', nombre: 'Ponencia · Silma Ayres · SOSA', sub: 'Ingredientes técnicos en la cocina contemporánea', cerrado: true },
   { value: '12:00 – 13:30h · Brunch con producto', hora: '12:00 – 13:30h', nombre: 'Brunch con producto en escena', sub: 'Networking · selección de AVA en mesa', cerrado: true },
   { value: '14:00 – 16:00h · Alexis García · 100×100', hora: '14:00 – 16:00h', nombre: 'Ponencia · Alexis García · 100×100 Alexis', sub: 'La alquimia de la masa', cerrado: true },
-  { value: '16:30 – 17:30h · Óscar Lafuente · Ron Arehucas', hora: '16:30 – 17:30h', nombre: 'Ponencia · Óscar Lafuente · Ron Arehucas', sub: 'El Atlántico en copa · coctelería y maridaje', cerrado: false },
-  { value: '18:00 – 21:00h · Tardeo · cóctel · atardecer', hora: '18:00 – 21:00h', nombre: 'Tardeo · cóctel · atardecer', sub: 'Cierre experiencial · gastronomía y música', cerrado: false },
+  { value: '16:30 – 17:30h · Óscar Lafuente · Ron Arehucas', hora: '16:30 – 17:30h', nombre: 'Ponencia · Óscar Lafuente · Ron Arehucas', sub: 'El Atlántico en copa · coctelería y maridaje', cerrado: true },
+  { value: '18:00 – 21:00h · Tardeo · cóctel · atardecer', hora: '18:00 – 21:00h', nombre: 'Tardeo · cóctel · atardecer', sub: 'Cierre experiencial · gastronomía y música', cerrado: true },
 ]
 
 const PONENTES = [
@@ -355,8 +355,8 @@ function RegistroForm() {
       <div style={{ padding: '1rem 1.25rem', background: 'var(--negro)', borderLeft: '3px solid var(--amarillo)', marginTop: '0.5rem' }}>
         <p style={{ fontSize: '0.72rem', color: 'rgba(247,243,238,0.85)', lineHeight: 1.7, fontFamily: 'DM Sans, sans-serif' }}>
           <strong style={{ color: 'var(--amarillo)', display: 'block', marginBottom: '0.3rem', letterSpacing: '0.05em' }}>Plazas completas en parte del programa</strong>
-          Las inscripciones para la jornada de mañana, el brunch y la ponencia de pastelería están cerradas — el aforo se cubrió. Gracias a todos los que ya forman parte.
-          Si aún no te has apuntado, puedes inscribirte a la <strong style={{ color: 'rgba(247,243,238,0.9)' }}>ponencia de coctelería de Óscar Lafuente</strong> y al <strong style={{ color: 'rgba(247,243,238,0.9)' }}>Tardeo de cierre</strong>.
+          El aforo de Yellow Craft Academy está completo. Las inscripciones para todos los bloques de la jornada están cerradas.
+          Gracias a todos los profesionales que ya forman parte de esta primera edición — nos vemos el 15 de junio.
         </p>
       </div>
 

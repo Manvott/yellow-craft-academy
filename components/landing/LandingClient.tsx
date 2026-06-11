@@ -354,7 +354,7 @@ function RegistroForm() {
       {/* Aviso cupos completos */}
       <div style={{ padding: '1rem 1.25rem', background: 'var(--negro)', borderLeft: '3px solid var(--amarillo)', marginTop: '0.5rem' }}>
         <p style={{ fontSize: '0.72rem', color: 'rgba(247,243,238,0.85)', lineHeight: 1.7, fontFamily: 'DM Sans, sans-serif' }}>
-          <strong style={{ color: 'var(--amarillo)', display: 'block', marginBottom: '0.3rem', letterSpacing: '0.05em' }}>Plazas completas en parte del programa</strong>
+          <strong style={{ color: 'var(--amarillo)', display: 'block', marginBottom: '0.3rem', letterSpacing: '0.05em' }}>Aforo completo · Inscripciones cerradas</strong>
           El aforo de Yellow Craft Academy está completo. Las inscripciones para todos los bloques de la jornada están cerradas.
           Gracias a todos los profesionales que ya forman parte de esta primera edición — nos vemos el 15 de junio.
         </p>

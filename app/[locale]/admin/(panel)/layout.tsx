@@ -42,7 +42,7 @@ export default async function AdminLayout({
   if (!session) redirect(`/${locale}/admin/login`)
 
   const navItems = [
-    { href: `/${locale}/admin`, label: 'Dashboard' },
+    ...(esSuperadmin ? [{ href: `/${locale}/admin`, label: 'Dashboard' }] : []),
     ...SECCIONES_ADMIN
       .filter(s => {
         if (s.soloSuperadmin) return esSuperadmin

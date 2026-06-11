@@ -1,8 +1,30 @@
 import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
+import { SECCIONES_ADMIN } from '@/lib/admin-secciones'
 import Link from 'next/link'
 
 export default async function AdminDashboard({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
+
+  // Solo superadmin puede ver el dashboard
+  try {
+    const supabase = await createClient()
+    const { data: sessionData } = await supabase.auth.getSession()
+    if (sessionData.session) {
+      const { data: rol } = await supabase
+        .from('admin_roles')
+        .select('secciones, es_superadmin')
+        .eq('user_id', sessionData.session.user.id)
+        .single()
+
+      const esSuperadmin = rol ? (rol.es_superadmin ?? false) : true
+      if (!esSuperadmin) {
+        const secciones: string[] = rol?.secciones ?? []
+        const primera = SECCIONES_ADMIN.find(s => !s.soloSuperadmin && secciones.includes(s.key))
+        redirect(`/${locale}/admin/${primera?.key ?? 'registros'}`)
+      }
+    }
+  } catch {}
 
   let counts = { registros: 0, solicitudes: 0, proveedores: 0, productos: 0, pildoras: 0 }
   try {

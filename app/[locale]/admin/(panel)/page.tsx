@@ -7,6 +7,7 @@ export default async function AdminDashboard({ params }: { params: Promise<{ loc
   const { locale } = await params
 
   // Solo superadmin puede ver el dashboard
+  let redirectTo: string | null = null
   try {
     const supabase = await createClient()
     const { data: sessionData } = await supabase.auth.getSession()
@@ -21,10 +22,12 @@ export default async function AdminDashboard({ params }: { params: Promise<{ loc
       if (!esSuperadmin) {
         const secciones: string[] = rol?.secciones ?? []
         const primera = SECCIONES_ADMIN.find(s => !s.soloSuperadmin && secciones.includes(s.key))
-        redirect(`/${locale}/admin/${primera?.key ?? 'registros'}`)
+        redirectTo = `/${locale}/admin/${primera?.key ?? 'registros'}`
       }
     }
   } catch {}
+
+  if (redirectTo) redirect(redirectTo)
 
   let counts = { registros: 0, solicitudes: 0, proveedores: 0, productos: 0, pildoras: 0 }
   try {

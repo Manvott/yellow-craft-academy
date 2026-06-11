@@ -371,7 +371,7 @@ function RegistroForm() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem', flex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
                   <span style={{ fontSize: '0.62rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gris-l)' }}>{b.hora}</span>
-                  <span style={{ fontSize: '0.55rem', letterSpacing: '0.2em', textTransform: 'uppercase', background: 'var(--gris)', color: 'var(--blanco)', padding: '0.2rem 0.6rem', fontFamily: 'DM Sans, sans-serif', whiteSpace: 'nowrap' }}>Completo</span>
+                  <span style={{ fontSize: '0.55rem', letterSpacing: '0.2em', textTransform: 'uppercase', background: 'var(--gris)', color: 'var(--blanco)', padding: '0.2rem 0.6rem', fontFamily: 'DM Sans, sans-serif', whiteSpace: 'nowrap' }}>Aforo completo</span>
                 </div>
                 <span style={{ fontSize: '0.85rem', color: 'var(--gris)', fontWeight: 400, textDecoration: 'line-through' }}>{b.nombre}</span>
                 <span style={{ fontSize: '0.75rem', color: 'var(--gris-l)' }}>{b.sub}</span>

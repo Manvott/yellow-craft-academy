@@ -7,11 +7,11 @@ import { registrarAsistente } from '@/app/actions/registros'
 interface Props { locale: string }
 
 const BLOQUES = [
-  { value: '10:00 – 12:00h · Silma Ayres · SOSA', hora: '10:00 – 12:00h', nombre: 'Ponencia · Silma Ayres · SOSA', sub: 'Ingredientes técnicos en la cocina contemporánea' },
-  { value: '12:00 – 13:30h · Brunch con producto', hora: '12:00 – 13:30h', nombre: 'Brunch con producto en escena', sub: 'Networking · selección de AVA en mesa' },
-  { value: '14:00 – 16:00h · Alexis García · 100×100', hora: '14:00 – 16:00h', nombre: 'Ponencia · Alexis García · 100×100 Alexis', sub: 'La alquimia de la masa' },
-  { value: '16:30 – 17:30h · Óscar Lafuente · Ron Arehucas', hora: '16:30 – 17:30h', nombre: 'Ponencia · Óscar Lafuente · Ron Arehucas', sub: 'El Atlántico en copa · coctelería y maridaje' },
-  { value: '18:00 – 21:00h · Tardeo · cóctel · atardecer', hora: '18:00 – 21:00h', nombre: 'Tardeo · cóctel · atardecer', sub: 'Cierre experiencial · gastronomía y música' },
+  { value: '10:00 – 12:00h · Silma Ayres · SOSA', hora: '10:00 – 12:00h', nombre: 'Ponencia · Silma Ayres · SOSA', sub: 'Ingredientes técnicos en la cocina contemporánea', cerrado: true },
+  { value: '12:00 – 13:30h · Brunch con producto', hora: '12:00 – 13:30h', nombre: 'Brunch con producto en escena', sub: 'Networking · selección de AVA en mesa', cerrado: true },
+  { value: '14:00 – 16:00h · Alexis García · 100×100', hora: '14:00 – 16:00h', nombre: 'Ponencia · Alexis García · 100×100 Alexis', sub: 'La alquimia de la masa', cerrado: true },
+  { value: '16:30 – 17:30h · Óscar Lafuente · Ron Arehucas', hora: '16:30 – 17:30h', nombre: 'Ponencia · Óscar Lafuente · Ron Arehucas', sub: 'El Atlántico en copa · coctelería y maridaje', cerrado: false },
+  { value: '18:00 – 21:00h · Tardeo · cóctel · atardecer', hora: '18:00 – 21:00h', nombre: 'Tardeo · cóctel · atardecer', sub: 'Cierre experiencial · gastronomía y música', cerrado: false },
 ]
 
 const PONENTES = [
@@ -351,24 +351,47 @@ function RegistroForm() {
         </div>
       </div>
 
+      {/* Aviso cupos completos */}
+      <div style={{ padding: '1rem 1.25rem', background: 'var(--negro)', borderLeft: '3px solid var(--amarillo)', marginTop: '0.5rem' }}>
+        <p style={{ fontSize: '0.72rem', color: 'rgba(247,243,238,0.85)', lineHeight: 1.7, fontFamily: 'DM Sans, sans-serif' }}>
+          <strong style={{ color: 'var(--amarillo)', display: 'block', marginBottom: '0.3rem', letterSpacing: '0.05em' }}>Plazas completas en parte del programa</strong>
+          Las inscripciones para la jornada de mañana, el brunch y la ponencia de pastelería están cerradas — el aforo se cubrió. Gracias a todos los que ya forman parte.
+          Si aún no te has apuntado, puedes inscribirte a la <strong style={{ color: 'rgba(247,243,238,0.9)' }}>ponencia de coctelería de Óscar Lafuente</strong> y al <strong style={{ color: 'rgba(247,243,238,0.9)' }}>Tardeo de cierre</strong>.
+        </p>
+      </div>
+
       <p style={{ fontSize: '0.65rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--gris)', marginTop: '0.5rem' }}>
         ¿A qué bloques vas a asistir?
       </p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
         {BLOQUES.map(b => (
-          <label key={b.value} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', cursor: 'pointer', padding: '0.85rem 1rem', background: 'var(--blanco)', border: '1px solid var(--crema3)' }}>
-            <input type="checkbox" name="bloques" value={b.value} style={{ marginTop: '0.15rem', accentColor: 'var(--negro)', width: 14, height: 14, flexShrink: 0 }} />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
-              <span style={{ fontSize: '0.62rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gris-l)' }}>{b.hora}</span>
-              <span style={{ fontSize: '0.85rem', color: 'var(--grafito)', fontWeight: 400 }}>{b.nombre}</span>
-              <span style={{ fontSize: '0.75rem', color: 'var(--gris)' }}>{b.sub}</span>
+          b.cerrado ? (
+            <div key={b.value} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', padding: '0.85rem 1rem', background: 'var(--crema2)', border: '1px solid var(--crema3)', opacity: 0.6, cursor: 'not-allowed' }}>
+              <input type="checkbox" disabled style={{ marginTop: '0.15rem', width: 14, height: 14, flexShrink: 0, cursor: 'not-allowed' }} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem', flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+                  <span style={{ fontSize: '0.62rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gris-l)' }}>{b.hora}</span>
+                  <span style={{ fontSize: '0.55rem', letterSpacing: '0.2em', textTransform: 'uppercase', background: 'var(--gris)', color: 'var(--blanco)', padding: '0.2rem 0.6rem', fontFamily: 'DM Sans, sans-serif', whiteSpace: 'nowrap' }}>Completo</span>
+                </div>
+                <span style={{ fontSize: '0.85rem', color: 'var(--gris)', fontWeight: 400, textDecoration: 'line-through' }}>{b.nombre}</span>
+                <span style={{ fontSize: '0.75rem', color: 'var(--gris-l)' }}>{b.sub}</span>
+              </div>
             </div>
-          </label>
+          ) : (
+            <label key={b.value} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', cursor: 'pointer', padding: '0.85rem 1rem', background: 'var(--blanco)', border: '1px solid var(--crema3)' }}>
+              <input type="checkbox" name="bloques" value={b.value} style={{ marginTop: '0.15rem', accentColor: 'var(--negro)', width: 14, height: 14, flexShrink: 0 }} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
+                <span style={{ fontSize: '0.62rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gris-l)' }}>{b.hora}</span>
+                <span style={{ fontSize: '0.85rem', color: 'var(--grafito)', fontWeight: 400 }}>{b.nombre}</span>
+                <span style={{ fontSize: '0.75rem', color: 'var(--gris)' }}>{b.sub}</span>
+              </div>
+            </label>
+          )
         ))}
       </div>
 
       <p style={{ fontSize: '0.75rem', color: 'var(--gris)', lineHeight: 1.6, fontStyle: 'italic' }}>
-        Selecciona todos los bloques a los que prevés asistir. Puedes cambiar tu asistencia escribiéndonos directamente.
+        Selecciona los bloques a los que prevés asistir. Puedes cambiar tu asistencia escribiéndonos directamente.
       </p>
 
       <a href="https://maps.google.com/?q=Avenida+de+las+Playas+Puerto+del+Carmen+Lanzarote" target="_blank" rel="noopener noreferrer"

@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+
+export const maxDuration = 30
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 

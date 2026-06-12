@@ -79,8 +79,8 @@ export default function FichasManager({ productos, proveedores, verCostes = true
     setUploadProgress('')
     const supabase = createClient()
 
-    // Subir imagen via API route (evita CORS del browser)
-    let imagenUrl = form.imagen_url
+    // Subir imagen — no bloqueante: si falla, guarda sin imagen nueva
+    let imagenUrl = form.imagen_url.startsWith('[') ? '' : form.imagen_url
     if (imgFile) {
       setUploadProgress('Subiendo imagen...')
       try {
@@ -92,17 +92,21 @@ export default function FichasManager({ productos, proveedores, verCostes = true
         fd.append('path', imgPath)
         const res = await fetch('/api/upload', { method: 'POST', body: fd })
         const data = await res.json()
-        if (!res.ok) { setUploadProgress(`Error: ${data.error}`); setLoading(false); return }
-        imagenUrl = data.url
+        if (res.ok) {
+          imagenUrl = data.url
+          setUploadProgress('')
+        } else {
+          setUploadProgress(`⚠ Imagen no subida (${data.error ?? 'error'}). El resto se guardará.`)
+        }
       } catch {
-        setUploadProgress('Error de red al subir imagen.'); setLoading(false); return
+        setUploadProgress('⚠ No se pudo subir la imagen (red). El resto se guardará.')
       }
-      setUploadProgress('')
     }
 
-    // Subir PDF via API route (evita CORS del browser)
+    // Subir PDF — no bloqueante: si falla, guarda sin PDF
     let fichaUrl = pdfActual
     if (pdfFile) {
+      const prevProgress = uploadProgress
       setUploadProgress('Subiendo PDF...')
       try {
         const ext = pdfFile.name.split('.').pop() ?? 'pdf'
@@ -113,12 +117,15 @@ export default function FichasManager({ productos, proveedores, verCostes = true
         fd.append('path', path)
         const res = await fetch('/api/upload', { method: 'POST', body: fd })
         const data = await res.json()
-        if (!res.ok) { setUploadProgress(`Error: ${data.error}`); setLoading(false); return }
-        fichaUrl = data.url
+        if (res.ok) {
+          fichaUrl = data.url
+          setUploadProgress('')
+        } else {
+          setUploadProgress(`⚠ PDF no subido (${data.error ?? 'error'}). La ficha se guardará sin él.`)
+        }
       } catch {
-        setUploadProgress('Error de red al subir PDF.'); setLoading(false); return
+        setUploadProgress('⚠ No se pudo subir el PDF (red). La ficha se guardará sin él.')
       }
-      setUploadProgress('')
     }
 
     const data = {

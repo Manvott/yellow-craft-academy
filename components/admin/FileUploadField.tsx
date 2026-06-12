@@ -34,6 +34,29 @@ export default function FileUploadField({ label, bucket, accept, icono, urlActua
 
     try {
       const path = `${Date.now()}-${sanitizePath(f.name)}`
+
+      // Archivos > 4MB: subida directa con URL firmada (evita límite Vercel 4.5MB)
+      if (f.size > 4 * 1024 * 1024) {
+        const urlRes = await fetch('/api/upload-url', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ bucket, path }),
+        })
+        const urlData = await urlRes.json()
+        if (!urlRes.ok) { setError(urlData.error ?? 'Error al obtener URL'); return }
+
+        const uploadRes = await fetch(urlData.signedUrl, {
+          method: 'PUT',
+          headers: { 'Content-Type': f.type },
+          body: f,
+        })
+        if (!uploadRes.ok) { setError('Error al subir el archivo'); return }
+
+        onUploaded(urlData.publicUrl)
+        return
+      }
+
+      // Archivos pequeños: ruta normal
       const fd = new FormData()
       fd.append('file', f)
       fd.append('bucket', bucket)

@@ -210,6 +210,7 @@ export default function AcreditacionClient({ registros }: Props) {
   const [filtro,   setFiltro]     = useState<'todos' | 'asistio' | 'pendiente' | 'solo-tardeo'>('todos')
   const [qrAbierto, setQrAbierto] = useState<string | null>(null)
   const [printingAll, setPrintingAll] = useState(false)
+  const [printingSinTardeo, setPrintingSinTardeo] = useState(false)
 
   async function toggleAsistio(id: string, current: boolean) {
     setUpdating(id)
@@ -238,6 +239,12 @@ export default function AcreditacionClient({ registros }: Props) {
     setPrintingAll(false)
   }
 
+  async function handlePrintSinTardeo() {
+    setPrintingSinTardeo(true)
+    await imprimirTodasPegatinas(registros.filter(r => !esSoloTardeo(r)))
+    setPrintingSinTardeo(false)
+  }
+
   return (
     <div>
       {/* Controles */}
@@ -257,6 +264,14 @@ export default function AcreditacionClient({ registros }: Props) {
             {label}
           </button>
         ))}
+        {/* Imprimir sin tardeo */}
+        {(() => { const sinTardeo = registros.filter(r => !esSoloTardeo(r)); return (
+        <button onClick={handlePrintSinTardeo} disabled={printingSinTardeo || sinTardeo.length === 0}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.45rem 1rem', fontSize: '0.68rem', letterSpacing: '0.1em', textTransform: 'uppercase', border: '1px solid var(--negro)', cursor: 'pointer', background: 'var(--blanco)', color: 'var(--negro)', fontFamily: 'DM Sans, sans-serif', opacity: printingSinTardeo ? 0.6 : 1 }}>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          {printingSinTardeo ? 'Generando...' : `Imprimir sin tardeo (${sinTardeo.length})`}
+        </button>
+        ); })()}
         {/* Imprimir todas */}
         <button onClick={handlePrintAll} disabled={printingAll || registros.length === 0}
           style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.45rem 1rem', fontSize: '0.68rem', letterSpacing: '0.1em', textTransform: 'uppercase', border: '1px solid var(--negro)', cursor: 'pointer', background: 'var(--negro)', color: 'var(--crema)', fontFamily: 'DM Sans, sans-serif', opacity: printingAll ? 0.6 : 1 }}>

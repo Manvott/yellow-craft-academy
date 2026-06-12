@@ -442,9 +442,9 @@ function RegistroForm() {
         <p style={{ fontSize: '0.8rem', color: '#c0392b', padding: '0.75rem 1rem', background: '#fef2f2', border: '1px solid #fca5a5' }}>{error}</p>
       )}
 
-      <button type="submit" disabled={isPending}
-        style={{ background: 'var(--negro)', color: 'var(--crema)', border: 'none', padding: '1rem', fontSize: '0.75rem', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 500, cursor: isPending ? 'not-allowed' : 'pointer', opacity: isPending ? 0.6 : 1, fontFamily: 'DM Sans, sans-serif', marginTop: '0.25rem' }}>
-        {isPending ? 'Enviando...' : 'Reservar plaza'}
+      <button type="submit" disabled={isPending || BLOQUES.every(b => b.cerrado)}
+        style={{ background: 'var(--negro)', color: 'var(--crema)', border: 'none', padding: '1rem', fontSize: '0.75rem', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 500, cursor: (isPending || BLOQUES.every(b => b.cerrado)) ? 'not-allowed' : 'pointer', opacity: (isPending || BLOQUES.every(b => b.cerrado)) ? 0.45 : 1, fontFamily: 'DM Sans, sans-serif', marginTop: '0.25rem' }}>
+        {isPending ? 'Enviando...' : BLOQUES.every(b => b.cerrado) ? 'Aforo completo' : 'Reservar plaza'}
       </button>
     </form>
   )

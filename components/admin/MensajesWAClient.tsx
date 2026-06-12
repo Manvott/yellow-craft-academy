@@ -64,6 +64,7 @@ export default function MensajesWAClient({ plantillas, registros, enviados }: Pr
   const [search, setSearch] = useState('')
   const [filtro, setFiltro] = useState<'todos' | 'pendientes' | 'enviados' | 'solo-tardeo'>('todos')
   const [updating, setUpdating] = useState<string | null>(null)
+  const [updatingLlamada, setUpdatingLlamada] = useState<string | null>(null)
   const [editando, setEditando] = useState<string | 'nueva' | false>(false)
   const [formTitulo, setFormTitulo] = useState('')
   const [formContenido, setFormContenido] = useState('')
@@ -118,6 +119,14 @@ export default function MensajesWAClient({ plantillas, registros, enviados }: Pr
     if (filtro === 'solo-tardeo') return matchSearch && esSoloTardeo(r)
     return matchSearch
   })
+
+  async function toggleLlamada(registroId: string, current: boolean) {
+    setUpdatingLlamada(registroId)
+    const supabase = createClient()
+    await supabase.from('registros').update({ confirmado_llamada: !current }).eq('id', registroId)
+    setUpdatingLlamada(null)
+    router.refresh()
+  }
 
   async function toggleEnviado(registroId: string) {
     if (!activa) return
@@ -299,6 +308,12 @@ export default function MensajesWAClient({ plantillas, registros, enviados }: Pr
                         {esSoloTardeo(r) && (
                           <span style={{ fontSize: '0.5rem', letterSpacing: '0.1em', textTransform: 'uppercase', background: '#fef3c7', color: '#b45309', padding: '0.1rem 0.35rem', flexShrink: 0, fontFamily: 'DM Sans, sans-serif', fontWeight: 600, border: '1px solid #fcd34d' }}>Tardeo</span>
                         )}
+                        {r.confirmado_llamada && (
+                          <span style={{ fontSize: '0.5rem', letterSpacing: '0.1em', textTransform: 'uppercase', background: '#eff6ff', color: '#1d4ed8', padding: '0.1rem 0.35rem', flexShrink: 0, fontFamily: 'DM Sans, sans-serif', fontWeight: 600, border: '1px solid #bfdbfe', display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}>
+                            <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                            Llamada
+                          </span>
+                        )}
                       </div>
                       <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                         {r.empresa && <span style={{ fontSize: '0.68rem', color: 'var(--gris)' }}>{r.empresa}</span>}
@@ -321,6 +336,12 @@ export default function MensajesWAClient({ plantillas, registros, enviados }: Pr
                       ) : (
                         <span style={{ fontSize: '0.6rem', color: 'var(--gris-l)', padding: '0.25rem 0.5rem', border: '1px solid var(--crema3)' }}>Sin tel.</span>
                       )}
+                      <button onClick={() => toggleLlamada(r.id, r.confirmado_llamada)} disabled={updatingLlamada === r.id}
+                        title={r.confirmado_llamada ? 'Quitar confirmación por llamada' : 'Marcar confirmado por llamada'}
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.2rem', fontSize: '0.58rem', border: `1px solid ${r.confirmado_llamada ? '#1d4ed8' : 'var(--crema3)'}`, padding: '0.25rem 0.5rem', background: r.confirmado_llamada ? '#eff6ff' : 'var(--crema2)', color: r.confirmado_llamada ? '#1d4ed8' : 'var(--gris)', cursor: 'pointer', whiteSpace: 'nowrap', opacity: updatingLlamada === r.id ? 0.5 : 1 }}>
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                        {r.confirmado_llamada ? 'Llamada ✓' : 'Llamada'}
+                      </button>
                     </div>
                     <button onClick={() => toggleEnviado(r.id)} disabled={updating === r.id} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.62rem', border: `1px solid ${enviado ? '#16a34a' : 'var(--crema3)'}`, padding: '0.25rem 0.6rem', background: enviado ? '#dcfce7' : 'var(--crema2)', color: enviado ? '#16a34a' : 'var(--gris)', cursor: 'pointer', opacity: updating === r.id ? 0.5 : 1, whiteSpace: 'nowrap' }}>
                       {enviado ? '✓ Enviado' : '○ Marcar'}

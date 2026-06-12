@@ -11,7 +11,7 @@ export default async function MensajesWAPage() {
     const supabase = await createClient()
     const [{ data: p }, { data: r }, { data: e }] = await Promise.all([
       supabase.from('mensajes_wa_plantillas').select('*').eq('activo', true).order('orden'),
-      supabase.from('registros').select('id, nombre, empresa, isla, telefono, email, bloques').order('created_at', { ascending: false }),
+      supabase.from('registros').select('id, nombre, empresa, isla, telefono, email, bloques, confirmado_llamada').order('created_at', { ascending: false }),
       supabase.from('mensajes_wa_enviados').select('plantilla_id, registro_id'),
     ])
     plantillas = (p as Plantilla[]) ?? []

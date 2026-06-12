@@ -65,13 +65,14 @@ export default function RegistrosAdmin({ registros }: Props) {
   }
 
   async function guardarNuevo() {
-    if (!nuevo.nombre.trim() || !nuevo.email.trim()) { setErrorNuevo('Nombre y email son obligatorios.'); return }
+    if (!nuevo.nombre.trim()) { setErrorNuevo('El nombre es obligatorio.'); return }
     setSavingNuevo(true); setErrorNuevo('')
     const supabase = createClient()
+    const emailFinal = nuevo.email.trim() || `admin_${Date.now()}@noemail.local`
     const { error } = await supabase.from('registros').insert({
       nombre:   nuevo.nombre.trim(),
       empresa:  nuevo.empresa.trim() || null,
-      email:    nuevo.email.trim(),
+      email:    emailFinal,
       telefono: nuevo.telefono.trim() || null,
       isla:     nuevo.isla || null,
       bloques:  nuevo.bloques,
@@ -191,7 +192,7 @@ export default function RegistrosAdmin({ registros }: Props) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.75rem', marginBottom: '0.75rem' }}>
             {([
               { label: 'Nombre *', key: 'nombre' as const, placeholder: 'Nombre completo' },
-              { label: 'Email *',  key: 'email'  as const, placeholder: 'email@dominio.com' },
+              { label: 'Email',    key: 'email'  as const, placeholder: 'email@dominio.com (opcional)' },
               { label: 'Empresa',  key: 'empresa' as const, placeholder: 'Nombre empresa (opcional)' },
               { label: 'Teléfono', key: 'telefono' as const, placeholder: '+34 600 000 000' },
             ] as const).map(({ label, key, placeholder }) => (

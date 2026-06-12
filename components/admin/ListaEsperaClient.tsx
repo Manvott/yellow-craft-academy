@@ -8,11 +8,11 @@ import type { RegistroEspera } from '@/app/[locale]/admin/(panel)/lista-espera/p
 const ISLAS = ['Lanzarote', 'La Graciosa', 'Fuerteventura', 'Gran Canaria', 'Tenerife', 'La Palma', 'La Gomera', 'El Hierro', 'Fuera de Canarias']
 
 const BLOQUES_OPCIONES = [
-  { value: '10:00 – 12:00h · Silma Ayres · SOSA',          label: '10:00' },
-  { value: '12:00 – 13:30h · Brunch con producto',           label: '12:00' },
-  { value: '14:00 – 16:00h · Alexis García · 100×100',      label: '14:00' },
+  { value: '10:00 – 12:00h · Silma Ayres · SOSA',           label: '10:00' },
+  { value: '12:00 – 13:30h · Brunch con producto',            label: '12:00' },
+  { value: '14:00 – 16:00h · Alexis García · 100×100',       label: '14:00' },
   { value: '16:30 – 17:30h · Óscar Lafuente · Ron Arehucas', label: '16:30' },
-  { value: '18:00 – 21:00h · Tardeo · cóctel · atardecer',  label: '18:00' },
+  { value: '18:00 – 21:00h · Tardeo · cóctel · atardecer',   label: '18:00' },
 ]
 
 const emptyForm = {
@@ -30,6 +30,7 @@ export default function ListaEsperaClient({ registros }: Props) {
   const [saving, setSaving]       = useState(false)
   const [error, setError]         = useState('')
   const [promoting, setPromoting] = useState<string | null>(null)
+  const [moviendo, setMoviendo]   = useState<string | null>(null)
   const [search, setSearch]       = useState('')
 
   function toggleBloque(v: string) {
@@ -43,24 +44,29 @@ export default function ListaEsperaClient({ registros }: Props) {
     if (!form.nombre.trim() || !form.email.trim()) { setError('Nombre y email son obligatorios.'); return }
     setSaving(true); setError('')
     const supabase = createClient()
+    // Siguiente posición = max actual + 1
+    const nextOrden = registros.length > 0
+      ? Math.max(...registros.map(r => r.lista_espera_orden ?? 0)) + 1
+      : 1
     const { error: err } = await supabase.from('registros').insert({
-      nombre:          form.nombre.trim(),
-      email:           form.email.trim(),
-      empresa:         form.empresa.trim() || null,
-      cargo:           form.cargo.trim() || null,
-      telefono:        form.telefono.trim() || null,
-      isla:            form.isla || null,
-      instagram:       form.instagram.trim() || null,
-      primera_vez:     form.primera_vez,
-      cliente_ava:     form.cliente_ava,
-      bloques:         form.bloques,
-      acepta_whatsapp: form.acepta_whatsapp,
-      acepta_imagen:   false,
-      origen:          'admin',
-      lista_espera:    true,
-      wa_confirmado:   false,
+      nombre:             form.nombre.trim(),
+      email:              form.email.trim(),
+      empresa:            form.empresa.trim() || null,
+      cargo:              form.cargo.trim() || null,
+      telefono:           form.telefono.trim() || null,
+      isla:               form.isla || null,
+      instagram:          form.instagram.trim() || null,
+      primera_vez:        form.primera_vez,
+      cliente_ava:        form.cliente_ava,
+      bloques:            form.bloques,
+      acepta_whatsapp:    form.acepta_whatsapp,
+      acepta_imagen:      false,
+      origen:             'admin',
+      lista_espera:       true,
+      lista_espera_orden: nextOrden,
+      wa_confirmado:      false,
       wa_mensaje_enviado: false,
-      asistio:         false,
+      asistio:            false,
     })
     setSaving(false)
     if (err) { setError(err.message); return }
@@ -70,8 +76,26 @@ export default function ListaEsperaClient({ registros }: Props) {
   async function promover(id: string) {
     setPromoting(id)
     const supabase = createClient()
-    await supabase.from('registros').update({ lista_espera: false }).eq('id', id)
+    await supabase.from('registros').update({ lista_espera: false, lista_espera_orden: null }).eq('id', id)
     setPromoting(null)
+    router.refresh()
+  }
+
+  // Intercambia el orden de dos filas adyacentes
+  async function mover(index: number, direccion: 'arriba' | 'abajo') {
+    const targetIndex = direccion === 'arriba' ? index - 1 : index + 1
+    if (targetIndex < 0 || targetIndex >= registros.length) return
+    const a = registros[index]
+    const b = registros[targetIndex]
+    setMoviendo(a.id)
+    const supabase = createClient()
+    const ordenA = a.lista_espera_orden ?? index + 1
+    const ordenB = b.lista_espera_orden ?? targetIndex + 1
+    await Promise.all([
+      supabase.from('registros').update({ lista_espera_orden: ordenB }).eq('id', a.id),
+      supabase.from('registros').update({ lista_espera_orden: ordenA }).eq('id', b.id),
+    ])
+    setMoviendo(null)
     router.refresh()
   }
 
@@ -79,6 +103,7 @@ export default function ListaEsperaClient({ registros }: Props) {
     r.nombre.toLowerCase().includes(search.toLowerCase()) ||
     (r.empresa ?? '').toLowerCase().includes(search.toLowerCase())
   )
+  const isFiltering = search.trim().length > 0
 
   const S = {
     label: { display: 'block' as const, fontSize: '0.58rem', letterSpacing: '0.2em', textTransform: 'uppercase' as const, color: 'var(--gris)', marginBottom: '0.25rem', fontFamily: 'DM Sans, sans-serif' },
@@ -104,6 +129,7 @@ export default function ListaEsperaClient({ registros }: Props) {
         <div style={{ border: '2px solid #c2410c', padding: '1.5rem', marginBottom: '1.5rem', background: '#fff7ed' }}>
           <p style={{ fontSize: '0.58rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: '#c2410c', marginBottom: '1.25rem', fontFamily: 'DM Sans, sans-serif', fontWeight: 600 }}>
             Añadir a lista de espera · <span style={{ color: '#7c3aed' }}>origen: admin</span>
+            {' '}· <span style={{ color: 'var(--gris)' }}>posición #{registros.length + 1}</span>
           </p>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.75rem', marginBottom: '0.75rem' }}>
@@ -194,6 +220,12 @@ export default function ListaEsperaClient({ registros }: Props) {
         placeholder="Buscar por nombre o empresa..."
         style={{ width: '100%', background: 'var(--blanco)', border: '1px solid var(--crema3)', color: 'var(--grafito)', padding: '0.65rem 1rem', fontFamily: 'DM Sans, sans-serif', fontSize: '0.82rem', outline: 'none', marginBottom: '1rem', boxSizing: 'border-box' }} />
 
+      {isFiltering && (
+        <p style={{ fontSize: '0.68rem', color: 'var(--gris-l)', marginBottom: '0.75rem', fontFamily: 'DM Sans, sans-serif' }}>
+          Mostrando {filtered.length} resultado{filtered.length !== 1 ? 's' : ''} — el orden real no cambia al buscar
+        </p>
+      )}
+
       {/* Lista */}
       <div style={{ background: 'var(--blanco)', border: '1px solid var(--crema3)', overflow: 'hidden' }}>
         {filtered.length === 0 && (
@@ -201,40 +233,65 @@ export default function ListaEsperaClient({ registros }: Props) {
             {registros.length === 0 ? 'No hay nadie en lista de espera.' : 'Sin resultados.'}
           </div>
         )}
-        {filtered.map((r, i) => (
-          <div key={r.id} style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '0.75rem', alignItems: 'center', padding: '0.75rem 1rem', borderBottom: '1px solid var(--crema3)', background: i % 2 === 0 ? 'var(--blanco)' : '#fff7ed' }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.15rem', flexWrap: 'wrap' }}>
-                <p style={{ fontWeight: 500, fontSize: '0.85rem', color: 'var(--negro)', margin: 0 }}>{r.nombre}</p>
-                <span style={{ fontSize: '0.5rem', letterSpacing: '0.1em', textTransform: 'uppercase', background: '#fff7ed', color: '#c2410c', padding: '0.1rem 0.35rem', fontFamily: 'DM Sans, sans-serif', fontWeight: 600, border: '1px solid #fed7aa' }}>Espera</span>
-                {r.cliente_ava && <span style={{ fontSize: '0.5rem', letterSpacing: '0.1em', textTransform: 'uppercase', background: '#e0f2fe', color: '#0369a1', padding: '0.1rem 0.35rem', fontFamily: 'DM Sans, sans-serif', fontWeight: 600, border: '1px solid #bae6fd' }}>Cliente AVA</span>}
+        {filtered.map((r, i) => {
+          // Índice real en la lista original (para mover correctamente)
+          const realIndex = registros.findIndex(x => x.id === r.id)
+          const posicion = r.lista_espera_orden ?? (realIndex + 1)
+          const enMovimiento = moviendo === r.id
+
+          return (
+            <div key={r.id} style={{ display: 'grid', gridTemplateColumns: '44px 1fr auto', gap: '0.75rem', alignItems: 'center', padding: '0.75rem 1rem', borderBottom: '1px solid var(--crema3)', background: i % 2 === 0 ? 'var(--blanco)' : '#fff7ed', opacity: enMovimiento ? 0.5 : 1, transition: 'opacity 0.2s' }}>
+
+              {/* Número + flechas */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.15rem' }}>
+                <button onClick={() => mover(realIndex, 'arriba')} disabled={realIndex === 0 || enMovimiento || isFiltering}
+                  style={{ background: 'none', border: 'none', cursor: realIndex === 0 || isFiltering ? 'default' : 'pointer', color: realIndex === 0 || isFiltering ? 'var(--crema3)' : 'var(--gris)', padding: '0.1rem', lineHeight: 1, fontSize: '0.7rem' }}>
+                  ▲
+                </button>
+                <span style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1.3rem', fontWeight: 300, color: '#c2410c', lineHeight: 1, minWidth: 24, textAlign: 'center' }}>
+                  {posicion}
+                </span>
+                <button onClick={() => mover(realIndex, 'abajo')} disabled={realIndex === registros.length - 1 || enMovimiento || isFiltering}
+                  style={{ background: 'none', border: 'none', cursor: realIndex === registros.length - 1 || isFiltering ? 'default' : 'pointer', color: realIndex === registros.length - 1 || isFiltering ? 'var(--crema3)' : 'var(--gris)', padding: '0.1rem', lineHeight: 1, fontSize: '0.7rem' }}>
+                  ▼
+                </button>
               </div>
-              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                {r.empresa && <span style={{ fontSize: '0.7rem', color: 'var(--gris)' }}>{r.empresa}</span>}
-                {r.cargo && <span style={{ fontSize: '0.68rem', color: 'var(--gris-l)' }}>{r.cargo}</span>}
-                {r.isla && <span style={{ fontSize: '0.58rem', background: 'var(--amarillo)', color: 'var(--negro)', padding: '0.05rem 0.35rem' }}>{r.isla}</span>}
-                {r.telefono && <span style={{ fontSize: '0.65rem', color: 'var(--gris-l)' }}>{r.telefono}</span>}
-                {r.email && <span style={{ fontSize: '0.65rem', color: 'var(--gris-l)' }}>{r.email}</span>}
-              </div>
-              {(r.bloques ?? []).length > 0 && (
-                <div style={{ display: 'flex', gap: '0.2rem', flexWrap: 'wrap', marginTop: '0.25rem' }}>
-                  {(r.bloques ?? []).map(b => (
-                    <span key={b} style={{ fontSize: '0.52rem', background: 'var(--crema2)', color: 'var(--gris)', padding: '0.1rem 0.3rem', border: '1px solid var(--crema3)', whiteSpace: 'nowrap' }}>
-                      {b.split('·')[0].trim().split('–')[0].trim()}
-                    </span>
-                  ))}
+
+              {/* Info */}
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.15rem', flexWrap: 'wrap' }}>
+                  <p style={{ fontWeight: 500, fontSize: '0.85rem', color: 'var(--negro)', margin: 0 }}>{r.nombre}</p>
+                  {r.cliente_ava && <span style={{ fontSize: '0.5rem', letterSpacing: '0.1em', textTransform: 'uppercase', background: '#e0f2fe', color: '#0369a1', padding: '0.1rem 0.35rem', fontFamily: 'DM Sans, sans-serif', fontWeight: 600, border: '1px solid #bae6fd' }}>Cliente AVA</span>}
                 </div>
-              )}
-              <p style={{ fontSize: '0.6rem', color: 'var(--gris-l)', marginTop: '0.2rem', fontFamily: 'DM Sans, sans-serif' }}>
-                {new Date(r.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
-              </p>
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                  {r.empresa && <span style={{ fontSize: '0.7rem', color: 'var(--gris)' }}>{r.empresa}</span>}
+                  {r.cargo && <span style={{ fontSize: '0.68rem', color: 'var(--gris-l)' }}>{r.cargo}</span>}
+                  {r.isla && <span style={{ fontSize: '0.58rem', background: 'var(--amarillo)', color: 'var(--negro)', padding: '0.05rem 0.35rem' }}>{r.isla}</span>}
+                  {r.telefono && <span style={{ fontSize: '0.65rem', color: 'var(--gris-l)' }}>{r.telefono}</span>}
+                  {r.email && <span style={{ fontSize: '0.65rem', color: 'var(--gris-l)' }}>{r.email}</span>}
+                </div>
+                {(r.bloques ?? []).length > 0 && (
+                  <div style={{ display: 'flex', gap: '0.2rem', flexWrap: 'wrap', marginTop: '0.25rem' }}>
+                    {(r.bloques ?? []).map(b => (
+                      <span key={b} style={{ fontSize: '0.52rem', background: 'var(--crema2)', color: 'var(--gris)', padding: '0.1rem 0.3rem', border: '1px solid var(--crema3)', whiteSpace: 'nowrap' }}>
+                        {b.split('·')[0].trim().split('–')[0].trim()}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <p style={{ fontSize: '0.6rem', color: 'var(--gris-l)', marginTop: '0.2rem', fontFamily: 'DM Sans, sans-serif' }}>
+                  {new Date(r.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                </p>
+              </div>
+
+              {/* Acción */}
+              <button onClick={() => promover(r.id)} disabled={promoting === r.id}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', background: 'var(--negro)', color: 'var(--crema)', border: 'none', padding: '0.5rem 1rem', fontSize: '0.62rem', letterSpacing: '0.12em', textTransform: 'uppercase', cursor: promoting === r.id ? 'wait' : 'pointer', fontFamily: 'DM Sans, sans-serif', opacity: promoting === r.id ? 0.5 : 1, whiteSpace: 'nowrap' }}>
+                ✓ Confirmar
+              </button>
             </div>
-            <button onClick={() => promover(r.id)} disabled={promoting === r.id}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', background: 'var(--negro)', color: 'var(--crema)', border: 'none', padding: '0.5rem 1rem', fontSize: '0.62rem', letterSpacing: '0.12em', textTransform: 'uppercase', cursor: promoting === r.id ? 'wait' : 'pointer', fontFamily: 'DM Sans, sans-serif', opacity: promoting === r.id ? 0.5 : 1, whiteSpace: 'nowrap' }}>
-              ✓ Confirmar inscripción
-            </button>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )

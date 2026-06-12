@@ -15,6 +15,7 @@ export interface RegistroEspera {
   bloques: string[] | null
   acepta_whatsapp: boolean
   lista_espera: boolean
+  lista_espera_orden: number | null
   created_at: string
 }
 
@@ -24,9 +25,9 @@ export default async function ListaEsperaPage() {
     const supabase = await createClient()
     const { data } = await supabase
       .from('registros')
-      .select('id, nombre, empresa, cargo, email, telefono, isla, instagram, primera_vez, cliente_ava, bloques, acepta_whatsapp, lista_espera, created_at')
+      .select('id, nombre, empresa, cargo, email, telefono, isla, instagram, primera_vez, cliente_ava, bloques, acepta_whatsapp, lista_espera, lista_espera_orden, created_at')
       .eq('lista_espera', true)
-      .order('created_at', { ascending: false })
+      .order('lista_espera_orden', { ascending: true, nullsFirst: false })
     registros = (data as RegistroEspera[]) ?? []
   } catch {}
 

@@ -25,11 +25,13 @@ export default function FileUploadField({ label, bucket, accept, icono, urlActua
   const inputRef = useRef<HTMLInputElement>(null)
   const [file, setFile] = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
+  const [progress, setProgress] = useState(0)
   const [error, setError] = useState('')
 
   async function handleFile(f: File) {
     setFile(f)
     setUploading(true)
+    setProgress(0)
     setError('')
 
     try {
@@ -43,16 +45,31 @@ export default function FileUploadField({ label, bucket, accept, icono, urlActua
           body: JSON.stringify({ bucket, path }),
         })
         const urlData = await urlRes.json()
-        if (!urlRes.ok) { setError(urlData.error ?? 'Error al obtener URL'); return }
+        if (!urlRes.ok) { setError(urlData.error ?? 'Error al obtener URL de subida'); return }
 
-        const uploadRes = await fetch(urlData.signedUrl, {
-          method: 'PUT',
-          headers: { 'Content-Type': f.type },
-          body: f,
+        await new Promise<void>((resolve, reject) => {
+          const xhr = new XMLHttpRequest()
+          xhr.open('PUT', urlData.signedUrl)
+          xhr.setRequestHeader('Content-Type', f.type || 'application/octet-stream')
+          xhr.upload.onprogress = (e) => {
+            if (e.lengthComputable) {
+              const pct = Math.round((e.loaded / e.total) * 100)
+              setProgress(pct)
+            }
+          }
+          xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              onUploaded(urlData.publicUrl)
+              resolve()
+            } else {
+              reject(new Error(`Error ${xhr.status}: ${xhr.responseText || 'Error al subir'}`))
+            }
+          }
+          xhr.onerror = () => reject(new Error('Error de red al subir el archivo'))
+          xhr.ontimeout = () => reject(new Error('Tiempo de espera agotado'))
+          xhr.timeout = 10 * 60 * 1000 // 10 min
+          xhr.send(f)
         })
-        if (!uploadRes.ok) { setError('Error al subir el archivo'); return }
-
-        onUploaded(urlData.publicUrl)
         return
       }
 
@@ -71,7 +88,7 @@ export default function FileUploadField({ label, bucket, accept, icono, urlActua
         onUploaded(data.url)
       }
     } catch (e: any) {
-      setError('Error de red. Inténtalo de nuevo.')
+      setError(e?.message ?? 'Error de red. Inténtalo de nuevo.')
     } finally {
       setUploading(false)
     }
@@ -102,8 +119,13 @@ export default function FileUploadField({ label, bucket, accept, icono, urlActua
       <button type="button" onClick={() => inputRef.current?.click()} disabled={uploading}
         style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'var(--negro)', color: 'var(--crema)', border: 'none', padding: '0.65rem 1.25rem', fontSize: '0.68rem', letterSpacing: '0.15em', textTransform: 'uppercase', cursor: uploading ? 'wait' : 'pointer', whiteSpace: 'nowrap', fontFamily: 'DM Sans, sans-serif', opacity: uploading ? 0.6 : 1 }}>
         <span style={{ fontSize: '1rem' }}>{icono}</span>
-        {uploading ? 'Subiendo...' : 'Añadir'}
+        {uploading ? (progress > 0 ? `Subiendo ${progress}%` : 'Subiendo...') : 'Añadir'}
       </button>
+      {uploading && progress > 0 && (
+        <div style={{ marginTop: '0.4rem', height: 4, background: 'var(--crema3)', width: '100%', maxWidth: 200 }}>
+          <div style={{ height: '100%', width: `${progress}%`, background: 'var(--negro)', transition: 'width 0.3s' }} />
+        </div>
+      )}
 
       {file && !uploading && !error && (
         <p style={{ fontSize: '0.65rem', color: '#16a34a', marginTop: '0.25rem' }}>✓ {file.name}</p>

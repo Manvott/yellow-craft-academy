@@ -13,6 +13,7 @@ export interface RegistroAcred {
   asistio: boolean
   created_at: string
   origen: string | null
+  lista_espera: boolean
 }
 
 export default async function AcreditacionPage() {
@@ -21,7 +22,7 @@ export default async function AcreditacionPage() {
     const supabase = await createClient()
     const { data } = await supabase
       .from('registros')
-      .select('id, nombre, empresa, telefono, email, isla, cargo, bloques, asistio, created_at, origen')
+      .select('id, nombre, empresa, telefono, email, isla, cargo, bloques, asistio, created_at, origen, lista_espera')
       .order('created_at', { ascending: false })
     registros = (data as RegistroAcred[]) ?? []
   } catch {}

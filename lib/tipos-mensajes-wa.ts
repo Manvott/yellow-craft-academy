@@ -15,6 +15,7 @@ export interface RegistroWA {
   email: string
   bloques: string[] | null
   confirmado_llamada: boolean
+  lista_espera: boolean
 }
 
 export interface Enviado {

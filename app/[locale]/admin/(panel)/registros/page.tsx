@@ -20,6 +20,7 @@ export interface Registro {
   wa_mensaje_enviado: boolean
   asistio: boolean
   origen: string | null
+  lista_espera: boolean
   created_at: string
 }
 

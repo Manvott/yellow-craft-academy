@@ -313,6 +313,9 @@ export default function AcreditacionClient({ registros }: Props) {
                   {r.origen === 'admin' && (
                     <span style={{ fontSize: '0.5rem', letterSpacing: '0.1em', textTransform: 'uppercase', background: '#f3e8ff', color: '#7c3aed', padding: '0.1rem 0.35rem', flexShrink: 0, fontFamily: 'DM Sans, sans-serif', fontWeight: 600, border: '1px solid #ddd6fe' }}>Admin</span>
                   )}
+                  {r.lista_espera && (
+                    <span style={{ fontSize: '0.5rem', letterSpacing: '0.1em', textTransform: 'uppercase', background: '#fff7ed', color: '#c2410c', padding: '0.1rem 0.35rem', flexShrink: 0, fontFamily: 'DM Sans, sans-serif', fontWeight: 600, border: '1px solid #fed7aa' }}>Espera</span>
+                  )}
                 </div>
                 <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
                   {r.empresa && <span style={{ fontSize: '0.7rem', color: 'var(--gris)' }}>{r.empresa}</span>}

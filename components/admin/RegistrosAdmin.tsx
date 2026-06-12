@@ -344,6 +344,9 @@ export default function RegistrosAdmin({ registros }: Props) {
                             {r.origen === 'admin' && (
                               <span style={{ fontSize: '0.5rem', letterSpacing: '0.12em', textTransform: 'uppercase', background: '#ede9fe', color: '#7c3aed', padding: '0.1rem 0.35rem', flexShrink: 0, fontFamily: 'DM Sans, sans-serif', fontWeight: 600 }}>Admin</span>
                             )}
+                            {r.lista_espera && (
+                              <span style={{ fontSize: '0.5rem', letterSpacing: '0.1em', textTransform: 'uppercase', background: '#fff7ed', color: '#c2410c', padding: '0.1rem 0.35rem', flexShrink: 0, fontFamily: 'DM Sans, sans-serif', fontWeight: 600, border: '1px solid #fed7aa' }}>Espera</span>
+                            )}
                           </div>
                           <p style={{ fontSize: '0.68rem', color: 'var(--gris)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {r.empresa ?? <span style={{ color: 'var(--gris-l)', fontStyle: 'italic' }}>Sin empresa</span>}

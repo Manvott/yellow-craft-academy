@@ -2,7 +2,6 @@
 
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 
 interface Foto {
   id: string
@@ -82,11 +81,20 @@ export default function FotosAdminManager({ fotos: fotosIniciales }: Props) {
     if (!seleccionadas.size) return
     if (!confirm(`¿Eliminar ${seleccionadas.size} foto(s)?`)) return
     setEliminando(true)
-    const supabase = createClient()
     const ids = Array.from(seleccionadas)
-    await supabase.from('fotos_evento').delete().in('id', ids)
-    setFotos(prev => prev.filter(f => !seleccionadas.has(f.id)))
-    setSeleccionadas(new Set())
+    const res = await fetch('/api/fotos/delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids }),
+    })
+    if (res.ok) {
+      setFotos(prev => prev.filter(f => !seleccionadas.has(f.id)))
+      setSeleccionadas(new Set())
+      router.refresh()
+    } else {
+      const t = await res.text()
+      setError(`Error al eliminar: ${t}`)
+    }
     setEliminando(false)
   }
 

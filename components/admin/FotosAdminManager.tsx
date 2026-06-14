@@ -16,44 +16,21 @@ interface Foto {
 
 interface Props { fotos: Foto[] }
 
-async function subirConPresign(
+async function subirFoto(
   file: File,
   sesion: string,
-  onProgress: (p: number) => void
 ): Promise<{ foto: Foto | null; error?: string }> {
   try {
-    const presignRes = await fetch('/api/fotos/presign', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nombre: file.name, tipo: file.type, sesion }),
-    })
-    if (!presignRes.ok) {
-      const t = await presignRes.text()
-      return { foto: null, error: `Presign falló: ${t}` }
+    const fd = new FormData()
+    fd.append('file', file)
+    fd.append('sesion', sesion)
+    const res = await fetch('/api/fotos/upload', { method: 'POST', body: fd })
+    if (!res.ok) {
+      const t = await res.text()
+      return { foto: null, error: `Error ${res.status}: ${t}` }
     }
-    const { uploadUrl, key, publicUrl } = await presignRes.json()
-
-    await new Promise<void>((resolve, reject) => {
-      const xhr = new XMLHttpRequest()
-      xhr.upload.onprogress = e => { if (e.lengthComputable) onProgress(Math.round((e.loaded / e.total) * 100)) }
-      xhr.onload = () => { xhr.status < 300 ? resolve() : reject(new Error(`R2 ${xhr.status}: ${xhr.responseText}`)) }
-      xhr.onerror = () => reject(new Error('Error de red al subir a R2'))
-      xhr.open('PUT', uploadUrl)
-      xhr.setRequestHeader('Content-Type', file.type)
-      xhr.send(file)
-    })
-
-    const regRes = await fetch('/api/fotos/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nombre_archivo: file.name, url_publica: publicUrl, r2_key: key, sesion }),
-    })
-    if (!regRes.ok) {
-      const t = await regRes.text()
-      return { foto: null, error: `Register falló: ${t}` }
-    }
-    const { id } = await regRes.json()
-    return { foto: { id, nombre_archivo: file.name, url_publica: publicUrl, r2_key: key, sesion, subido_por: null, created_at: new Date().toISOString() } }
+    const { id, url } = await res.json()
+    return { foto: { id, nombre_archivo: file.name, url_publica: url, r2_key: '', sesion, subido_por: null, created_at: new Date().toISOString() } }
   } catch (e: any) {
     return { foto: null, error: e?.message ?? 'Error desconocido' }
   }
@@ -80,9 +57,8 @@ export default function FotosAdminManager({ fotos: fotosIniciales }: Props) {
     const nuevas: Foto[] = []
     const errores: string[] = []
     for (let i = 0; i < files.length; i++) {
-      const { foto, error: err } = await subirConPresign(files[i], sesion, p =>
-        setProgreso(Math.round(((i / files.length) + p / 100 / files.length) * 100))
-      )
+        setProgreso(Math.round(((i + 1) / files.length) * 100))
+      const { foto, error: err } = await subirFoto(files[i], sesion)
       if (foto) nuevas.push(foto)
       else if (err) errores.push(`${files[i].name}: ${err}`)
     }

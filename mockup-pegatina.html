@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Mockup Pegatina YCA</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #e8e8e8;
+    font-family: 'Georgia', serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    gap: 32px;
+  }
+  h2 {
+    font-family: sans-serif;
+    font-size: 11px;
+    color: #888;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+  }
+  .group { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+
+  /* Pegatina escalada x2.5 para diseño */
+  .pegatina {
+    width: 660px;
+    height: 236px;
+    background: #ffffff;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    padding: 20px 24px;
+    gap: 20px;
+    box-shadow: 0 3px 14px rgba(0,0,0,0.12);
+  }
+
+  .qr-box {
+    flex-shrink: 0;
+    width: 188px;
+    height: 188px;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .qr-box svg { width: 168px; height: 168px; }
+
+  .divider {
+    width: 1px;
+    height: 140px;
+    background: #e0e0e0;
+    flex-shrink: 0;
+  }
+
+  .info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+  }
+  .info .evento {
+    font-family: sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #F5C800;
+    font-weight: 600;
+  }
+  .info .nombre {
+    font-family: 'Georgia', serif;
+    font-size: 30px;
+    font-weight: bold;
+    line-height: 1.1;
+    color: #1a1a1a;
+  }
+  .info .nombre.largo { font-size: 22px; }
+  .info .isla {
+    font-family: sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #555;
+  }
+  .info .id-code {
+    font-family: monospace;
+    font-size: 9px;
+    color: #bbb;
+    margin-top: 2px;
+  }
+
+  hr { width: 100%; border: none; border-top: 1px dashed #ccc; margin: 8px 0; }
+
+  /* Tamano real */
+  .real-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .pegatina-real {
+    width: 264px;
+    height: 94px;
+    background: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    padding: 7px 10px;
+    gap: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  .qr-real {
+    flex-shrink: 0;
+    width: 74px;
+    height: 74px;
+    border: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .qr-real svg { width: 66px; height: 66px; }
+  .div-real { width: 1px; height: 54px; background: #e0e0e0; flex-shrink: 0; }
+  .info-real { flex: 1; }
+  .info-real .ev { font-family: sans-serif; font-size: 5px; letter-spacing: 0.25em; text-transform: uppercase; color: #F5C800; font-weight: 700; }
+  .info-real .nombre { font-size: 10.5px; font-weight: bold; font-family: Georgia, serif; line-height: 1.2; color: #1a1a1a; }
+  .info-real .isla { font-size: 6.5px; letter-spacing: 0.15em; text-transform: uppercase; color: #666; margin-top: 3px; font-family: sans-serif; }
+  .info-real .code { font-size: 5.5px; font-family: monospace; color: #bbb; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<h2>Mockup pegatina acreditacion &mdash; Yellow Craft Academy &mdash; 7 x 2,5 cm</h2>
+
+<div class="group">
+  <h2>Vista ampliada (x2.5)</h2>
+
+  <div class="pegatina">
+    <div class="qr-box">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100" height="100" fill="white"/>
+        <rect x="5" y="5" width="25" height="25" fill="black"/>
+        <rect x="8" y="8" width="19" height="19" fill="white"/>
+        <rect x="11" y="11" width="13" height="13" fill="black"/>
+        <rect x="70" y="5" width="25" height="25" fill="black"/>
+        <rect x="73" y="8" width="19" height="19" fill="white"/>
+        <rect x="76" y="11" width="13" height="13" fill="black"/>
+        <rect x="5" y="70" width="25" height="25" fill="black"/>
+        <rect x="8" y="73" width="19" height="19" fill="white"/>
+        <rect x="11" y="76" width="13" height="13" fill="black"/>
+        <rect x="35" y="5" width="5" height="5" fill="black"/>
+        <rect x="45" y="5" width="5" height="5" fill="black"/>
+        <rect x="40" y="10" width="5" height="5" fill="black"/>
+        <rect x="55" y="15" width="5" height="5" fill="black"/>
+        <rect x="35" y="20" width="5" height="5" fill="black"/>
+        <rect x="60" y="20" width="5" height="5" fill="black"/>
+        <rect x="35" y="35" width="5" height="5" fill="black"/>
+        <rect x="50" y="35" width="5" height="5" fill="black"/>
+        <rect x="40" y="40" width="5" height="5" fill="black"/>
+        <rect x="60" y="45" width="5" height="5" fill="black"/>
+        <rect x="35" y="50" width="5" height="5" fill="black"/>
+        <rect x="50" y="55" width="5" height="5" fill="black"/>
+        <rect x="60" y="60" width="5" height="5" fill="black"/>
+        <rect x="70" y="35" width="5" height="5" fill="black"/>
+        <rect x="85" y="35" width="5" height="5" fill="black"/>
+        <rect x="75" y="45" width="5" height="5" fill="black"/>
+        <rect x="90" y="50" width="5" height="5" fill="black"/>
+        <rect x="70" y="55" width="5" height="5" fill="black"/>
+        <rect x="85" y="60" width="5" height="5" fill="black"/>
+        <rect x="35" y="70" width="5" height="5" fill="black"/>
+        <rect x="55" y="70" width="5" height="5" fill="black"/>
+        <rect x="45" y="80" width="5" height="5" fill="black"/>
+        <rect x="60" y="85" width="5" height="5" fill="black"/>
+        <rect x="35" y="90" width="5" height="5" fill="black"/>
+        <rect x="50" y="95" width="5" height="5" fill="black"/>
+      </svg>
+    </div>
+    <div class="divider"></div>
+    <div class="info">
+      <div class="evento">Yellow Craft Academy &middot; 15 Jun 2026</div>
+      <div class="nombre">Maria Garcia Lopez</div>
+      <div class="isla">Lanzarote</div>
+      <div class="id-code">#YCA-2026-0042</div>
+    </div>
+  </div>
+
+  <div class="pegatina">
+    <div class="qr-box">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100" height="100" fill="white"/>
+        <rect x="5" y="5" width="25" height="25" fill="black"/>
+        <rect x="8" y="8" width="19" height="19" fill="white"/>
+        <rect x="11" y="11" width="13" height="13" fill="black"/>
+        <rect x="70" y="5" width="25" height="25" fill="black"/>
+        <rect x="73" y="8" width="19" height="19" fill="white"/>
+        <rect x="76" y="11" width="13" height="13" fill="black"/>
+        <rect x="5" y="70" width="25" height="25" fill="black"/>
+        <rect x="8" y="73" width="19" height="19" fill="white"/>
+        <rect x="11" y="76" width="13" height="13" fill="black"/>
+        <rect x="40" y="8" width="5" height="5" fill="black"/>
+        <rect x="55" y="12" width="5" height="5" fill="black"/>
+        <rect x="45" y="22" width="5" height="5" fill="black"/>
+        <rect x="35" y="38" width="5" height="5" fill="black"/>
+        <rect x="55" y="42" width="5" height="5" fill="black"/>
+        <rect x="40" y="52" width="5" height="5" fill="black"/>
+        <rect x="60" y="58" width="5" height="5" fill="black"/>
+        <rect x="80" y="38" width="5" height="5" fill="black"/>
+        <rect x="90" y="48" width="5" height="5" fill="black"/>
+        <rect x="75" y="58" width="5" height="5" fill="black"/>
+        <rect x="50" y="78" width="5" height="5" fill="black"/>
+        <rect x="60" y="88" width="5" height="5" fill="black"/>
+      </svg>
+    </div>
+    <div class="divider"></div>
+    <div class="info">
+      <div class="evento">Yellow Craft Academy &middot; 15 Jun 2026</div>
+      <div class="nombre largo">Alejandro Martinez de la Torre</div>
+      <div class="isla">Gran Canaria</div>
+      <div class="id-code">#YCA-2026-0087</div>
+    </div>
+  </div>
+
+  <div class="pegatina">
+    <div class="qr-box">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100" height="100" fill="white"/>
+        <rect x="5" y="5" width="25" height="25" fill="black"/>
+        <rect x="8" y="8" width="19" height="19" fill="white"/>
+        <rect x="11" y="11" width="13" height="13" fill="black"/>
+        <rect x="70" y="5" width="25" height="25" fill="black"/>
+        <rect x="73" y="8" width="19" height="19" fill="white"/>
+        <rect x="76" y="11" width="13" height="13" fill="black"/>
+        <rect x="5" y="70" width="25" height="25" fill="black"/>
+        <rect x="8" y="73" width="19" height="19" fill="white"/>
+        <rect x="11" y="76" width="13" height="13" fill="black"/>
+        <rect x="45" y="10" width="5" height="5" fill="black"/>
+        <rect x="58" y="18" width="5" height="5" fill="black"/>
+        <rect x="38" y="35" width="5" height="5" fill="black"/>
+        <rect x="52" y="40" width="5" height="5" fill="black"/>
+        <rect x="62" y="52" width="5" height="5" fill="black"/>
+        <rect x="38" y="58" width="5" height="5" fill="black"/>
+        <rect x="82" y="42" width="5" height="5" fill="black"/>
+        <rect x="72" y="55" width="5" height="5" fill="black"/>
+        <rect x="45" y="75" width="5" height="5" fill="black"/>
+        <rect x="58" y="88" width="5" height="5" fill="black"/>
+      </svg>
+    </div>
+    <div class="divider"></div>
+    <div class="info">
+      <div class="evento">Yellow Craft Academy &middot; 15 Jun 2026</div>
+      <div class="nombre">Carlos Ruiz</div>
+      <div class="isla">Tenerife</div>
+      <div class="id-code">#YCA-2026-0015</div>
+    </div>
+  </div>
+</div>
+
+<hr/>
+
+<div class="real-wrap">
+  <h2>Tamano real &mdash; 7 x 2,5 cm</h2>
+  <div class="pegatina-real">
+    <div class="qr-real">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100" height="100" fill="white"/>
+        <rect x="5" y="5" width="25" height="25" fill="black"/>
+        <rect x="8" y="8" width="19" height="19" fill="white"/>
+        <rect x="11" y="11" width="13" height="13" fill="black"/>
+        <rect x="70" y="5" width="25" height="25" fill="black"/>
+        <rect x="73" y="8" width="19" height="19" fill="white"/>
+        <rect x="76" y="11" width="13" height="13" fill="black"/>
+        <rect x="5" y="70" width="25" height="25" fill="black"/>
+        <rect x="8" y="73" width="19" height="19" fill="white"/>
+        <rect x="11" y="76" width="13" height="13" fill="black"/>
+        <rect x="40" y="10" width="5" height="5" fill="black"/>
+        <rect x="55" y="20" width="5" height="5" fill="black"/>
+        <rect x="40" y="40" width="5" height="5" fill="black"/>
+        <rect x="55" y="55" width="5" height="5" fill="black"/>
+        <rect x="80" y="40" width="5" height="5" fill="black"/>
+        <rect x="50" y="80" width="5" height="5" fill="black"/>
+      </svg>
+    </div>
+    <div class="div-real"></div>
+    <div class="info-real">
+      <div class="ev">YCA 2026</div>
+      <div class="nombre">Maria Garcia Lopez</div>
+      <div class="isla">Lanzarote</div>
+      <div class="code">#YCA-2026-0042</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

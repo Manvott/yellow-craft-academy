@@ -24,10 +24,11 @@ export default function RegistrosAdmin({ registros }: Props) {
   const [nuevo,       setNuevo]     = useState(emptyNuevo)
   const [savingNuevo, setSavingNuevo] = useState(false)
   const [errorNuevo,  setErrorNuevo]  = useState('')
-  const [editando,    setEditando]   = useState<string | null>(null)
-  const [editNombre,  setEditNombre]  = useState('')
-  const [editEmpresa, setEditEmpresa] = useState('')
-  const [editBloques, setEditBloques] = useState<string[]>([])
+  const [editando,       setEditando]      = useState<string | null>(null)
+  const [editNombre,     setEditNombre]     = useState('')
+  const [editEmpresa,    setEditEmpresa]    = useState('')
+  const [editBloques,    setEditBloques]    = useState<string[]>([])
+  const [editClienteAva, setEditClienteAva] = useState(false)
 
   const BLOQUES_OPCIONES = [
     { value: '10:00 – 12:00h · Silma Ayres · SOSA',           label: '10:00' },
@@ -42,6 +43,7 @@ export default function RegistrosAdmin({ registros }: Props) {
     setEditNombre(r.nombre)
     setEditEmpresa(r.empresa ?? '')
     setEditBloques(r.bloques ?? [])
+    setEditClienteAva(r.cliente_ava ?? false)
   }
 
   function toggleBloque(val: string) {
@@ -55,9 +57,10 @@ export default function RegistrosAdmin({ registros }: Props) {
     setUpdating(id)
     const supabase = createClient()
     await supabase.from('registros').update({
-      nombre:  editNombre.trim(),
-      empresa: editEmpresa.trim() || null,
-      bloques: editBloques,
+      nombre:      editNombre.trim(),
+      empresa:     editEmpresa.trim() || null,
+      bloques:     editBloques,
+      cliente_ava: editClienteAva,
     }).eq('id', id)
     setUpdating(null)
     setEditando(null)
@@ -305,6 +308,20 @@ export default function RegistrosAdmin({ registros }: Props) {
                             placeholder="Empresa (opcional)"
                             style={{ background: 'var(--crema)', border: '1px solid var(--crema3)', color: 'var(--gris)', padding: '0.3rem 0.5rem', fontSize: '0.72rem', fontFamily: 'DM Sans, sans-serif', outline: 'none', width: '100%' }}
                           />
+                          {/* Cliente AVA */}
+                          <div style={{ marginTop: '0.4rem' }}>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer', userSelect: 'none' }}>
+                              <input
+                                type="checkbox"
+                                checked={editClienteAva}
+                                onChange={e => setEditClienteAva(e.target.checked)}
+                                style={{ accentColor: '#0369a1', width: 14, height: 14 }}
+                              />
+                              <span style={{ fontSize: '0.62rem', fontFamily: 'DM Sans, sans-serif', color: editClienteAva ? '#0369a1' : 'var(--gris)', fontWeight: editClienteAva ? 600 : 400 }}>
+                                Cliente AVA
+                              </span>
+                            </label>
+                          </div>
                           {/* Tramos */}
                           <div style={{ marginTop: '0.4rem' }}>
                             <p style={{ fontSize: '0.55rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gris)', marginBottom: '0.3rem', fontFamily: 'DM Sans, sans-serif' }}>Tramos</p>

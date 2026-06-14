@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import type { SeccionPildora, Pildora } from '@/lib/types'
 import { useRouter } from 'next/navigation'
 import FileUploadField from './FileUploadField'
+import VideoField from './VideoField'
 
 interface Props { secciones: SeccionPildora[] }
 
@@ -187,14 +188,9 @@ export default function PillorasAdminManager({ secciones }: Props) {
 
               {/* VIDEO */}
               <div style={{ gridColumn: '1/-1', background: 'var(--crema)', padding: '1rem', borderLeft: '3px solid #7C3AED' }}>
-                <FileUploadField
-                  label="Vídeo"
-                  bucket="pildoras-media"
-                  accept="video/*"
-                  icono="🎬"
-                  urlActual={pilForm.video_url}
-                  onUploaded={url => setPilForm(f => ({ ...f, video_url: url }))}
-                  hint="MP4, WebM. O pega una URL de YouTube/Vimeo."
+                <VideoField
+                  value={pilForm.video_url}
+                  onChange={url => setPilForm(f => ({ ...f, video_url: url }))}
                 />
               </div>
 

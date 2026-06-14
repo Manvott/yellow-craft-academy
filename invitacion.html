@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yellow Craft Academy · Una invitación</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #e8e4dc;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 40px 16px;
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  .card {
+    background: #FAFAF7;
+    width: 420px;
+    padding: 52px 44px 56px;
+    border: 1px solid #e0dbd0;
+    box-shadow: 0 8px 48px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0;
+  }
+
+  /* ── LOGO ── */
+  .logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+  .logo-dot {
+    width: 18px;
+    height: 18px;
+    background: #F5C800;
+    border-radius: 50%;
+    margin-bottom: 10px;
+  }
+  .logo-yellow {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 1.55rem;
+    letter-spacing: 0.18em;
+    color: #1a1a1a;
+    line-height: 1;
+  }
+  .logo-craft {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 1.55rem;
+    letter-spacing: 0.05em;
+    color: #1a1a1a;
+    line-height: 1.1;
+  }
+  .logo-academy {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    font-size: 0.62rem;
+    letter-spacing: 0.45em;
+    color: #999;
+    margin-top: 4px;
+  }
+
+  /* ── ETIQUETA INVITACIÓN ── */
+  .invitacion-label {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 0.68rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: #1a1a1a;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    padding: 6px 18px;
+    margin-bottom: 36px;
+  }
+
+  /* ── HORA ── */
+  .hora {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 5.5rem;
+    letter-spacing: -0.02em;
+    color: #1a1a1a;
+    line-height: 1;
+    margin-bottom: 18px;
+  }
+
+  /* ── FECHA / LUGAR ── */
+  .meta {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.62rem;
+    font-weight: 400;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #888;
+    line-height: 1.7;
+    margin-bottom: 44px;
+  }
+  .meta strong {
+    color: #1a1a1a;
+    font-weight: 700;
+  }
+
+  /* ── SEPARADOR ── */
+  .sep {
+    width: 32px;
+    height: 1px;
+    background: #ccc;
+    margin: 0 auto 36px;
+  }
+
+  /* ── CUERPO COPY ── */
+  .copy {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.18rem;
+    font-weight: 400;
+    line-height: 1.75;
+    color: #2a2a2a;
+    margin-bottom: 28px;
+    max-width: 310px;
+  }
+  .copy em {
+    font-style: italic;
+    font-weight: 500;
+  }
+
+  /* ── FRASE ANCLA ── */
+  .ancla {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 2rem;
+    font-weight: 400;
+    color: #1a1a1a;
+    line-height: 1.2;
+    margin-bottom: 40px;
+  }
+
+  /* ── TARDEO ── */
+  .tardeo-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.6rem;
+    font-weight: 400;
+    letter-spacing: 0.3em;
+    color: #aaa;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .tardeo-items {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 44px;
+  }
+  .tardeo-item {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 0.65rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: #1a1a1a;
+  }
+  .tardeo-dot {
+    width: 3px;
+    height: 3px;
+    background: #F5C800;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── CIERRE ── */
+  .cierre {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1.55rem;
+    font-weight: 400;
+    color: #1a1a1a;
+    margin-bottom: 28px;
+  }
+
+  /* ── FIRMA ── */
+  .firma {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.55rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: #1a1a1a;
+    margin-bottom: 28px;
+  }
+
+  /* ── MARIPOSA ── */
+  .mariposa {
+    width: 90px;
+    height: auto;
+    opacity: 0.88;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.12));
+  }
+
+  @media print {
+    body { background: white; padding: 0; }
+    .card { box-shadow: none; border: none; margin: 0 auto; }
+    @page { size: A4; margin: 1cm; }
+  }
+</style>
+</head>
+<body>
+<div class="card">
+
+  <!-- Logo -->
+  <div class="logo">
+    <div class="logo-dot"></div>
+    <div class="logo-yellow">YELLOW</div>
+    <div class="logo-craft">Craft</div>
+    <div class="logo-yellow" style="margin-top:2px">ACADEMY</div>
+    <div class="logo-academy">Lanzarote · 2026</div>
+  </div>
+
+  <!-- Etiqueta -->
+  <div class="invitacion-label">— Una invitación personal —</div>
+
+  <!-- Hora -->
+  <div class="hora">18:00</div>
+
+  <!-- Fecha y lugar -->
+  <div class="meta">
+    15 de junio &nbsp;·&nbsp; <strong>Sala Ocean</strong> &nbsp;·&nbsp; Puerto del Carmen
+  </div>
+
+  <div class="sep"></div>
+
+  <!-- Copy magnético -->
+  <p class="copy">
+    Hay días que no se olvidan.<br>
+    El 15 de junio es uno de ellos.
+  </p>
+
+  <p class="copy">
+    Yellow Craft Academy reúne a quienes han hecho<br>
+    del oficio <em>una forma de vida.</em><br>
+    A los que madrugan, prueban y no se conforman.
+  </p>
+
+  <p class="copy">
+    Al caer la tarde, paramos.<br>
+    Y celebramos lo que somos<br>
+    <em>con quienes lo entienden sin explicación.</em>
+  </p>
+
+  <!-- Frase ancla -->
+  <div class="ancla">Personas como tú.</div>
+
+  <!-- Tardeo -->
+  <div class="tardeo-label">De seis a nueve de la tarde</div>
+  <div class="tardeo-items">
+    <span class="tardeo-item">Tardeo</span>
+    <div class="tardeo-dot"></div>
+    <span class="tardeo-item">Conversación</span>
+    <div class="tardeo-dot"></div>
+    <span class="tardeo-item">Encuentro</span>
+  </div>
+
+  <!-- Cierre -->
+  <div class="cierre">Te esperamos.</div>
+
+  <!-- Firma -->
+  <div class="firma">Vanessa</div>
+
+  <!-- Mariposa -->
+  <img
+    class="mariposa"
+    src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Camponotus_flavomarginatus_ant.jpg/1px-transparent.png"
+    onerror="this.style.display='none'"
+    alt=""
+  />
+  <!-- Sustituir src por la ruta real de la mariposa cuando esté disponible -->
+  <svg class="mariposa" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" style="width:80px;opacity:0.7">
+    <!-- Ala superior izquierda -->
+    <path d="M60 50 C40 30, 5 20, 2 45 C0 65, 30 65, 60 55" fill="#5a9e6f" opacity="0.85"/>
+    <!-- Ala inferior izquierda -->
+    <path d="M60 55 C35 60, 10 75, 15 88 C22 98, 48 85, 60 65" fill="#3d7a52" opacity="0.8"/>
+    <!-- Ala superior derecha -->
+    <path d="M60 50 C80 30, 115 20, 118 45 C120 65, 90 65, 60 55" fill="#5a9e6f" opacity="0.85"/>
+    <!-- Ala inferior derecha -->
+    <path d="M60 55 C85 60, 110 75, 105 88 C98 98, 72 85, 60 65" fill="#3d7a52" opacity="0.8"/>
+    <!-- Cuerpo -->
+    <ellipse cx="60" cy="57" rx="3" ry="14" fill="#1a1a1a"/>
+    <!-- Antenas -->
+    <line x1="60" y1="43" x2="48" y2="28" stroke="#1a1a1a" stroke-width="1.2"/>
+    <circle cx="48" cy="28" r="2" fill="#1a1a1a"/>
+    <line x1="60" y1="43" x2="72" y2="28" stroke="#1a1a1a" stroke-width="1.2"/>
+    <circle cx="72" cy="28" r="2" fill="#1a1a1a"/>
+    <!-- Detalles alas -->
+    <path d="M60 52 C45 38, 18 30, 10 48" fill="none" stroke="#2d6b40" stroke-width="0.8" opacity="0.6"/>
+    <path d="M60 52 C75 38, 102 30, 110 48" fill="none" stroke="#2d6b40" stroke-width="0.8" opacity="0.6"/>
+    <circle cx="25" cy="42" r="5" fill="#F5C800" opacity="0.35"/>
+    <circle cx="95" cy="42" r="5" fill="#F5C800" opacity="0.35"/>
+  </svg>
+
+</div>
+</body>
+</html>

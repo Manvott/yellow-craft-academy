@@ -46,6 +46,9 @@ export default function Navbar() {
         <Link href={`/${locale}/pildoras`} style={{ fontSize: '0.72rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--gris)', textDecoration: 'none', fontFamily: 'DM Sans, sans-serif' }}>
           {t('pildoras')}
         </Link>
+        <Link href={`/${locale}/fotos`} style={{ fontSize: '0.72rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--gris)', textDecoration: 'none', fontFamily: 'DM Sans, sans-serif' }}>
+          Fotos
+        </Link>
         <button
           onClick={switchLocale}
           style={{ fontSize: '0.65rem', letterSpacing: '0.2em', textTransform: 'uppercase', background: 'var(--negro)', color: 'var(--crema)', padding: '0.4rem 1rem', fontWeight: 500, border: 'none', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}

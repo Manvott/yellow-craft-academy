@@ -569,6 +569,7 @@ function PreguntasSection() {
 }
 
 export default function LandingClient({ locale }: Props) {
+  const [menuAbierto, setMenuAbierto] = useState(false)
   return (
     <div style={{ background: 'var(--crema)', color: 'var(--grafito)', fontFamily: 'DM Sans, sans-serif', fontWeight: 300, overflowX: 'hidden' }}>
 
@@ -578,6 +579,7 @@ export default function LandingClient({ locale }: Props) {
           <YCLogo size={34} />
         </Link>
         <a href="https://www.instagram.com/avaseleccion?igsh=YXNmeDNsZGsyM3g1" target="_blank" rel="noopener noreferrer"
+          className="yca-nav-tagline"
           style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', textDecoration: 'none' }}>
           <span style={{ fontSize: '0.7rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gris)' }}>Organizado por AVA</span>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--gris)" strokeWidth="1.6">
@@ -589,9 +591,28 @@ export default function LandingClient({ locale }: Props) {
         <div className="yca-nav-links" style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
           <Link href={`/${locale}`} style={{ fontSize: '0.7rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--gris)', textDecoration: 'none' }}>Catálogo</Link>
           <Link href={`/${locale}/pildoras`} style={{ fontSize: '0.7rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--gris)', textDecoration: 'none' }}>Píldoras</Link>
+          <Link href={`/${locale}/fotos`} style={{ fontSize: '0.7rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--gris)', textDecoration: 'none' }}>Fotos</Link>
           <a href="#registro" style={{ fontSize: '0.68rem', letterSpacing: '0.2em', textTransform: 'uppercase', background: 'var(--negro)', color: 'var(--crema)', padding: '0.45rem 1.3rem', fontWeight: 500, textDecoration: 'none' }}>Reservar plaza</a>
         </div>
+
+        {/* Botón hamburguesa — solo móvil */}
+        <button className="yca-burger" onClick={() => setMenuAbierto(o => !o)} aria-label="Menú"
+          style={{ display: 'none', background: 'none', border: 'none', cursor: 'pointer', padding: '0.3rem', flexDirection: 'column', gap: '4px' }}>
+          <span style={{ display: 'block', width: 22, height: 2, background: 'var(--negro)', transition: 'transform 0.2s', transform: menuAbierto ? 'translateY(6px) rotate(45deg)' : 'none' }} />
+          <span style={{ display: 'block', width: 22, height: 2, background: 'var(--negro)', opacity: menuAbierto ? 0 : 1, transition: 'opacity 0.2s' }} />
+          <span style={{ display: 'block', width: 22, height: 2, background: 'var(--negro)', transition: 'transform 0.2s', transform: menuAbierto ? 'translateY(-6px) rotate(-45deg)' : 'none' }} />
+        </button>
       </nav>
+
+      {/* Panel menú móvil */}
+      {menuAbierto && (
+        <div className="yca-mobile-menu" style={{ position: 'fixed', top: 58, left: 0, right: 0, zIndex: 99, background: 'rgba(247,243,238,0.98)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(0,0,0,0.08)', display: 'flex', flexDirection: 'column', padding: '1rem 1.25rem' }}>
+          <Link href={`/${locale}`} onClick={() => setMenuAbierto(false)} style={{ fontSize: '0.85rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--negro)', textDecoration: 'none', padding: '0.9rem 0', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>Catálogo</Link>
+          <Link href={`/${locale}/pildoras`} onClick={() => setMenuAbierto(false)} style={{ fontSize: '0.85rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--negro)', textDecoration: 'none', padding: '0.9rem 0', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>Píldoras</Link>
+          <Link href={`/${locale}/fotos`} onClick={() => setMenuAbierto(false)} style={{ fontSize: '0.85rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--negro)', textDecoration: 'none', padding: '0.9rem 0', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>Fotos</Link>
+          <a href="#registro" onClick={() => setMenuAbierto(false)} style={{ fontSize: '0.8rem', letterSpacing: '0.2em', textTransform: 'uppercase', background: 'var(--negro)', color: 'var(--crema)', padding: '0.9rem', fontWeight: 500, textDecoration: 'none', textAlign: 'center', marginTop: '0.75rem' }}>Reservar plaza</a>
+        </div>
+      )}
 
       {/* HERO */}
       <section className="yca-hero" style={{ minHeight: '100vh', display: 'grid', gridTemplateColumns: '1fr 1fr', paddingTop: 72 }}>
@@ -916,7 +937,8 @@ export default function LandingClient({ locale }: Props) {
           /* Nav */
           nav { padding: 0.85rem 1.25rem !important; }
           .yca-nav-tagline { display: none !important; }
-          .yca-nav-links a:not(:last-child) { display: none !important; }
+          .yca-nav-links { display: none !important; }
+          .yca-burger { display: flex !important; }
           /* Secciones */
           .yca-section { padding: 4rem 1.5rem !important; }
           .yca-section-header { flex-direction: column !important; gap: 0.5rem !important; }

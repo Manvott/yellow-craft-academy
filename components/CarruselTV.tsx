@@ -19,8 +19,27 @@ const POLL_MS = 20000
 export default function CarruselTV({ fotosIniciales }: Props) {
   const [fotos, setFotos] = useState<Foto[]>(fotosIniciales)
   const [idx, setIdx] = useState(0)
+  const [pantallaCompleta, setPantallaCompleta] = useState(false)
   const fotosRef = useRef(fotos)
   fotosRef.current = fotos
+
+  async function toggleFullscreen() {
+    try {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen()
+        setPantallaCompleta(true)
+      } else {
+        await document.exitFullscreen()
+        setPantallaCompleta(false)
+      }
+    } catch {}
+  }
+
+  useEffect(() => {
+    const onChange = () => setPantallaCompleta(!!document.fullscreenElement)
+    document.addEventListener('fullscreenchange', onChange)
+    return () => document.removeEventListener('fullscreenchange', onChange)
+  }, [])
 
   const refrescar = useCallback(async () => {
     try {
@@ -69,6 +88,12 @@ export default function CarruselTV({ fotosIniciales }: Props) {
         <p style={{ color: 'rgba(247,243,238,0.4)', fontFamily: 'DM Sans, sans-serif', fontSize: '1rem', letterSpacing: '0.1em' }}>
           Las fotografías del evento aparecerán aquí…
         </p>
+        {!pantallaCompleta && (
+          <button onClick={toggleFullscreen}
+            style={{ marginTop: '0.5rem', background: 'rgba(245,197,24,0.95)', color: '#0A0A08', border: 'none', borderRadius: '2rem', padding: '0.6rem 1.3rem', fontSize: '0.8rem', fontWeight: 600, fontFamily: 'DM Sans, sans-serif', cursor: 'pointer', letterSpacing: '0.05em' }}>
+            ⛶ Pantalla completa
+          </button>
+        )}
       </div>
     )
   }
@@ -121,6 +146,14 @@ export default function CarruselTV({ fotosIniciales }: Props) {
           Yellow Craft Academy
         </span>
       </div>
+
+      {/* Botón pantalla completa */}
+      {!pantallaCompleta && (
+        <button onClick={toggleFullscreen}
+          style={{ position: 'absolute', top: '2rem', left: '3rem', zIndex: 4, display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(245,197,24,0.95)', color: '#0A0A08', border: 'none', borderRadius: '2rem', padding: '0.6rem 1.3rem', fontSize: '0.8rem', fontWeight: 600, fontFamily: 'DM Sans, sans-serif', cursor: 'pointer', letterSpacing: '0.05em' }}>
+          ⛶ Pantalla completa
+        </button>
+      )}
 
       {/* Indicador de progreso */}
       <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 3, background: 'rgba(255,255,255,0.1)', zIndex: 3 }}>

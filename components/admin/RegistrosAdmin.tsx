@@ -16,7 +16,7 @@ const emptyNuevo = { nombre: '', empresa: '', email: '', telefono: '', isla: '',
 export default function RegistrosAdmin({ registros }: Props) {
   const router = useRouter()
   const [updating,    setUpdating]  = useState<string | null>(null)
-  const [filtro,      setFiltro]    = useState<'todos' | 'pendientes' | 'confirmados' | 'solo-tardeo' | 'cliente-ava'>('todos')
+  const [filtro,      setFiltro]    = useState<'todos' | 'pendientes' | 'confirmados' | 'solo-tardeo' | 'cliente-ava' | 'admin'>('todos')
   const [cruzando,    setCruzando]  = useState(false)
   const [cruzResult,  setCruzResult] = useState<{ clientesAva: number; nuevosClientes: number; total: number } | null>(null)
   const [search,      setSearch]    = useState('')
@@ -144,6 +144,7 @@ export default function RegistrosAdmin({ registros }: Props) {
       filtro === 'confirmados'  ? r.wa_confirmado :
       filtro === 'solo-tardeo'  ? esSoloTardeo(r) :
       filtro === 'cliente-ava'  ? r.cliente_ava :
+      filtro === 'admin'        ? r.origen === 'admin' :
       true
     return matchSearch && matchFiltro
   })
@@ -255,6 +256,7 @@ export default function RegistrosAdmin({ registros }: Props) {
           { key: 'todos',       label: `Todos (${registros.length})`,                                           accent: null        },
           { key: 'cliente-ava', label: `Clientes AVA (${clienteAvaCount})`,                                     accent: '#0284c7'   },
           { key: 'solo-tardeo', label: `Solo tardeo (${soloTardeoCount})`,                                       accent: '#d97706'   },
+          { key: 'admin',       label: `Admin (${registros.filter(r => r.origen === 'admin').length})`,         accent: '#7c3aed'   },
           { key: 'pendientes',  label: `Pendientes WA (${registros.filter(r => !r.wa_confirmado).length})`,     accent: null        },
           { key: 'confirmados', label: `En lista WA (${registros.filter(r => r.wa_confirmado).length})`,        accent: null        },
         ] as const).map(({ key, label, accent }) => (

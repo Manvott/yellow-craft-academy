@@ -51,15 +51,41 @@ function PildoraCard({ pildora }: { pildora: Pildora }) {
             )}
           </>
         )}
-        {pildora.video_url && (
-          <a
-            href={pildora.video_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ marginTop: '1rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.65rem', letterSpacing: '0.2em', textTransform: 'uppercase', background: 'var(--amarillo)', color: 'var(--negro)', padding: '0.35rem 0.9rem', textDecoration: 'none', fontWeight: 500, fontFamily: 'DM Sans, sans-serif' }}
-          >
-            ▶ Ver video
-          </a>
+        {(pildora.video_url || pildora.pdf_url || pildora.audio_url) && (
+          <div style={{ marginTop: '1rem', display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+            {pildora.video_url && (
+              <a
+                href={pildora.video_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.65rem', letterSpacing: '0.2em', textTransform: 'uppercase', background: 'var(--amarillo)', color: 'var(--negro)', padding: '0.35rem 0.9rem', textDecoration: 'none', fontWeight: 500, fontFamily: 'DM Sans, sans-serif' }}
+              >
+                ▶ Ver video
+              </a>
+            )}
+            {pildora.pdf_url && (
+              <a
+                href={pildora.pdf_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Ver PDF: ${pildora.titulo}`}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.65rem', letterSpacing: '0.2em', textTransform: 'uppercase', background: 'var(--negro)', color: 'var(--crema)', padding: '0.35rem 0.9rem', textDecoration: 'none', fontWeight: 500, fontFamily: 'DM Sans, sans-serif' }}
+              >
+                📄 Ver PDF
+              </a>
+            )}
+            {pildora.audio_url && (
+              <a
+                href={pildora.audio_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Escuchar audio: ${pildora.titulo}`}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.65rem', letterSpacing: '0.2em', textTransform: 'uppercase', background: 'var(--blanco)', color: 'var(--negro)', border: '1px solid var(--negro)', padding: '0.35rem 0.9rem', textDecoration: 'none', fontWeight: 500, fontFamily: 'DM Sans, sans-serif' }}
+              >
+                ♪ Escuchar
+              </a>
+            )}
+          </div>
         )}
       </div>
     </div>

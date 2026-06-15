@@ -60,6 +60,8 @@ export interface Pildora {
   contenido: string | null
   imagen_url: string | null
   video_url: string | null
+  pdf_url: string | null
+  audio_url: string | null
   orden: number
   activo: boolean
   created_at: string

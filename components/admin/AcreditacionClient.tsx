@@ -211,6 +211,7 @@ export default function AcreditacionClient({ registros }: Props) {
   const [qrAbierto, setQrAbierto] = useState<string | null>(null)
   const [printingAll, setPrintingAll] = useState(false)
   const [printingSinTardeo, setPrintingSinTardeo] = useState(false)
+  const [printingAdmin, setPrintingAdmin] = useState(false)
 
   async function toggleAsistio(id: string, current: boolean) {
     setUpdating(id)
@@ -246,6 +247,12 @@ export default function AcreditacionClient({ registros }: Props) {
     setPrintingSinTardeo(false)
   }
 
+  async function handlePrintAdmin() {
+    setPrintingAdmin(true)
+    await imprimirTodasPegatinas(registros.filter(r => r.origen === 'admin'))
+    setPrintingAdmin(false)
+  }
+
   return (
     <div>
       {/* Controles */}
@@ -272,6 +279,14 @@ export default function AcreditacionClient({ registros }: Props) {
           style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.45rem 1rem', fontSize: '0.68rem', letterSpacing: '0.1em', textTransform: 'uppercase', border: '1px solid var(--negro)', cursor: 'pointer', background: 'var(--blanco)', color: 'var(--negro)', fontFamily: 'DM Sans, sans-serif', opacity: printingSinTardeo ? 0.6 : 1 }}>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
           {printingSinTardeo ? 'Generando...' : `Imprimir sin tardeo (${sinTardeo.length})`}
+        </button>
+        ); })()}
+        {/* Imprimir solo admin */}
+        {(() => { const admins = registros.filter(r => r.origen === 'admin'); return (
+        <button onClick={handlePrintAdmin} disabled={printingAdmin || admins.length === 0}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.45rem 1rem', fontSize: '0.68rem', letterSpacing: '0.1em', textTransform: 'uppercase', border: '1px solid #7c3aed', cursor: 'pointer', background: 'var(--blanco)', color: '#7c3aed', fontFamily: 'DM Sans, sans-serif', opacity: printingAdmin ? 0.6 : 1 }}>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          {printingAdmin ? 'Generando...' : `Imprimir admin (${admins.length})`}
         </button>
         ); })()}
         {/* Imprimir todas */}

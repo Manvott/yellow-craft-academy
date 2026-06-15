@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import type { RegistroAcred } from '@/app/[locale]/admin/(panel)/acreditacion/page'
 import QRCode from 'qrcode'
@@ -215,9 +214,17 @@ export default function AcreditacionClient({ registros }: Props) {
 
   async function toggleAsistio(id: string, current: boolean) {
     setUpdating(id)
-    const supabase = createClient()
-    await supabase.from('registros').update({ asistio: !current }).eq('id', id)
+    const res = await fetch('/api/admin/marcar-asistencia', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, asistio: !current }),
+    })
     setUpdating(null)
+    if (!res.ok) {
+      const { error } = await res.json().catch(() => ({ error: 'Error al marcar asistencia' }))
+      alert(`No se pudo marcar la asistencia: ${error}`)
+      return
+    }
     router.refresh()
   }
 

@@ -20,16 +20,30 @@ async function subirFoto(
   sesion: string,
 ): Promise<{ foto: Foto | null; error?: string }> {
   try {
-    const fd = new FormData()
-    fd.append('file', file)
-    fd.append('sesion', sesion)
-    const res = await fetch('/api/fotos/upload', { method: 'POST', body: fd })
-    if (!res.ok) {
-      const t = await res.text()
-      return { foto: null, error: `Error ${res.status}: ${t}` }
-    }
-    const { id, url } = await res.json()
-    return { foto: { id, nombre_archivo: file.name, url_publica: url, r2_key: '', sesion, subido_por: null, created_at: new Date().toISOString() } }
+    const presignRes = await fetch('/api/fotos/presign', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nombre: file.name, tipo: file.type || 'image/jpeg', sesion }),
+    })
+    if (!presignRes.ok) return { foto: null, error: `Presign ${presignRes.status}: ${await presignRes.text()}` }
+    const { uploadUrl, key, publicUrl } = await presignRes.json()
+
+    const putRes = await fetch(uploadUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': file.type || 'image/jpeg' },
+      body: file,
+    })
+    if (!putRes.ok) return { foto: null, error: `R2 ${putRes.status}` }
+
+    const regRes = await fetch('/api/fotos/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nombre_archivo: file.name, url_publica: publicUrl, r2_key: key, sesion, tamano_bytes: file.size }),
+    })
+    if (!regRes.ok) return { foto: null, error: `Register ${regRes.status}: ${await regRes.text()}` }
+    const { id } = await regRes.json()
+
+    return { foto: { id, nombre_archivo: file.name, url_publica: publicUrl, r2_key: key, sesion, subido_por: null, created_at: new Date().toISOString() } }
   } catch (e: any) {
     return { foto: null, error: e?.message ?? 'Error desconocido' }
   }
@@ -53,15 +67,28 @@ export default function FotosAdminManager({ fotos: fotosIniciales }: Props) {
   async function handleFiles(files: FileList) {
     setSubiendo(true)
     setError('')
+    const lista = Array.from(files)
     const nuevas: Foto[] = []
     const errores: string[] = []
-    for (let i = 0; i < files.length; i++) {
-        setProgreso(Math.round(((i + 1) / files.length) * 100))
-      const { foto, error: err } = await subirFoto(files[i], sesion)
-      if (foto) nuevas.push(foto)
-      else if (err) errores.push(`${files[i].name}: ${err}`)
+    let completados = 0
+    const CONCURRENCIA = 4
+    let cursor = 0
+
+    async function worker() {
+      while (cursor < lista.length) {
+        const i = cursor++
+        const file = lista[i]
+        const { foto, error: err } = await subirFoto(file, sesion)
+        if (foto) nuevas.push(foto)
+        else if (err) errores.push(`${file.name}: ${err}`)
+        completados++
+        setProgreso(Math.round((completados / lista.length) * 100))
+      }
     }
-    if (errores.length) setError(errores.join(' | '))
+
+    await Promise.all(Array.from({ length: Math.min(CONCURRENCIA, lista.length) }, worker))
+
+    if (errores.length) setError(`${errores.length} de ${lista.length} fallaron — ${errores.slice(0, 3).join(' | ')}`)
     setFotos(prev => [...nuevas, ...prev])
     setSubiendo(false)
     setProgreso(0)
@@ -124,13 +151,13 @@ export default function FotosAdminManager({ fotos: fotosIniciales }: Props) {
         >
           <span style={{ fontSize: '2.2rem', marginBottom: '0.6rem' }}>📷</span>
           <span style={{ fontSize: '0.87rem', fontFamily: 'DM Sans, sans-serif', color: 'var(--gris)' }}>
-            {subiendo ? `Subiendo… ${progreso}%` : 'Arrastra fotos aquí o haz clic para seleccionar'}
+            {subiendo ? `Subiendo bloque… ${progreso}%` : 'Arrastra un bloque de fotos JPEG aquí o haz clic para seleccionar'}
           </span>
           <input
             ref={inputRef}
             type="file"
             multiple
-            accept="image/*"
+            accept="image/jpeg,image/jpg,image/png,image/webp,image/*"
             style={{ display: 'none' }}
             disabled={subiendo}
             onChange={e => { if (e.target.files?.length) handleFiles(e.target.files) }}

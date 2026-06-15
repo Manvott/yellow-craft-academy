@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 export const maxDuration = 10
 
 export async function POST(request: NextRequest) {
-  const { nombre_archivo, url_publica, r2_key, sesion, subido_por } = await request.json()
+  const { nombre_archivo, url_publica, r2_key, sesion, subido_por, tamano_bytes } = await request.json()
   if (!nombre_archivo || !url_publica || !r2_key) {
     return NextResponse.json({ error: 'Faltan parámetros' }, { status: 400 })
   }
@@ -21,6 +21,7 @@ export async function POST(request: NextRequest) {
     r2_key,
     sesion: sesion || 'general',
     subido_por: subido_por || null,
+    tamano_bytes: tamano_bytes ?? 0,
   }).select('id').single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })

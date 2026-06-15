@@ -13,6 +13,23 @@ interface Foto {
 
 interface Props { fotosIniciales: Foto[] }
 
+async function descargarFoto(url: string, nombre: string) {
+  try {
+    const res = await fetch(url, { mode: 'cors' })
+    const blob = await res.blob()
+    const objectUrl = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = objectUrl
+    a.download = nombre || 'foto.jpg'
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    URL.revokeObjectURL(objectUrl)
+  } catch {
+    window.open(url, '_blank')
+  }
+}
+
 export default function FotosGaleriaClient({ fotosIniciales }: Props) {
   const [filtro, setFiltro] = useState('todas')
   const [lightbox, setLightbox] = useState<Foto | null>(null)
@@ -65,10 +82,10 @@ export default function FotosGaleriaClient({ fotosIniciales }: Props) {
             {lightbox.subido_por && (
               <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem', fontFamily: 'DM Sans, sans-serif' }}>{lightbox.subido_por}</span>
             )}
-            <a href={lightbox.url_publica} download={lightbox.nombre_archivo} onClick={e => e.stopPropagation()}
-              style={{ background: 'var(--amarillo)', color: 'var(--negro)', padding: '0.5rem 1.5rem', borderRadius: '2rem', fontSize: '0.8rem', fontFamily: 'DM Sans, sans-serif', fontWeight: 600, textDecoration: 'none' }}>
+            <button onClick={e => { e.stopPropagation(); descargarFoto(lightbox.url_publica, lightbox.nombre_archivo) }}
+              style={{ background: 'var(--amarillo)', color: 'var(--negro)', padding: '0.5rem 1.5rem', borderRadius: '2rem', fontSize: '0.8rem', fontFamily: 'DM Sans, sans-serif', fontWeight: 600, border: 'none', cursor: 'pointer' }}>
               ↓ Descargar
-            </a>
+            </button>
             <button onClick={() => setLightbox(null)}
               style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', padding: '0.5rem 1rem', borderRadius: '2rem', cursor: 'pointer', fontSize: '0.8rem', fontFamily: 'DM Sans, sans-serif' }}>
               Cerrar

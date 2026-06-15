@@ -41,6 +41,30 @@ export default function CarruselTV({ fotosIniciales }: Props) {
     return () => document.removeEventListener('fullscreenchange', onChange)
   }, [])
 
+  // Wake Lock: evita que la pantalla se atenúe o suspenda por inactividad
+  useEffect(() => {
+    let wakeLock: any = null
+    let cancelado = false
+
+    async function pedir() {
+      try {
+        if ('wakeLock' in navigator && !cancelado) {
+          wakeLock = await (navigator as any).wakeLock.request('screen')
+        }
+      } catch {}
+    }
+    pedir()
+
+    const onVisibility = () => { if (document.visibilityState === 'visible') pedir() }
+    document.addEventListener('visibilitychange', onVisibility)
+
+    return () => {
+      cancelado = true
+      document.removeEventListener('visibilitychange', onVisibility)
+      try { wakeLock?.release() } catch {}
+    }
+  }, [])
+
   const refrescar = useCallback(async () => {
     try {
       const sb = createClient()

@@ -54,6 +54,8 @@ export default function FotosAdminManager({ fotos: fotosIniciales }: Props) {
   const [fotos, setFotos] = useState<Foto[]>(fotosIniciales)
   const [subiendo, setSubiendo] = useState(false)
   const [progreso, setProgreso] = useState(0)
+  const [subTotal, setSubTotal] = useState(0)
+  const [subHechas, setSubHechas] = useState(0)
   const [sesion, setSesion] = useState('general')
   const [filtro, setFiltro] = useState('todas')
   const [seleccionadas, setSeleccionadas] = useState<Set<string>>(new Set())
@@ -68,10 +70,12 @@ export default function FotosAdminManager({ fotos: fotosIniciales }: Props) {
     setSubiendo(true)
     setError('')
     const lista = Array.from(files)
+    setSubTotal(lista.length)
+    setSubHechas(0)
     const nuevas: Foto[] = []
     const errores: string[] = []
     let completados = 0
-    const CONCURRENCIA = 4
+    const CONCURRENCIA = 6
     let cursor = 0
 
     async function worker() {
@@ -82,6 +86,7 @@ export default function FotosAdminManager({ fotos: fotosIniciales }: Props) {
         if (foto) nuevas.push(foto)
         else if (err) errores.push(`${file.name}: ${err}`)
         completados++
+        setSubHechas(completados)
         setProgreso(Math.round((completados / lista.length) * 100))
       }
     }
@@ -150,9 +155,21 @@ export default function FotosAdminManager({ fotos: fotosIniciales }: Props) {
           onDrop={e => { e.preventDefault(); if (!subiendo && e.dataTransfer.files.length) handleFiles(e.dataTransfer.files) }}
         >
           <span style={{ fontSize: '2.2rem', marginBottom: '0.6rem' }}>📷</span>
-          <span style={{ fontSize: '0.87rem', fontFamily: 'DM Sans, sans-serif', color: 'var(--gris)' }}>
-            {subiendo ? `Subiendo bloque… ${progreso}%` : 'Arrastra un bloque de fotos JPEG aquí o haz clic para seleccionar'}
-          </span>
+          {subiendo ? (
+            <span style={{ fontSize: '0.95rem', fontFamily: 'DM Sans, sans-serif', color: 'var(--negro)', fontWeight: 600 }}>
+              Subiendo {subHechas} / {subTotal} fotos… ({progreso}%)
+            </span>
+          ) : (
+            <>
+              <span style={{ background: 'var(--negro)', color: 'var(--crema)', padding: '0.6rem 1.4rem', borderRadius: '0.5rem', fontSize: '0.82rem', fontFamily: 'DM Sans, sans-serif', marginBottom: '0.6rem' }}>
+                Seleccionar fotos en bloque
+              </span>
+              <span style={{ fontSize: '0.78rem', fontFamily: 'DM Sans, sans-serif', color: 'var(--gris)', textAlign: 'center' }}>
+                Arrastra aquí o haz clic. Puedes seleccionar cientos a la vez<br />
+                (en el explorador: <strong>Ctrl + A</strong> para todas, o <strong>Ctrl/Shift + clic</strong> para varias)
+              </span>
+            </>
+          )}
           <input
             ref={inputRef}
             type="file"

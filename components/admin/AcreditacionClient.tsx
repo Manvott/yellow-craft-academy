@@ -207,7 +207,7 @@ export default function AcreditacionClient({ registros }: Props) {
   const router   = useRouter()
   const [updating, setUpdating]   = useState<string | null>(null)
   const [search,   setSearch]     = useState('')
-  const [filtro,   setFiltro]     = useState<'todos' | 'asistio' | 'pendiente' | 'solo-tardeo'>('todos')
+  const [filtro,   setFiltro]     = useState<'todos' | 'asistio' | 'pendiente' | 'solo-tardeo' | 'admin'>('todos')
   const [qrAbierto, setQrAbierto] = useState<string | null>(null)
   const [printingAll, setPrintingAll] = useState(false)
   const [printingSinTardeo, setPrintingSinTardeo] = useState(false)
@@ -229,6 +229,7 @@ export default function AcreditacionClient({ registros }: Props) {
       filtro === 'asistio'     ? r.asistio :
       filtro === 'pendiente'   ? !r.asistio :
       filtro === 'solo-tardeo' ? esSoloTardeo(r) :
+      filtro === 'admin'       ? r.origen === 'admin' :
       true
     return matchSearch && matchFiltro
   })
@@ -254,13 +255,14 @@ export default function AcreditacionClient({ registros }: Props) {
           style={{ flex: '1 1 200px', background: 'var(--blanco)', border: '1px solid var(--crema3)', color: 'var(--grafito)', padding: '0.65rem 1rem', fontFamily: 'DM Sans, sans-serif', fontSize: '0.82rem', outline: 'none' }}
         />
         {([
-          { key: 'todos',       label: `Todos (${registros.length})` },
-          { key: 'solo-tardeo', label: `Solo tardeo (${soloTardeoCount})` },
-          { key: 'asistio',     label: `Asistió (${registros.filter(r => r.asistio).length})` },
-          { key: 'pendiente',   label: `Pendiente (${registros.filter(r => !r.asistio).length})` },
-        ] as const).map(({ key, label }) => (
+          { key: 'todos',       label: `Todos (${registros.length})`,                                          accent: null      },
+          { key: 'solo-tardeo', label: `Solo tardeo (${soloTardeoCount})`,                                      accent: '#d97706' },
+          { key: 'admin',       label: `Admin (${registros.filter(r => r.origen === 'admin').length})`,         accent: '#7c3aed' },
+          { key: 'asistio',     label: `Asistió (${registros.filter(r => r.asistio).length})`,                  accent: null      },
+          { key: 'pendiente',   label: `Pendiente (${registros.filter(r => !r.asistio).length})`,               accent: null      },
+        ] as const).map(({ key, label, accent }) => (
           <button key={key} onClick={() => setFiltro(key)}
-            style={{ padding: '0.45rem 0.9rem', fontSize: '0.68rem', letterSpacing: '0.1em', textTransform: 'uppercase', border: `1px solid ${key === 'solo-tardeo' ? '#d97706' : 'var(--crema3)'}`, cursor: 'pointer', background: filtro === key ? (key === 'solo-tardeo' ? '#d97706' : 'var(--negro)') : 'var(--blanco)', color: filtro === key ? '#fff' : (key === 'solo-tardeo' ? '#d97706' : 'var(--gris)'), fontFamily: 'DM Sans, sans-serif' }}>
+            style={{ padding: '0.45rem 0.9rem', fontSize: '0.68rem', letterSpacing: '0.1em', textTransform: 'uppercase', border: `1px solid ${accent ?? 'var(--crema3)'}`, cursor: 'pointer', background: filtro === key ? (accent ?? 'var(--negro)') : 'var(--blanco)', color: filtro === key ? '#fff' : (accent ?? 'var(--gris)'), fontFamily: 'DM Sans, sans-serif' }}>
             {label}
           </button>
         ))}

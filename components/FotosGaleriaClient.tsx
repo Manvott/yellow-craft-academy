@@ -13,21 +13,13 @@ interface Foto {
 
 interface Props { fotosIniciales: Foto[] }
 
-async function descargarFoto(url: string, nombre: string) {
-  try {
-    const res = await fetch(url, { mode: 'cors' })
-    const blob = await res.blob()
-    const objectUrl = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = objectUrl
-    a.download = nombre || 'foto.jpg'
-    document.body.appendChild(a)
-    a.click()
-    a.remove()
-    URL.revokeObjectURL(objectUrl)
-  } catch {
-    window.open(url, '_blank')
-  }
+function descargarFoto(url: string, nombre: string) {
+  const a = document.createElement('a')
+  a.href = `/api/fotos/download?url=${encodeURIComponent(url)}&nombre=${encodeURIComponent(nombre || 'foto.jpg')}`
+  a.download = nombre || 'foto.jpg'
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
 }
 
 export default function FotosGaleriaClient({ fotosIniciales }: Props) {

@@ -70,24 +70,20 @@ export default function RegistrosAdmin({ registros }: Props) {
   async function guardarNuevo() {
     if (!nuevo.nombre.trim() || !nuevo.email.trim()) { setErrorNuevo('Nombre y email son obligatorios.'); return }
     setSavingNuevo(true); setErrorNuevo('')
-    const supabase = createClient()
-    const { error } = await supabase.from('registros').insert({
-      nombre:   nuevo.nombre.trim(),
-      empresa:  nuevo.empresa.trim() || null,
-      email:    nuevo.email.trim(),
-      telefono: nuevo.telefono.trim() || null,
-      isla:     nuevo.isla || null,
-      bloques:  nuevo.bloques,
-      origen:   'admin',
-      primera_vez: false,
-      cliente_ava: false,
-      acepta_whatsapp: false,
-      wa_confirmado: false,
-      wa_mensaje_enviado: false,
-      asistio: false,
+    const res = await fetch('/api/admin/crear-registro', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        nombre:   nuevo.nombre.trim(),
+        empresa:  nuevo.empresa.trim() || null,
+        email:    nuevo.email.trim(),
+        telefono: nuevo.telefono.trim() || null,
+        isla:     nuevo.isla || null,
+        bloques:  nuevo.bloques,
+      }),
     })
     setSavingNuevo(false)
-    if (error) { setErrorNuevo(error.message); return }
+    if (!res.ok) { const { error } = await res.json().catch(() => ({ error: 'Error al crear' })); setErrorNuevo(error); return }
     setNuevo(emptyNuevo); setShowNuevo(false); router.refresh()
   }
 

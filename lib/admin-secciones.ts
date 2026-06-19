@@ -12,6 +12,7 @@ export const SECCIONES_ADMIN = [
   { key: 'pildoras',    label: 'Pildoras',       icono: '💊', soloSuperadmin: false },
   { key: 'fotos',       label: 'Fotografías',    icono: '📸', soloSuperadmin: false },
   { key: 'informes',    label: 'Informes',       icono: '📊', soloSuperadmin: false },
+  { key: 'visitas',     label: 'Visitas web',    icono: '📈', soloSuperadmin: false },
   { key: 'ajustes',     label: 'Ajustes',        icono: '⚙', soloSuperadmin: true  },
 ] as const
 

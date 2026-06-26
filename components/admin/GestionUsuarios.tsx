@@ -85,7 +85,7 @@ export default function GestionUsuarios() {
 
           {!u.es_superadmin && (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.4rem', marginBottom: '1rem' }}>
-              {SECCIONES_ADMIN.filter(s => !s.soloSuperadmin).map(s => {
+              {SECCIONES_ADMIN.map(s => {
                 const activo = u.secciones.includes(s.key)
                 return (
                   <label key={s.key} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', padding: '0.5rem 0.75rem', border: `1px solid ${activo ? 'var(--negro)' : 'var(--crema3)'}`, background: activo ? 'var(--negro)' : 'var(--crema)', transition: 'all 0.2s' }}>

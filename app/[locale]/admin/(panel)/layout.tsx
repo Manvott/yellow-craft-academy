@@ -44,10 +44,7 @@ export default async function AdminLayout({
   const navItems = [
     ...(esSuperadmin ? [{ href: `/${locale}/admin`, label: 'Dashboard' }] : []),
     ...SECCIONES_ADMIN
-      .filter(s => {
-        if (s.soloSuperadmin) return esSuperadmin
-        return esSuperadmin || secciones.includes(s.key)
-      })
+      .filter(s => esSuperadmin || secciones.includes(s.key))
       .map(s => ({
         href: `/${locale}/admin/${s.key}`,
         label: s.label,

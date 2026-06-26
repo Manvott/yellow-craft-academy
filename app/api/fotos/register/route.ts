@@ -3,6 +3,11 @@ import { NextRequest, NextResponse } from 'next/server'
 export const maxDuration = 10
 
 export async function POST(request: NextRequest) {
+  const { checkAdmin } = await import('@/lib/admin-guard')
+  const { ok, soloLectura } = await checkAdmin()
+  if (!ok) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+  if (soloLectura) return NextResponse.json({ error: 'Modo prueba: solo lectura' }, { status: 403 })
+
   const { nombre_archivo, url_publica, r2_key, sesion, subido_por, tamano_bytes } = await request.json()
   if (!nombre_archivo || !url_publica || !r2_key) {
     return NextResponse.json({ error: 'Faltan parámetros' }, { status: 400 })

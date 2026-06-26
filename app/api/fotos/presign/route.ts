@@ -14,6 +14,11 @@ const r2 = new S3Client({
 })
 
 export async function POST(request: NextRequest) {
+  const { checkAdmin } = await import('@/lib/admin-guard')
+  const { ok, soloLectura } = await checkAdmin()
+  if (!ok) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+  if (soloLectura) return NextResponse.json({ error: 'Modo prueba: solo lectura' }, { status: 403 })
+
   const { nombre, tipo, sesion } = await request.json()
   if (!nombre || !tipo) return NextResponse.json({ error: 'Faltan parámetros' }, { status: 400 })
 

@@ -5,6 +5,11 @@ export const maxDuration = 60
 
 export async function POST(request: NextRequest) {
   try {
+    const { checkAdmin } = await import('@/lib/admin-guard')
+    const { ok, soloLectura } = await checkAdmin()
+    if (!ok) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    if (soloLectura) return NextResponse.json({ error: 'Modo prueba: solo lectura' }, { status: 403 })
+
     const r2 = new S3Client({
       region: 'auto',
       endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,

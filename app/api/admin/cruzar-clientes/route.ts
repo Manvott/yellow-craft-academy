@@ -6,6 +6,12 @@ export const dynamic = 'force-dynamic'
 export async function POST() {
   const supabase = await createClient()
 
+  const { data: { user } } = await supabase.auth.getUser()
+  if (user) {
+    const { data: rol } = await supabase.from('admin_roles').select('solo_lectura').eq('user_id', user.id).single()
+    if (rol?.solo_lectura) return NextResponse.json({ error: 'Modo prueba: solo lectura' }, { status: 403 })
+  }
+
   // Ejecuta el cruce: marca cliente_ava=true donde email o teléfono coincida con clientes_ava
   const { error } = await supabase.rpc('cruzar_clientes_ava')
 

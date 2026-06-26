@@ -15,6 +15,7 @@ export default async function AdminLayout({
   let userEmail = ''
   let secciones: string[] = []
   let esSuperadmin = false
+  let soloLectura = false
 
   try {
     const supabase = await createClient()
@@ -25,13 +26,14 @@ export default async function AdminLayout({
     if (session) {
       const { data: rol } = await supabase
         .from('admin_roles')
-        .select('secciones, es_superadmin')
+        .select('secciones, es_superadmin, solo_lectura')
         .eq('user_id', session.user.id)
         .single()
 
       if (rol) {
         secciones = rol.secciones ?? []
         esSuperadmin = rol.es_superadmin ?? false
+        soloLectura = rol.solo_lectura ?? false
       } else {
         esSuperadmin = true
         secciones = SECCIONES_ADMIN.map(s => s.key)
@@ -56,6 +58,7 @@ export default async function AdminLayout({
       navItems={navItems}
       userEmail={userEmail}
       esSuperadmin={esSuperadmin}
+      soloLectura={soloLectura}
       locale={locale}
     >
       {children}

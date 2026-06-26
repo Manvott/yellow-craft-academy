@@ -10,6 +10,7 @@ interface Usuario {
   secciones: string[]
   es_superadmin: boolean
   ver_costes: boolean
+  solo_lectura: boolean
   es_yo?: boolean
 }
 
@@ -31,7 +32,7 @@ export default function GestionUsuarios() {
     const res = await fetch('/api/admin/guardar-permisos', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_id: u.user_id, email: u.email, secciones, es_superadmin: u.es_superadmin, ver_costes: u.ver_costes }),
+      body: JSON.stringify({ user_id: u.user_id, email: u.email, secciones, es_superadmin: u.es_superadmin, ver_costes: u.ver_costes, solo_lectura: u.solo_lectura }),
     })
     if (res.ok) {
       setFeedback(`Permisos de ${u.email} guardados correctamente`)
@@ -111,6 +112,21 @@ export default function GestionUsuarios() {
               <div>
                 <p style={{ fontSize: '0.78rem', color: 'var(--negro)', fontFamily: 'DM Sans, sans-serif' }}>Ver costes en Fichas de Producto</p>
                 <p style={{ fontSize: '0.65rem', color: 'var(--gris)', fontFamily: 'DM Sans, sans-serif' }}>Si está desactivado, el usuario no verá precios, IGIC ni costes logísticos</p>
+              </div>
+            </label>
+          )}
+
+          {/* Modo prueba / solo lectura */}
+          {!u.es_superadmin && (
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer', padding: '0.6rem 0.75rem', border: `1px solid ${u.solo_lectura ? '#fcd34d' : 'var(--crema3)'}`, background: u.solo_lectura ? '#fffbeb' : 'var(--crema)', marginBottom: '0.75rem' }}>
+              <input type="checkbox"
+                checked={u.solo_lectura}
+                onChange={e => update(u.user_id, { solo_lectura: e.target.checked })}
+                style={{ accentColor: '#d97706', width: 14, height: 14 }}
+              />
+              <div>
+                <p style={{ fontSize: '0.78rem', color: 'var(--negro)', fontFamily: 'DM Sans, sans-serif' }}>Modo prueba (solo lectura)</p>
+                <p style={{ fontSize: '0.65rem', color: 'var(--gris)', fontFamily: 'DM Sans, sans-serif' }}>Puede navegar y probar el portal, pero no se guardan cambios (crear, editar ni eliminar)</p>
               </div>
             </label>
           )}

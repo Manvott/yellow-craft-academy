@@ -5,6 +5,11 @@ export const maxDuration = 30
 
 export async function POST(request: NextRequest) {
   try {
+    const { checkAdmin } = await import('@/lib/admin-guard')
+    const { ok, soloLectura } = await checkAdmin()
+    if (!ok) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    if (soloLectura) return NextResponse.json({ error: 'Modo prueba: solo lectura' }, { status: 403 })
+
     const { ids } = await request.json()
     if (!Array.isArray(ids) || !ids.length) {
       return NextResponse.json({ error: 'Faltan ids' }, { status: 400 })

@@ -11,13 +11,17 @@ interface Props {
   navItems: NavItem[]
   userEmail: string
   esSuperadmin: boolean
+  soloLectura?: boolean
   children: React.ReactNode
   locale: string
 }
 
-export default function AdminShell({ navItems, userEmail, esSuperadmin, children, locale }: Props) {
+export default function AdminShell({ navItems, userEmail, esSuperadmin, soloLectura = false, children, locale }: Props) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const pathname = usePathname()
+
+  // Expone el modo solo lectura al cliente de Supabase (bloquea mutaciones)
+  if (typeof window !== 'undefined') (window as any).__YCA_READONLY = soloLectura
 
   // Cerrar sidebar al navegar
   useEffect(() => { setSidebarOpen(false) }, [pathname])
@@ -112,6 +116,12 @@ export default function AdminShell({ navItems, userEmail, esSuperadmin, children
 
       {/* Main content */}
       <main className="admin-main" style={{ flex: 1, padding: '2.5rem', overflow: 'auto', marginLeft: 220, minWidth: 0, maxWidth: '100%' }}>
+        {soloLectura && (
+          <div style={{ background: '#fef3c7', border: '1px solid #fcd34d', color: '#92400e', padding: '0.75rem 1.1rem', marginBottom: '1.5rem', fontSize: '0.78rem', fontFamily: 'DM Sans, sans-serif', display: 'flex', alignItems: 'center', gap: '0.6rem', borderRadius: '0.4rem' }}>
+            <span style={{ fontSize: '1rem' }}>👁</span>
+            <span><strong>Modo prueba (solo lectura).</strong> Puedes navegar y probar el portal, pero los cambios no se guardan.</span>
+          </div>
+        )}
         {children}
       </main>
 

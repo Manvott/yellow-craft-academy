@@ -13,6 +13,9 @@ export async function POST(request: NextRequest) {
   const { data: { session } } = await supabaseAuth.auth.getSession()
   if (!session) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 
+  const { data: miRol } = await supabaseAuth.from('admin_roles').select('solo_lectura').eq('user_id', session.user.id).single()
+  if (miRol?.solo_lectura) return NextResponse.json({ error: 'Modo prueba: solo lectura' }, { status: 403 })
+
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
   if (!serviceKey) return NextResponse.json({ error: 'Configuración incompleta' }, { status: 500 })
 
@@ -23,12 +26,13 @@ export async function POST(request: NextRequest) {
     { auth: { autoRefreshToken: false, persistSession: false } }
   )
 
-  const { user_id, email, secciones, es_superadmin, ver_costes } = await request.json()
+  const { user_id, email, secciones, es_superadmin, ver_costes, solo_lectura } = await request.json()
   if (!user_id) return NextResponse.json({ error: 'user_id requerido' }, { status: 422 })
 
   const { error } = await adminClient.from('admin_roles').upsert({
     user_id, email, secciones, es_superadmin,
     ver_costes: ver_costes ?? true,
+    solo_lectura: solo_lectura ?? false,
   }, { onConflict: 'user_id' })
 
   if (error) {

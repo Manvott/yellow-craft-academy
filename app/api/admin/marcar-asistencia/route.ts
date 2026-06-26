@@ -8,6 +8,9 @@ export async function POST(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 
+  const { data: rol } = await supabase.from('admin_roles').select('solo_lectura').eq('user_id', user.id).single()
+  if (rol?.solo_lectura) return NextResponse.json({ error: 'Modo prueba: solo lectura' }, { status: 403 })
+
   const { id, asistio } = await request.json()
   if (!id || typeof asistio !== 'boolean') {
     return NextResponse.json({ error: 'Parámetros inválidos' }, { status: 400 })

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
-const MAX_ADMIN_USERS = 10
+const MAX_ADMIN_USERS = 15
 
 export async function POST(request: NextRequest) {
   const cookieStore = await cookies()

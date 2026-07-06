@@ -48,6 +48,22 @@ export default function GestionUsuarios() {
     setUsuarios(prev => prev.map(u => u.user_id === id ? { ...u, ...patch } : u))
   }
 
+  async function eliminarUsuario(u: Usuario) {
+    if (!confirm(`¿Eliminar al usuario ${u.email}? Esta acción no se puede deshacer.`)) return
+    const res = await fetch('/api/admin/eliminar-usuario', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_id: u.user_id }),
+    })
+    if (res.ok) {
+      setUsuarios(prev => prev.filter(x => x.user_id !== u.user_id))
+      setFeedback(`Usuario ${u.email} eliminado`)
+    } else {
+      const data = await res.json().catch(() => ({ error: 'Error al eliminar' }))
+      setFeedback(`Error: ${data.error}`)
+    }
+  }
+
   function toggleSeccion(id: string, key: string) {
     setUsuarios(prev => prev.map(u => {
       if (u.user_id !== id) return u
@@ -76,12 +92,20 @@ export default function GestionUsuarios() {
               </p>
               {u.es_superadmin && <span style={{ fontSize: '0.6rem', background: 'var(--amarillo)', color: 'var(--negro)', padding: '0.1rem 0.5rem' }}>★ Superadmin</span>}
             </div>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.75rem', color: 'var(--gris)' }}>
-              <input type="checkbox" checked={u.es_superadmin}
-                onChange={e => update(u.user_id, { es_superadmin: e.target.checked })}
-                style={{ accentColor: 'var(--negro)', width: 14, height: 14 }} />
-              Superadmin
-            </label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.75rem', color: 'var(--gris)' }}>
+                <input type="checkbox" checked={u.es_superadmin}
+                  onChange={e => update(u.user_id, { es_superadmin: e.target.checked })}
+                  style={{ accentColor: 'var(--negro)', width: 14, height: 14 }} />
+                Superadmin
+              </label>
+              {!u.es_yo && (
+                <button onClick={() => eliminarUsuario(u)}
+                  style={{ background: 'none', border: '1px solid #dc2626', color: '#dc2626', borderRadius: '0.35rem', padding: '0.3rem 0.7rem', fontSize: '0.68rem', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                  Eliminar
+                </button>
+              )}
+            </div>
           </div>
 
           {!u.es_superadmin && (

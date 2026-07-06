@@ -134,7 +134,7 @@ function InvitarUsuario() {
         Añadir usuario administrador
       </h2>
       <p style={{ fontSize: '0.78rem', color: 'var(--gris)', lineHeight: 1.6, marginBottom: '1.25rem' }}>
-        Crea hasta 2 usuarios adicionales con acceso completo al panel.
+        Crea hasta 15 usuarios en total. Ajusta sus permisos en la sección de abajo.
       </p>
       <form onSubmit={handleSubmit} style={{ maxWidth: 380 }}>
         <div>

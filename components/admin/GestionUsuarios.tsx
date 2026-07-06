@@ -11,6 +11,7 @@ interface Usuario {
   es_superadmin: boolean
   ver_costes: boolean
   solo_lectura: boolean
+  suspendido: boolean
   es_yo?: boolean
 }
 
@@ -32,7 +33,7 @@ export default function GestionUsuarios() {
     const res = await fetch('/api/admin/guardar-permisos', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_id: u.user_id, email: u.email, secciones, es_superadmin: u.es_superadmin, ver_costes: u.ver_costes, solo_lectura: u.solo_lectura }),
+      body: JSON.stringify({ user_id: u.user_id, email: u.email, secciones, es_superadmin: u.es_superadmin, ver_costes: u.ver_costes, solo_lectura: u.solo_lectura, suspendido: u.suspendido }),
     })
     if (res.ok) {
       setFeedback(`Permisos de ${u.email} guardados correctamente`)
@@ -46,6 +47,24 @@ export default function GestionUsuarios() {
 
   function update(id: string, patch: Partial<Usuario>) {
     setUsuarios(prev => prev.map(u => u.user_id === id ? { ...u, ...patch } : u))
+  }
+
+  async function toggleSuspension(u: Usuario) {
+    const nuevo = !u.suspendido
+    if (nuevo && !confirm(`¿Suspender el acceso de ${u.email}? No podrá entrar hasta que lo reactives.`)) return
+    const secciones = u.es_superadmin ? SECCIONES_ADMIN.map(s => s.key) : u.secciones
+    const res = await fetch('/api/admin/guardar-permisos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_id: u.user_id, email: u.email, secciones, es_superadmin: u.es_superadmin, ver_costes: u.ver_costes, solo_lectura: u.solo_lectura, suspendido: nuevo }),
+    })
+    if (res.ok) {
+      update(u.user_id, { suspendido: nuevo })
+      setFeedback(`${u.email} ${nuevo ? 'suspendido' : 'reactivado'}`)
+    } else {
+      const data = await res.json().catch(() => ({ error: 'Error' }))
+      setFeedback(`Error: ${data.error}`)
+    }
   }
 
   async function eliminarUsuario(u: Usuario) {
@@ -99,6 +118,12 @@ export default function GestionUsuarios() {
                   style={{ accentColor: 'var(--negro)', width: 14, height: 14 }} />
                 Superadmin
               </label>
+              {!u.es_yo && (
+                <button onClick={() => toggleSuspension(u)}
+                  style={{ background: u.suspendido ? '#16a34a' : 'none', border: `1px solid ${u.suspendido ? '#16a34a' : '#d97706'}`, color: u.suspendido ? '#fff' : '#d97706', borderRadius: '0.35rem', padding: '0.3rem 0.7rem', fontSize: '0.68rem', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                  {u.suspendido ? 'Reactivar' : 'Suspender'}
+                </button>
+              )}
               {!u.es_yo && (
                 <button onClick={() => eliminarUsuario(u)}
                   style={{ background: 'none', border: '1px solid #dc2626', color: '#dc2626', borderRadius: '0.35rem', padding: '0.3rem 0.7rem', fontSize: '0.68rem', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>

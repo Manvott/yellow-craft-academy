@@ -35,6 +35,7 @@ export async function GET(request: NextRequest) {
       es_superadmin: rol?.es_superadmin ?? false,
       ver_costes: rol?.ver_costes ?? true,
       solo_lectura: rol?.solo_lectura ?? false,
+      suspendido: rol?.suspendido ?? false,
       es_yo: u.id === session.user.id,
     }
   })

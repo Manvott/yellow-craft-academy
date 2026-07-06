@@ -26,13 +26,14 @@ export async function POST(request: NextRequest) {
     { auth: { autoRefreshToken: false, persistSession: false } }
   )
 
-  const { user_id, email, secciones, es_superadmin, ver_costes, solo_lectura } = await request.json()
+  const { user_id, email, secciones, es_superadmin, ver_costes, solo_lectura, suspendido } = await request.json()
   if (!user_id) return NextResponse.json({ error: 'user_id requerido' }, { status: 422 })
 
   const { error } = await adminClient.from('admin_roles').upsert({
     user_id, email, secciones, es_superadmin,
     ver_costes: ver_costes ?? true,
     solo_lectura: solo_lectura ?? false,
+    suspendido: suspendido ?? false,
   }, { onConflict: 'user_id' })
 
   if (error) {

@@ -70,6 +70,9 @@ export default function MensajesWAClient({ plantillas, registros, enviados }: Pr
   const [formContenido, setFormContenido] = useState('')
   const [saving, setSaving] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const [seleccionados, setSeleccionados] = useState<Set<string>>(new Set())
+  const [enviandoInvitacion, setEnviandoInvitacion] = useState(false)
+  const [feedbackInvitacion, setFeedbackInvitacion] = useState<{ ok: boolean; msg: string } | null>(null)
 
   useEffect(() => {
     function checkMobile() { setIsMobile(window.innerWidth < 768) }
@@ -156,6 +159,41 @@ export default function MensajesWAClient({ plantillas, registros, enviados }: Pr
     setFormTitulo('')
     setFormContenido('')
     router.refresh()
+  }
+
+  function toggleSeleccion(registroId: string) {
+    setSeleccionados(prev => {
+      const next = new Set(prev)
+      if (next.has(registroId)) next.delete(registroId)
+      else next.add(registroId)
+      return next
+    })
+  }
+
+  function seleccionarVisibles(ids: string[]) {
+    setSeleccionados(new Set(ids))
+  }
+
+  async function enviarInvitacionEvento() {
+    const destinatarios = registros
+      .filter(r => seleccionados.has(r.id) && r.telefono)
+      .map(r => ({ registro_id: r.id, nombre: r.nombre, telefono: r.telefono as string }))
+    if (destinatarios.length === 0) return
+    setEnviandoInvitacion(true)
+    setFeedbackInvitacion(null)
+    const res = await fetch('/api/admin/enviar-invitacion-evento', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ destinatarios }),
+    })
+    const data = await res.json()
+    setEnviandoInvitacion(false)
+    if (!res.ok) {
+      setFeedbackInvitacion({ ok: false, msg: data.error ?? 'Error al enviar la invitación.' })
+    } else {
+      setFeedbackInvitacion({ ok: true, msg: `Invitación enviada a ${data.enviados} destinatario(s).` })
+      setSeleccionados(new Set())
+    }
   }
 
   function startEditar(p: Plantilla) {
@@ -271,13 +309,23 @@ export default function MensajesWAClient({ plantillas, registros, enviados }: Pr
               </div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '0.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <button onClick={enviarInvitacionEvento} disabled={enviandoInvitacion || seleccionados.size === 0}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.62rem', letterSpacing: '0.12em', textTransform: 'uppercase', border: '1px solid #25D366', padding: '0.4rem 0.9rem', background: seleccionados.size === 0 ? 'var(--blanco)' : '#25D366', color: seleccionados.size === 0 ? '#25D366' : '#fff', cursor: seleccionados.size === 0 ? 'default' : 'pointer', fontFamily: 'DM Sans, sans-serif', opacity: enviandoInvitacion ? 0.6 : 1 }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d={waPath}/></svg>
+                {enviandoInvitacion ? 'Enviando...' : `Enviar invitación evento (${seleccionados.size})`}
+              </button>
               <button onClick={() => downloadAllVcf(registros)}
                 style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.62rem', letterSpacing: '0.12em', textTransform: 'uppercase', border: '1px solid var(--crema3)', padding: '0.35rem 0.85rem', background: 'var(--blanco)', color: 'var(--gris)', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
                 Exportar todos los contactos (.vcf)
               </button>
             </div>
+            {feedbackInvitacion && (
+              <p style={{ fontSize: '0.72rem', marginBottom: '0.75rem', padding: '0.5rem 0.85rem', background: feedbackInvitacion.ok ? '#f0fdf4' : '#fef2f2', border: `1px solid ${feedbackInvitacion.ok ? '#86efac' : '#fca5a5'}`, color: feedbackInvitacion.ok ? '#166534' : '#dc2626', fontFamily: 'DM Sans, sans-serif' }}>
+                {feedbackInvitacion.msg}
+              </p>
+            )}
 
             <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
               <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar..."
@@ -294,6 +342,18 @@ export default function MensajesWAClient({ plantillas, registros, enviados }: Pr
               ))}
             </div>
 
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '0.35rem' }}>
+              <button onClick={() => seleccionarVisibles(filtrados.filter(r => r.telefono).map(r => r.id))}
+                style={{ fontSize: '0.62rem', letterSpacing: '0.08em', textTransform: 'uppercase', background: 'none', border: 'none', color: 'var(--gris)', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', textDecoration: 'underline' }}>
+                Seleccionar visibles con teléfono
+              </button>
+              {seleccionados.size > 0 && (
+                <button onClick={() => setSeleccionados(new Set())}
+                  style={{ marginLeft: '0.75rem', fontSize: '0.62rem', letterSpacing: '0.08em', textTransform: 'uppercase', background: 'none', border: 'none', color: 'var(--gris)', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', textDecoration: 'underline' }}>
+                  Deseleccionar todos
+                </button>
+              )}
+            </div>
             <div style={{ background: 'var(--blanco)', border: '1px solid var(--crema3)' }}>
               {filtrados.length === 0 && <div style={{ textAlign: 'center', padding: '2.5rem', color: 'var(--gris-l)', fontSize: '0.82rem' }}>Sin resultados</div>}
               {filtrados.map((r, i) => {
@@ -301,7 +361,10 @@ export default function MensajesWAClient({ plantillas, registros, enviados }: Pr
                 const tel = r.telefono ? r.telefono.replace(/\D/g, '') : null
                 const waUrl = tel ? `https://wa.me/${tel}?text=${encodeURIComponent(buildMensaje(activa.contenido, r))}` : null
                 return (
-                  <div key={r.id} style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', gap: '0.75rem', alignItems: 'center', padding: '0.65rem 1rem', borderBottom: '1px solid var(--crema3)', background: enviado ? '#f0fdf4' : i % 2 === 0 ? 'var(--blanco)' : 'var(--crema)' }}>
+                  <div key={r.id} style={{ display: 'grid', gridTemplateColumns: 'auto 1fr auto auto', gap: '0.75rem', alignItems: 'center', padding: '0.65rem 1rem', borderBottom: '1px solid var(--crema3)', background: enviado ? '#f0fdf4' : i % 2 === 0 ? 'var(--blanco)' : 'var(--crema)' }}>
+                    <input type="checkbox" checked={seleccionados.has(r.id)} disabled={!r.telefono} onChange={() => toggleSeleccion(r.id)}
+                      title={r.telefono ? 'Seleccionar para invitación al nuevo evento' : 'Sin teléfono, no se puede invitar'}
+                      style={{ width: 16, height: 16, cursor: r.telefono ? 'pointer' : 'not-allowed' }} />
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.1rem' }}>
                         <p style={{ fontWeight: 500, fontSize: '0.82rem', color: 'var(--negro)', margin: 0 }}>{r.nombre}</p>

@@ -2,6 +2,7 @@ export const SECCIONES_ADMIN = [
   { key: 'registros',      label: 'Asistentes',     icono: '👥', soloSuperadmin: false },
   { key: 'lista-espera',  label: 'Lista de espera', icono: '⏳', soloSuperadmin: false },
   { key: 'mensajes-wa',    label: 'Mensajes WA',    icono: '💬', soloSuperadmin: false },
+  { key: 'invitacion-evento', label: 'Invitación Evento', icono: '📨', soloSuperadmin: false },
   { key: 'acreditacion',   label: 'Acreditación',   icono: '🎫', soloSuperadmin: false },
   { key: 'fichas',      label: 'Fichas Producto',icono: '📋', soloSuperadmin: false },
   { key: 'menu',        label: 'Menú',           icono: '🍽', soloSuperadmin: false },
